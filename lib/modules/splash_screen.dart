@@ -1,5 +1,6 @@
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/services/app_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,11 +18,15 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     appService = Get.find<AppService>();
+    final user = FirebaseAuth.instance.currentUser;
     Future.delayed(const Duration(milliseconds: 2000), () async {
       if (appService.onBoarding) {
-        final id = appService.appUser.value.id;
-        if (id.isNotEmpty) {
-          Get.offAllNamed(AppRoutes.ROOT_VIEW);
+        if (user != null) {
+          if (appService.importData) {
+            Get.offAllNamed(AppRoutes.ROOT_VIEW);
+          } else {
+            Get.offAllNamed(AppRoutes.IMPORT_DATA);
+          }
         } else {
           Get.offAllNamed(AppRoutes.LOGIN);
         }

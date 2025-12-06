@@ -20,12 +20,12 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: Colors.white,
-        secondaryLabelStyle: const TextStyle(color: Colors.black),
-        checkmarkColor: Colors.black,
-        selectedColor: const Color(0xFF45AE91).withValues(alpha: 0.6),
+        secondaryLabelStyle: const TextStyle(color: Colors.white),
+        checkmarkColor: Colors.white,
+        selectedColor: const Color(0xFF00796B),
         shape: const RoundedRectangleBorder(
-          side: BorderSide(color: Color(0xFF45AE91)),
-          borderRadius: BorderRadius.all(Radius.circular(28)),
+          side: BorderSide(color: Color(0xFF00796B)),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
       ),
       dropdownMenuTheme: const DropdownMenuThemeData(

@@ -6,6 +6,8 @@ import 'package:drivvo/modules/authentication/signup/signup_bindings.dart';
 import 'package:drivvo/modules/authentication/signup/signup_view.dart';
 import 'package:drivvo/modules/common/onboarding/onboarding_bindings.dart';
 import 'package:drivvo/modules/common/onboarding/onboarding_view.dart';
+import 'package:drivvo/modules/import-data/import_data_bindings.dart';
+import 'package:drivvo/modules/import-data/import_data_view.dart';
 import 'package:drivvo/modules/root/root_bindings.dart';
 import 'package:drivvo/modules/root/root_view.dart';
 import 'package:drivvo/modules/common/update-profile/update_profile_bindings.dart';
@@ -33,7 +35,7 @@ class AppPages {
       binding: LoginBindings(),
     ),
 
-     GetPage(
+    GetPage(
       name: AppRoutes.SIGNUP,
       page: () => SignupView(),
       binding: SignupBindings(),
@@ -44,7 +46,7 @@ class AppPages {
       page: () => ForgotPasswordView(),
       binding: ForgotPasswordBindings(),
     ),
-    
+
     GetPage(
       name: AppRoutes.ROOT_VIEW,
       page: () => const RootView(),
@@ -58,6 +60,12 @@ class AppPages {
       name: AppRoutes.UPDATE_PROFILE,
       page: () => UpdateProfileView(),
       binding: UpdateProfileBindings(),
+    ),
+
+    GetPage(
+      name: AppRoutes.IMPORT_DATA,
+      page: () => ImportDataView(),
+      binding: ImportDataBindings(),
     ),
   ];
 }

@@ -3,14 +3,12 @@ import 'package:drivvo/custom-widget/text-input-field/password_input_field.dart'
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
 import 'package:drivvo/modules/authentication/login/login_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
-import 'package:drivvo/utils/constants.dart';
+import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginView extends GetView<LoginController> {
   const LoginView({super.key});
-
-  bool get _isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +23,11 @@ class LoginView extends GetView<LoginController> {
                 const SizedBox(height: 40),
                 Text(
                   'login_to_continue'.tr,
-                  style: _getTextStyle(
+                  style: Utils.getTextStyle(
                     baseSize: 28,
                     isBold: true,
                     color: Colors.black,
+                    isUrdu: controller.isUrdu,
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -105,19 +104,23 @@ class LoginView extends GetView<LoginController> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () => controller.onTapLogin(),
+                    onPressed: () => Get.toNamed(AppRoutes.FORGOT_PASSWORD),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         vertical: 0,
                         horizontal: 0,
                       ),
                     ),
-                    child: Text(
-                      'forgot_password'.tr,
-                      style: _getTextStyle(
-                        baseSize: 14,
-                        isBold: false,
-                        color: const Color(0xFF00695C),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'forgot_password'.tr,
+                        style: Utils.getTextStyle(
+                          baseSize: 14,
+                          isBold: false,
+                          color: const Color(0xFF00695C),
+                          isUrdu: controller.isUrdu,
+                        ),
                       ),
                     ),
                   ),
@@ -137,10 +140,11 @@ class LoginView extends GetView<LoginController> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'or'.tr,
-                        style: _getTextStyle(
+                        style: Utils.getTextStyle(
                           baseSize: 16,
                           isBold: false,
                           color: Colors.grey[600]!,
+                          isUrdu: controller.isUrdu,
                         ),
                       ),
                     ),
@@ -154,7 +158,7 @@ class LoginView extends GetView<LoginController> {
                   width: double.infinity,
                   height: 56,
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () => controller.signInWithGoogle(),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.black87),
                       shape: RoundedRectangleBorder(
@@ -168,10 +172,11 @@ class LoginView extends GetView<LoginController> {
                         const SizedBox(width: 12),
                         Text(
                           'sign_in_with_google'.tr,
-                          style: _getTextStyle(
+                          style: Utils.getTextStyle(
                             baseSize: 14,
                             isBold: true,
                             color: Colors.black87,
+                            isUrdu: controller.isUrdu,
                           ),
                         ),
                       ],
@@ -191,10 +196,11 @@ class LoginView extends GetView<LoginController> {
           children: [
             Text(
               "no_account".tr,
-              style: _getTextStyle(
+              style: Utils.getTextStyle(
                 baseSize: 14,
                 isBold: false,
                 color: Colors.black87,
+                isUrdu: controller.isUrdu,
               ),
             ),
             Text(" "),
@@ -202,9 +208,10 @@ class LoginView extends GetView<LoginController> {
               onTap: () => Get.toNamed(AppRoutes.SIGNUP),
               child: Text(
                 'sign_up'.tr,
-                style: _getTextStyle(
+                style: Utils.getTextStyle(
                   baseSize: 14,
                   isBold: true,
+                  isUrdu: controller.isUrdu,
                   color: const Color(0xFF00695C),
                 ),
               ),
@@ -212,19 +219,6 @@ class LoginView extends GetView<LoginController> {
           ],
         ),
       ),
-    );
-  }
-
-  TextStyle _getTextStyle({
-    required double baseSize,
-    required bool isBold,
-    required Color color,
-  }) {
-    return TextStyle(
-      fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-      color: color,
-      fontSize: _isUrdu ? baseSize + 2 : baseSize,
-      fontFamily: _isUrdu ? "U-FONT-R" : "D-FONT-R",
     );
   }
 }

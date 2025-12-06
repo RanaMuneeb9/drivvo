@@ -1,29 +1,38 @@
+import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String name;
+  final bool isUrdu;
+  final bool? centerTitle;
+  final List<Widget>? actions;
 
-  const CustomAppBar({super.key, required this.name});
+  const CustomAppBar({
+    super.key,
+    required this.name,
+    required this.isUrdu,
+    this.centerTitle = false,
+    this.actions = const [SizedBox()],
+  });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: false,
-      backgroundColor: const Color(0XffFB5C7C),
+      backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
-      centerTitle: true,
-      leading: IconButton(
-        onPressed: () => Navigator.pop(context),
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-      ),
+      elevation: 0,
       title: Text(
-        name,
-        style: const TextStyle(
-          fontFamily: "D-FONT-M",
-          fontSize: 20,
-          color: Colors.white,
+        name.tr,
+        style: Utils.getTextStyle(
+          baseSize: 18,
+          isBold: true,
+          color: Colors.black,
+          isUrdu: isUrdu,
         ),
       ),
+      centerTitle: centerTitle,
+      actions: actions,
     );
   }
 

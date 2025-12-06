@@ -1,6 +1,7 @@
 import 'package:drivvo/model/onboarding_model.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/services/app_service.dart';
+import 'package:drivvo/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,6 +10,8 @@ class OnboardingController extends GetxController {
   late AppService appService;
 
   final PageController pageController = PageController();
+
+  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   // Data from your screenshots
   final List<OnboardingModel> contentList = [
@@ -47,7 +50,7 @@ class OnboardingController extends GetxController {
   }
 
   void skipToLogin() {
-    appService.setBoring(value: true);
+    appService.setOnboarding(value: true);
     Get.offAllNamed(AppRoutes.LOGIN);
   }
 

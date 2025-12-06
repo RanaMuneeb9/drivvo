@@ -1,5 +1,5 @@
 import 'package:drivvo/modules/root/root_controller.dart';
-import 'package:drivvo/utils/constants.dart';
+import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -20,76 +20,101 @@ class RootView extends GetView<RootController> {
           body: controller.currentPage,
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFbceaf9), Color(0xFF8bb9ff)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+              color: Colors.white,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
               ),
-
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withAlpha(100),
-                  blurRadius: 1,
+                  blurRadius: 5,
                   offset: const Offset(0, 1),
                 ),
               ],
             ),
-            child: BottomNavigationBar(
-              backgroundColor: Colors.white,
-              selectedItemColor: Color(0XffFB5C7C),
-              showSelectedLabels: true,
-              unselectedLabelStyle: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize:
-                    Get.locale?.languageCode == Constants.DEFAULT_LANGUAGE_CODE
-                    ? 12
-                    : 14,
-                color: Colors.black,
-                fontFamily:
-                    Get.locale?.languageCode == Constants.DEFAULT_LANGUAGE_CODE
-                    ? "D-FONT-R"
-                    : "U-FONT-R",
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30.0),
+                topRight: Radius.circular(30.0),
               ),
-              selectedLabelStyle: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize:
-                    Get.locale?.languageCode == Constants.DEFAULT_LANGUAGE_CODE
-                    ? 12
-                    : 14,
-                height: 0,
-                fontFamily:
-                    Get.locale?.languageCode == Constants.DEFAULT_LANGUAGE_CODE
-                    ? "D-FONT-R"
-                    : "U-FONT-R",
+              child: BottomNavigationBar(
+                elevation: 10,
+                backgroundColor: Colors.white,
+                selectedItemColor: Color(0xFF00796B),
+                showSelectedLabels: true,
+                unselectedLabelStyle: Utils.getTextStyle(
+                  baseSize: 12,
+                  color: Colors.black,
+                  isBold: false,
+                  isUrdu: controller.isUrdu,
+                ),
+                selectedLabelStyle: Utils.getTextStyle(
+                  baseSize: 12,
+                  color: Colors.black,
+                  isBold: false,
+                  isUrdu: controller.isUrdu,
+                ),
+                unselectedItemColor: Colors.black45,
+                type: BottomNavigationBarType.fixed,
+                currentIndex: controller.currentIndex.value,
+                showUnselectedLabels: true,
+                onTap: (index) => {controller.changePageInRoot(index)},
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Image.asset(
+                      "assets/images/home.png",
+                      width: 28,
+                      height: 28,
+                      fit: BoxFit.cover,
+                      color: controller.currentIndex.value == 0
+                          ? Color(0xFF00796B)
+                          : Colors.grey,
+                    ),
+                    label: "home".tr,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Image.asset(
+                      "assets/images/report.png",
+                      width: 28,
+                      height: 28,
+                      fit: BoxFit.cover,
+                      color: controller.currentIndex.value == 1
+                          ? Color(0xFF00796B)
+                          : Colors.grey,
+                    ),
+                    label: "report".tr,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.settings),
+                    label: "setting".tr,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Image.asset(
+                      "assets/images/reminder.png",
+                      width: 28,
+                      height: 28,
+                      fit: BoxFit.cover,
+                      color: controller.currentIndex.value == 3
+                          ? Color(0xFF00796B)
+                          : Colors.grey,
+                    ),
+                    label: "reminder".tr,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Image.asset(
+                      "assets/images/more.png",
+                      width: 28,
+                      height: 28,
+                      fit: BoxFit.cover,
+                      color: controller.currentIndex.value == 4
+                          ? Color(0xFF00796B)
+                          : Colors.grey,
+                    ),
+                    label: "more".tr,
+                  ),
+                ],
               ),
-              unselectedItemColor: Colors.black45,
-              type: BottomNavigationBarType.fixed,
-              elevation: 0,
-              currentIndex: controller.currentIndex.value,
-              showUnselectedLabels: true,
-              onTap: (index) => {controller.changePageInRoot(index)},
-              items: [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home_outlined),
-                  label: "home".tr,
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.calendar_month),
-                  label: "calender".tr,
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.medical_information_outlined),
-                  label: "pills".tr,
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.settings),
-                  label: "settings".tr,
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.settings),
-                  label: "more".tr,
-                ),
-              ],
             ),
           ),
         ),

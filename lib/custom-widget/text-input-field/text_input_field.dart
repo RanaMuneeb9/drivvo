@@ -86,7 +86,6 @@ class TextInputField extends StatelessWidget {
           ),
           onSaved: (value) => onSaved(value),
           validator: (value) => onValidate(value),
-          onChanged: (value) => onChange?.call(value),
         ),
       ],
     );

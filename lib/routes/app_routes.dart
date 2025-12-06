@@ -13,4 +13,6 @@ abstract class AppRoutes {
   static const ROOT_VIEW = '/root';
   // ignore: constant_identifier_names
   static const UPDATE_PROFILE = '/update_profile';
+  // ignore: constant_identifier_names
+  static const IMPORT_DATA = '/import_data';
 }

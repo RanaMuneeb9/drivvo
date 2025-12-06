@@ -4,6 +4,20 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class Utils {
+  static TextStyle getTextStyle({
+    required double baseSize,
+    required bool isBold,
+    required Color color,
+    required bool isUrdu,
+  }) {
+    return TextStyle(
+      fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+      color: color,
+      fontSize: isUrdu ? baseSize + 2 : baseSize,
+      fontFamily: isUrdu ? "U-FONT-R" : "D-FONT-R",
+    );
+  }
+
   static SnackbarController showSnackBar({
     required String message,
     required bool success,

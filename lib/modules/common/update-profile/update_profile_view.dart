@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:drivvo/custom-widget/button/custom_button.dart';
+import 'package:drivvo/custom-widget/custom_app_bar.dart';
 import 'package:drivvo/custom-widget/profile_image.dart';
+import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
 import 'package:drivvo/modules/common/update-profile/update_profile_controller.dart';
-import 'package:drivvo/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UpdateProfileView extends GetView<UpdateProfileController> {
   const UpdateProfileView({super.key});
@@ -12,30 +14,10 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
+      appBar: CustomAppBar(
+        name: "update_profile".tr,
+        isUrdu: controller.isUrdu,
         centerTitle: true,
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back),
-        ),
-        title: Text(
-          "update_profile".tr,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize:
-                Get.locale?.languageCode == Constants.DEFAULT_LANGUAGE_CODE
-                ? 20
-                : 22,
-            fontFamily:
-                Get.locale?.languageCode == Constants.DEFAULT_LANGUAGE_CODE
-                ? "D-FONT-R"
-                : "U-FONT-R",
-          ),
-        ),
       ),
       body: SafeArea(
         child: Column(
@@ -69,7 +51,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                                   child: controller.filePath.isNotEmpty
                                       ? CircleAvatar(
                                           foregroundColor: const Color(
-                                            0xFF169EC5,
+                                            0xFF047772,
                                           ),
                                           backgroundImage: FileImage(
                                             File(controller.filePath.value),
@@ -86,12 +68,12 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                                           height: 120,
                                           radius: 100,
                                           placeholder:
-                                              "assets/images/default.png",
+                                              "assets/images/placeholder.png",
                                         ),
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () => {},
+                                onTap: () => {showResponseDialog()},
                                 child: Container(
                                   width:
                                       MediaQuery.of(context).size.width * 0.1,
@@ -99,7 +81,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                                       MediaQuery.of(context).size.width * 0.1,
                                   decoration: const BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Color(0XffFB5C7C),
+                                    color: Color(0xFF00796B),
                                   ),
                                   child: Center(
                                     child: Icon(
@@ -116,7 +98,44 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                           ),
                         ),
                         const SizedBox(height: 40),
-                        CustomButton(title: "update".tr, onTap: () {}),
+                        TextInputField(
+                          isRequired: false,
+                          isNext: true,
+                          obscureText: false,
+                          readOnly: false,
+                          initialValue:
+                              controller.appService.appUser.value.name,
+                          labelText: "name".tr,
+                          hintText: "enter_your_name".tr,
+                          inputAction: TextInputAction.next,
+                          type: TextInputType.name,
+                          onSaved: (value) {
+                            value != null
+                                ? controller.name = value
+                                : controller.name = "";
+                          },
+                          onValidate: (value) {},
+                        ),
+                        const SizedBox(height: 20),
+                        TextInputField(
+                          isRequired: false,
+                          isNext: true,
+                          obscureText: false,
+                          readOnly: true,
+                          initialValue:
+                              controller.appService.appUser.value.email,
+                          labelText: "email".tr,
+                          hintText: "enter_your_email".tr,
+                          inputAction: TextInputAction.next,
+                          type: TextInputType.emailAddress,
+                          onSaved: (value) => {},
+                          onValidate: (value) {},
+                        ),
+                        const SizedBox(height: 40),
+                        CustomButton(
+                          title: "update".tr,
+                          onTap: () => controller.saveData(),
+                        ),
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -130,80 +149,80 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
     );
   }
 
-  // void showResponseDialog() async {
-  //   final ImagePicker imgPicker = ImagePicker();
+  void showResponseDialog() async {
+    final ImagePicker imgPicker = ImagePicker();
 
-  //   Get.defaultDialog(
-  //     title: "Choose Option",
-  //     backgroundColor: Colors.white,
-  //     content: Padding(
-  //       padding: const EdgeInsets.only(top: 10, left: 16, right: 16),
-  //       child: Column(
-  //         children: [
-  //           GestureDetector(
-  //             behavior: HitTestBehavior.opaque,
-  //             onTap: () async {
-  //               Get.back();
-  //               final pickedFile = await imgPicker.pickImage(
-  //                 source: ImageSource.camera,
-  //                 imageQuality: 85,
-  //                 maxWidth: 400,
-  //                 maxHeight: 400,
-  //               );
-  //               if (pickedFile != null) {
-  //                 controller.onPickedFile(pickedFile);
-  //               }
-  //             },
-  //             child: Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: [
-  //                 Text(
-  //                   "Take Photo",
-  //                   style: const TextStyle(
-  //                     fontWeight: FontWeight.w600,
-  //                     color: Color(0xff000000),
-  //                     fontSize: 14,
-  //                   ),
-  //                 ),
-  //                 const Icon(Icons.camera_alt, color: Colors.black, size: 18),
-  //               ],
-  //             ),
-  //           ),
-  //           const SizedBox(height: 5),
-  //           const Divider(thickness: 0.5, color: Color(0x20000000)),
-  //           const SizedBox(height: 5),
-  //           GestureDetector(
-  //             behavior: HitTestBehavior.opaque,
-  //             onTap: () async {
-  //               Get.back();
-  //               final pickedFile = await imgPicker.pickImage(
-  //                 source: ImageSource.gallery,
-  //                 imageQuality: 85,
-  //                 maxWidth: 400,
-  //                 maxHeight: 400,
-  //               );
-  //               if (pickedFile != null) {
-  //                 controller.onPickedFile(pickedFile);
-  //               }
-  //             },
-  //             child: Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: [
-  //                 Text(
-  //                   "Gallery",
-  //                   style: const TextStyle(
-  //                     fontWeight: FontWeight.w600,
-  //                     color: Color(0xff000000),
-  //                     fontSize: 14,
-  //                   ),
-  //                 ),
-  //                 const Icon(Icons.camera_alt, color: Colors.black, size: 18),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+    Get.defaultDialog(
+      title: "choose_option".tr,
+      backgroundColor: Colors.white,
+      content: Padding(
+        padding: const EdgeInsets.only(top: 10, left: 16, right: 16),
+        child: Column(
+          children: [
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () async {
+                Get.back();
+                final pickedFile = await imgPicker.pickImage(
+                  source: ImageSource.camera,
+                  imageQuality: 85,
+                  maxWidth: 400,
+                  maxHeight: 400,
+                );
+                if (pickedFile != null) {
+                  controller.onPickedFile(pickedFile);
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "take_photo".tr,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xff000000),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const Icon(Icons.camera_alt, color: Colors.black, size: 18),
+                ],
+              ),
+            ),
+            const SizedBox(height: 5),
+            const Divider(thickness: 0.5, color: Color(0x20000000)),
+            const SizedBox(height: 5),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () async {
+                Get.back();
+                final pickedFile = await imgPicker.pickImage(
+                  source: ImageSource.gallery,
+                  imageQuality: 85,
+                  maxWidth: 400,
+                  maxHeight: 400,
+                );
+                if (pickedFile != null) {
+                  controller.onPickedFile(pickedFile);
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "gallery".tr,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xff000000),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const Icon(Icons.camera_alt, color: Colors.black, size: 18),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

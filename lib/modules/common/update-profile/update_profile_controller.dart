@@ -1,6 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/services/app_service.dart';
+import 'package:drivvo/utils/constants.dart';
+import 'package:drivvo/utils/database_tables.dart';
+import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UpdateProfileController extends GetxController {
   late AppService appService;
@@ -11,10 +17,9 @@ class UpdateProfileController extends GetxController {
 
   var name = "";
 
-  // final FirebaseFirestore db = FirebaseFirestore.instance;
-  // final storageRef = FirebaseStorage.instance.ref().child(
-  //   DatabaseTables.USER_IMAGES,
-  // );
+  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
+
+  final FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
   void onInit() {
@@ -22,37 +27,44 @@ class UpdateProfileController extends GetxController {
     super.onInit();
   }
 
-  // Future<void> saveData() async {
-  //   if (formStateKey.currentState?.validate() == true) {
-  //     formStateKey.currentState?.save();
+  Future<void> saveData() async {
+    if (formStateKey.currentState?.validate() == true) {
+      formStateKey.currentState?.save();
 
-  //     Utils.showProgressDialog(Get.context!);
-  //     if (filePath.value.isNotEmpty) {
-  //       uploadImage();
-  //       //saveUser();
-  //     } else {
-  //       saveUser();
-  //     }
-  //   }
-  // }
+      Utils.showProgressDialog(Get.context!);
+      if (filePath.value.isNotEmpty) {
+        saveUser();
+      } else {
+        saveUser();
+      }
+    }
+  }
 
-  // Future<void> saveUser() async {
-  //   final map = <String, dynamic>{};
-  //   map["name"] = name;
+  Future<void> saveUser() async {
+    final map = <String, dynamic>{};
+    map["name"] = name;
 
-  //   await db
-  //       .collection(DatabaseTables.USER_PROFILE)
-  //       .doc(appService.appUser.value.id)
-  //       .update(map)
-  //       .then((_) {
-  //         Get.back();
-  //         Get.back();
-  //         appService.appUser.value.name = name;
-  //         appService.appUser.refresh();
-  //         appService.refreshUserData();
-  //         Utils.showSnackBar(message: "profile_updated_success", success: true);
-  //       });
-  // }
+    try {
+      await db
+          .collection(DatabaseTables.USER_PROFILE)
+          .doc(appService.appUser.value.id)
+          .update(map)
+          .then((_) {
+            Get.back();
+            Get.back();
+            appService.appUser.value.name = name;
+            appService.appUser.refresh();
+            appService.getUserProfile();
+            Utils.showSnackBar(
+              message: "profile_updated_success",
+              success: true,
+            );
+          });
+    } catch (e) {
+      Get.back();
+      Utils.showSnackBar(message: "save_data_failed", success: false);
+    }
+  }
 
   // Future<void> uploadImage() async {
   //   final metadata = SettableMetadata(
@@ -106,31 +118,31 @@ class UpdateProfileController extends GetxController {
   //       });
   // }
 
-  // Future<void> onPickedFile(XFile? pickedFile) async {
-  //   if (pickedFile != null) {
-  //     CroppedFile? croppedFile = await ImageCropper().cropImage(
-  //       sourcePath: pickedFile.path,
-  //       aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-  //       uiSettings: [
-  //         AndroidUiSettings(
-  //           toolbarTitle: 'Cropper',
-  //           toolbarColor: const Color(0XffFB5C7C),
-  //           toolbarWidgetColor: Colors.white,
-  //           lockAspectRatio: true,
-  //           aspectRatioPresets: [CropAspectRatioPreset.square],
-  //         ),
-  //         IOSUiSettings(
-  //           title: 'Cropper',
-  //           aspectRatioPresets: [
-  //             CropAspectRatioPreset
-  //                 .square, // IMPORTANT: iOS supports only one custom aspect ratio in preset list
-  //           ],
-  //         ),
-  //       ],
-  //     );
-  //     if (croppedFile != null) {
-  //       filePath.value = croppedFile.path;
-  //     }
-  //   }
-  // }
+  Future<void> onPickedFile(XFile? pickedFile) async {
+    if (pickedFile != null) {
+      CroppedFile? croppedFile = await ImageCropper().cropImage(
+        sourcePath: pickedFile.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: const Color(0xFF047772),
+            toolbarWidgetColor: Colors.white,
+            lockAspectRatio: true,
+            aspectRatioPresets: [CropAspectRatioPreset.square],
+          ),
+          IOSUiSettings(
+            title: 'Cropper',
+            aspectRatioPresets: [
+              CropAspectRatioPreset
+                  .square, // IMPORTANT: iOS supports only one custom aspect ratio in preset list
+            ],
+          ),
+        ],
+      );
+      if (croppedFile != null) {
+        filePath.value = croppedFile.path;
+      }
+    }
+  }
 }

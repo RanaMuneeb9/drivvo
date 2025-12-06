@@ -1,4 +1,7 @@
 import 'package:drivvo/services/app_service.dart';
+import 'package:drivvo/utils/constants.dart';
+import 'package:drivvo/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -6,8 +9,6 @@ class ForgotPasswordController extends GetxController {
   final formStateKey = GlobalKey<FormState>();
   late AppService appService;
   TextEditingController emailController = TextEditingController();
-
-  var loading = false.obs;
 
   var email = "";
 
@@ -17,56 +18,54 @@ class ForgotPasswordController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
-    getProfile();
+    registeredEmail.value = appService.appUser.value.email;
   }
 
+  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
+
+  
   Future<void> onTapForgot() async {
-    // if (formStateKey.currentState?.validate() == true) {
-    //   formStateKey.currentState?.save();
-    //   if (email.isNotEmpty) {
-    //     try {
-    //       loading.value = true;
-    //       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-    //       loading.value = false;
-    //       Get.back();
-    //       Utils.showSnackBar(
-    //         message: "password_reset_link_sent",
-    //         success: true,
-    //       );
-    //     } on FirebaseAuthException catch (e) {
-    //       if (e.code == "user-not-found") {
-    //         Get.back();
-    //         Utils.showSnackBar(message: "no_user_found", success: false);
-    //       } else if (e.code == "invalid-email") {
-    //         Get.back();
-    //         Utils.showSnackBar(
-    //           message: "invalid_email_address",
-    //           success: false,
-    //         );
-    //       } else {
-    //         Get.back();
-    //         Utils.showSnackBar(message: "something_went_wrong", success: false);
-
-    //         loading.value = false;
-    //       }
-    //     } finally {
-    //       loading.value = false;
-    //     }
-    //   }
-    // }
+    if (formStateKey.currentState?.validate() == true) {
+      formStateKey.currentState?.save();
+      if (email.isNotEmpty) {
+        Utils.showProgressDialog(Get.context!);
+        try {
+          await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+          Get.back(closeOverlays: true);
+          Utils.showSnackBar(
+            message: "password_reset_link_sent",
+            success: true,
+          );
+        } on FirebaseAuthException catch (e) {
+          if (e.code == "user-not-found") {
+            Get.back(closeOverlays: true);
+            Utils.showSnackBar(message: "no_user_found", success: false);
+          } else if (e.code == "invalid-email") {
+            Get.back(closeOverlays: true);
+            Utils.showSnackBar(
+              message: "invalid_email_address",
+              success: false,
+            );
+          } else {
+            Get.back(closeOverlays: true);
+            Utils.showSnackBar(message: "something_went_wrong", success: false);
+          }
+        }
+      }
+    }
   }
 
-  Future<void> getProfile() async {
-    // var docSnapshot = await FirebaseFirestore.instance
-    //     .collection(Constants.USER_PROFILE)
-    //     .doc(appService.appUser.value.id)
-    //     .get();
-    // if (docSnapshot.exists) {
-    //   Map<String, dynamic>? data = docSnapshot.data();
-    //   if (data != null) {
-    //     final user = AppUser.fromJson(data);
-    //     registeredEmail.value = user.email;
-    //   }
-    // }
-  }
+  // Future<void> getProfile() async {
+  //   var docSnapshot = await FirebaseFirestore.instance
+  //       .collection(Constants.USER_PROFILE)
+  //       .doc(id)
+  //       .get();
+  //   if (docSnapshot.exists) {
+  //     Map<String, dynamic>? data = docSnapshot.data();
+  //     if (data != null) {
+  //       final user = AppUser.fromJson(data);
+  //       registeredEmail.value = user.email;
+  //     }
+  //   }
+  // }
 }

@@ -1,12 +1,16 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/app_user.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/constants.dart';
+import 'package:drivvo/utils/database_tables.dart';
 import 'package:drivvo/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AppService extends GetxService {
   late GetStorage _box;
@@ -15,10 +19,12 @@ class AppService extends GetxService {
   static AppService get to => Get.find();
 
   bool onBoarding = false;
-  //final FirebaseFirestore db = FirebaseFirestore.instance;
+  bool importData = false;
+  final FirebaseFirestore db = FirebaseFirestore.instance;
 
   String _languageCode = "";
   String _countryCode = "";
+  var savedLanguage = "";
 
   Future<AppService> init() async {
     await GetStorage.init();
@@ -33,6 +39,10 @@ class AppService extends GetxService {
     super.onInit();
 
     onBoarding = _box.read<bool>(Constants.ONBOARDING) ?? false;
+    importData = _box.read<bool>(Constants.IMPORT_DATA) ?? false;
+
+    //for the needs in setting
+    savedLanguage = _box.read<String>(Constants.LANGUAGE_CODE) ?? 'en';
 
     _languageCode =
         _box.read<String>(Constants.LANGUAGE_CODE) ??
@@ -56,23 +66,25 @@ class AppService extends GetxService {
   }
 
   Future<void> getUserProfile() async {
-    // final user = FirebaseAuth.instance.currentUser;
-    // if (user == null) {
-    //   return;
-    // }
-
-    // // Refresh user profile (use Firebase UID)
-    // var docSnapshot = await db
-    //     .collection(DatabaseTables.USER_PROFILE)
-    //     .doc(user.uid)
-    //     .get();
-    // if (docSnapshot.exists) {
-    //   Map<String, dynamic>? data = docSnapshot.data();
-    //   if (data != null) {
-    //     final userData = AppUser.fromJson(data);
-    //     setProfile(userData);
-    //   }
-    // }
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        return;
+      }
+      var docSnapshot = await db
+          .collection(DatabaseTables.USER_PROFILE)
+          .doc(user.uid)
+          .get();
+      if (docSnapshot.exists) {
+        Map<String, dynamic>? data = docSnapshot.data();
+        if (data != null) {
+          final userData = AppUser.fromJson(data);
+          setProfile(userData);
+        }
+      }
+    } catch (e) {
+      Utils.showSnackBar(message: "Failed to load profile", success: false);
+    }
   }
 
   Future<void> setProfile(AppUser user) async {
@@ -80,22 +92,31 @@ class AppService extends GetxService {
     await _box.write(Constants.USER_PROFILE, user.toJson());
   }
 
-  Future<void> setBoring({required bool value}) async {
+  Future<void> setOnboarding({required bool value}) async {
     onBoarding = value;
     await _box.write(Constants.ONBOARDING, value);
   }
 
+  Future<void> setImportData({required bool value}) async {
+    importData = value;
+    await _box.write(Constants.IMPORT_DATA, value);
+  }
+
   Future<void> logOut() async {
-    // if (appUser.value.signInMethod == Constants.GOOGLE) {
-    //   await GoogleSignIn().signOut();
-    // } else if (appUser.value.signInMethod == Constants.FACEBOOK) {
-    //   await FacebookAuth.instance.logOut();
-    // }
-    // setProfile(AppUser());
-    // setIsUserLogin(false);
-    // await FirebaseAuth.instance.signOut();
-    Get.offAllNamed(AppRoutes.LOGIN);
-    Utils.showSnackBar(message: "You have been logout.", success: true);
+    try {
+      if (appUser.value.signInMethod == Constants.GOOGLE) {
+        await GoogleSignIn().signOut();
+      }
+      await FirebaseAuth.instance.signOut();
+      setProfile(AppUser());
+      Get.offAllNamed(AppRoutes.LOGIN);
+      Utils.showSnackBar(message: "You have been logged out.", success: true);
+    } catch (e) {
+      Utils.showSnackBar(
+        message: "Failed to logout. Please try again.",
+        success: false,
+      );
+    }
   }
 
   void changeLanguage(String langCode, String country) {
@@ -105,6 +126,4 @@ class AppService extends GetxService {
     _box.write(Constants.COUNTRY_CODE, country);
     Get.updateLocale(Locale(langCode, country));
   }
-
-
 }
