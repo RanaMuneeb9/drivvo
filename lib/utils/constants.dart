@@ -1,5 +1,16 @@
 class Constants {
   // ignore: constant_identifier_names
+  static const String EXPENSE_TYPES = "expense_types";
+  // ignore: constant_identifier_names
+  static const String INCOME_TYPES = "income_types";
+  // ignore: constant_identifier_names
+  static const String SERVICE_TYPES = "service_types";
+  // ignore: constant_identifier_names
+  static const String PAYMENT_METHOD = "payment_methods";
+  // ignore: constant_identifier_names
+  static const String REASONS = "reasons";
+
+  // ignore: constant_identifier_names
   static const String ONBOARDING = "Onboarding";
   // ignore: constant_identifier_names
   static const String IMPORT_DATA = "ImportData";

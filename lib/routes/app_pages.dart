@@ -1,13 +1,15 @@
 import 'package:drivvo/modules/authentication/forgot_password/forgot_password_bindings.dart';
 import 'package:drivvo/modules/authentication/forgot_password/forgot_password_view.dart';
+import 'package:drivvo/modules/authentication/import-data/import_data_bindings.dart';
+import 'package:drivvo/modules/authentication/import-data/import_data_view.dart';
 import 'package:drivvo/modules/authentication/login/login_bindings.dart';
 import 'package:drivvo/modules/authentication/login/login_view.dart';
 import 'package:drivvo/modules/authentication/signup/signup_bindings.dart';
 import 'package:drivvo/modules/authentication/signup/signup_view.dart';
 import 'package:drivvo/modules/common/onboarding/onboarding_bindings.dart';
 import 'package:drivvo/modules/common/onboarding/onboarding_view.dart';
-import 'package:drivvo/modules/authentication/import-data/import_data_bindings.dart';
-import 'package:drivvo/modules/authentication/import-data/import_data_view.dart';
+import 'package:drivvo/modules/common/update-profile/update_profile_bindings.dart';
+import 'package:drivvo/modules/common/update-profile/update_profile_view.dart';
 import 'package:drivvo/modules/more/general/create/create_general_bindings.dart';
 import 'package:drivvo/modules/more/general/create/create_general_view.dart';
 import 'package:drivvo/modules/more/general/general_bindings.dart';
@@ -18,8 +20,8 @@ import 'package:drivvo/modules/more/vehicles/vehicles_bindings.dart';
 import 'package:drivvo/modules/more/vehicles/vehicles_view.dart';
 import 'package:drivvo/modules/root/root_bindings.dart';
 import 'package:drivvo/modules/root/root_view.dart';
-import 'package:drivvo/modules/common/update-profile/update_profile_bindings.dart';
-import 'package:drivvo/modules/common/update-profile/update_profile_view.dart';
+import 'package:drivvo/modules/setting/setting_bindings.dart';
+import 'package:drivvo/modules/setting/setting_view.dart';
 import 'package:drivvo/modules/splash_screen.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
@@ -98,6 +100,12 @@ class AppPages {
       name: AppRoutes.CREATE_GENERAL_VIEW,
       page: () => CreateGeneralView(),
       binding: CreateGeneralBindings(),
+    ),
+
+    GetPage(
+      name: AppRoutes.SETTINGS,
+      page: () => SettingView(),
+      binding: SettingBindings(),
     ),
   ];
 }

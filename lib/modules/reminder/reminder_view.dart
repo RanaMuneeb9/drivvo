@@ -1,5 +1,5 @@
-import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/modules/reminder/reminder_controller.dart';
+import 'package:drivvo/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,19 @@ class ReminderView extends GetView<ReminderController> {
         backgroundColor: const Color(0xFF00796B),
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      appBar: CustomAppBar(name: "reminders".tr, isUrdu: controller.isUrdu),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          "reminders".tr,
+          style: Utils.getTextStyle(
+            baseSize: 18,
+            isBold: true,
+            color: Colors.black,
+            isUrdu: controller.isUrdu,
+          ),
+        ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

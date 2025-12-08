@@ -7,8 +7,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isUrdu;
   final Color? bgColor;
   final Color textColor;
+  final Color? arrowColor;
   final bool? centerTitle;
-  final bool showBackBtn;
   final List<Widget>? actions;
 
   const CustomAppBar({
@@ -18,7 +18,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.bgColor = Colors.white,
     this.textColor = Colors.black,
     this.centerTitle = false,
-    this.showBackBtn = false,
+    this.arrowColor = Colors.white,
     this.actions = const [SizedBox()],
   });
 
@@ -29,12 +29,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: bgColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      leading: showBackBtn
-          ? IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-            )
-          : SizedBox(),
+      leading: IconButton(
+        onPressed: () => Navigator.pop(context),
+        icon: Icon(Icons.arrow_back, color: arrowColor),
+      ),
       title: Text(
         name.tr,
         style: Utils.getTextStyle(

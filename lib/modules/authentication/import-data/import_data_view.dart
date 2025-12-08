@@ -97,7 +97,7 @@ class ImportOptionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Color(0xFF00796B),
+      color:  Utils.appColor,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,

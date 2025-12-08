@@ -1,4 +1,5 @@
 import 'package:drivvo/modules/common/view-photo/view_photo_controller.dart';
+import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,10 +9,9 @@ class ViewPhotoView extends GetView<ViewPhotoController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.black,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Color(0XffFB5C7C),
+        backgroundColor: Utils.appColor,
         surfaceTintColor: Colors.transparent,
         centerTitle: true,
         leading: IconButton(

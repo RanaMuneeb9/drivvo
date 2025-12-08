@@ -1,4 +1,5 @@
 import 'package:drivvo/utils/constants.dart';
+import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,6 +19,7 @@ class PasswordInputField extends StatelessWidget {
   final Function(String? value) onValidate;
   final String? initialValue;
   final int? maxLength;
+  final bool isUrdu;
 
   const PasswordInputField({
     super.key,
@@ -36,6 +38,7 @@ class PasswordInputField extends StatelessWidget {
     required this.onValidate,
     this.initialValue,
     this.maxLength,
+    required this.isUrdu,
   });
 
   @override
@@ -61,26 +64,26 @@ class PasswordInputField extends StatelessWidget {
           obscureText: obscureText,
           keyboardType: type,
           textInputAction: inputAction,
+          style: Utils.getTextStyle(
+            baseSize: 14,
+            isBold: false,
+            color: Colors.black,
+            isUrdu: isUrdu,
+          ),
           decoration: InputDecoration(
             filled: true,
+            errorStyle: Utils.getTextStyle(
+              baseSize: 14,
+              isBold: false,
+              color: Colors.red,
+              isUrdu: isUrdu,
+            ),
             hintText: hintText,
             contentPadding: const EdgeInsets.symmetric(
               vertical: 16,
               horizontal: 16,
             ),
             suffixIcon: suffixIcon,
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16.0),
-              borderSide: BorderSide(color: Colors.grey[200]!, width: 2),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16.0),
-              borderSide: BorderSide(color: Colors.grey[200]!, width: 2),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16.0),
-              borderSide: BorderSide(color: Colors.grey[200]!, width: 2),
-            ),
           ),
           onChanged: (value) => onChanged(value),
           onSaved: (value) => onSaved(value),

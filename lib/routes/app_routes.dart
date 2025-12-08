@@ -23,4 +23,6 @@ abstract class AppRoutes {
   static const GENERAL_VIEW = '/more/general_view';
   // ignore: constant_identifier_names
   static const CREATE_GENERAL_VIEW = '/more/create_general_view';
+  // ignore: constant_identifier_names
+  static const SETTINGS = '/more/settings';
 }

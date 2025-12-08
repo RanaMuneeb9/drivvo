@@ -16,12 +16,11 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        name: "Add new Vehicle",
+        name: "add_new_vehicle".tr,
         isUrdu: controller.isUrdu,
-        bgColor: const Color(0xFF047772),
+        bgColor: Utils.appColor,
         textColor: Colors.white,
         centerTitle: true,
-        showBackBtn: true,
         actions: [
           IconButton(
             onPressed: () => controller.saveData(),
@@ -46,14 +45,14 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
             children: [
               // --- Basic Information Card ---
               CardHeaderText(
-                title: "Basic Information",
+                title: "basic_information".tr,
                 isUrdu: controller.isUrdu,
               ),
               _buildCard(
                 child: Column(
                   children: [
                     FormLabelText(
-                      title: "Vehicle Type",
+                      title: "vehicle_type".tr,
                       isUrdu: controller.isUrdu,
                     ),
                     const SizedBox(height: 4),
@@ -65,7 +64,15 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                           .map<DropdownMenuItem<String>>((element) {
                             return DropdownMenuItem<String>(
                               value: element,
-                              child: Text(element),
+                              child: Text(
+                                element.tr,
+                                style: Utils.getTextStyle(
+                                  baseSize: 14,
+                                  isBold: false,
+                                  color: Colors.black,
+                                  isUrdu: controller.isUrdu,
+                                ),
+                              ),
                             );
                           })
                           .toList(),
@@ -73,7 +80,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                           controller.onSelectVehicleType(value!),
                       validator: (value) {
                         if (value == null || value == "") {
-                          return "Vechile type is required".tr;
+                          return "vehicle_type_required".tr;
                         } else {
                           return null;
                         }
@@ -86,7 +93,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                       isNext: true,
                       obscureText: false,
                       readOnly: false,
-                      labelText: "Vehicle Name".tr,
+                      labelText: "vehicle_name".tr,
                       hintText: "name".tr,
                       inputAction: TextInputAction.next,
                       type: TextInputType.name,
@@ -112,8 +119,8 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                       readOnly: true,
                       controller: controller.manufacturerController,
                       isUrdu: controller.isUrdu,
-                      labelText: "Manufacturer".tr,
-                      hintText: "e.g, Toyota, Honda".tr,
+                      labelText: "manufacturer".tr,
+                      hintText: "manufacturer_hint".tr,
                       inputAction: TextInputAction.next,
                       type: TextInputType.name,
                       sufixIcon: Icon(Icons.info_outline),
@@ -123,7 +130,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                       },
                       onValidate: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Manufacturer is required'.tr;
+                          return 'manufacturer_required'.tr;
                         }
                         return null;
                       },
@@ -135,8 +142,8 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                       isNext: true,
                       obscureText: false,
                       readOnly: false,
-                      labelText: "Model".tr,
-                      hintText: "eg Civic, Camry".tr,
+                      labelText: "model".tr,
+                      hintText: "model_hint".tr,
                       inputAction: TextInputAction.next,
                       type: TextInputType.name,
                       onTap: () {},
@@ -155,7 +162,10 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
               ),
               const SizedBox(height: 24),
               // -- - Registration Card ---
-              CardHeaderText(title: "Registration", isUrdu: controller.isUrdu),
+              CardHeaderText(
+                title: "registration".tr,
+                isUrdu: controller.isUrdu,
+              ),
               _buildCard(
                 child: Row(
                   children: [
@@ -167,8 +177,8 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                         isNext: true,
                         obscureText: false,
                         readOnly: false,
-                        labelText: "License Plate (optional)".tr,
-                        hintText: "ABC-1234".tr,
+                        labelText: "license_plate_optional".tr,
+                        hintText: "license_plate_hint".tr,
                         inputAction: TextInputAction.next,
                         type: TextInputType.name,
                         onTap: () {},
@@ -184,11 +194,13 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Year",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
+                          Text(
+                            "year".tr,
+                            style: Utils.getTextStyle(
+                              baseSize: 14,
+                              isBold: false,
+                              color: Colors.black,
+                              isUrdu: controller.isUrdu,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -226,7 +238,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
               const SizedBox(height: 24),
               // --- Fuel Configuration Card ---
               CardHeaderText(
-                title: "Fuel Configuration",
+                title: "fuel_configuration".tr,
                 isUrdu: controller.isUrdu,
               ),
               _buildCard(
@@ -234,7 +246,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     FormLabelText(
-                      title: "Tank Configuration",
+                      title: "tank_configuration".tr,
                       isUrdu: controller.isUrdu,
                     ),
                     const SizedBox(height: 4),
@@ -247,14 +259,22 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                       ) {
                         return DropdownMenuItem<String>(
                           value: element,
-                          child: Text(element),
+                          child: Text(
+                            element.tr,
+                            style: Utils.getTextStyle(
+                              baseSize: 14,
+                              isBold: false,
+                              color: Colors.black,
+                              isUrdu: controller.isUrdu,
+                            ),
+                          ),
                         );
                       }).toList(),
                       onChanged: (String? value) =>
                           controller.onSelectTank(value!),
                       validator: (value) {
                         if (value == null || value == "") {
-                          return "Tank configuration is required".tr;
+                          return "tank_configuration_required".tr;
                         } else {
                           return null;
                         }
@@ -262,7 +282,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                     ),
                     const SizedBox(height: 16),
                     FormLabelText(
-                      title: "Fuel Type",
+                      title: "fuel_type".tr,
                       isUrdu: controller.isUrdu,
                     ),
                     const SizedBox(height: 4),
@@ -282,7 +302,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                           controller.onSelectFuelType(value!),
                       validator: (value) {
                         if (value == null || value == "") {
-                          return "Fuel type is required".tr;
+                          return "fuel_type_required".tr;
                         } else {
                           return null;
                         }
@@ -295,8 +315,8 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                       isNext: true,
                       obscureText: false,
                       readOnly: false,
-                      labelText: "Fuel Capacity".tr,
-                      hintText: "Capacity in gallons".tr,
+                      labelText: "fuel_capacity".tr,
+                      hintText: "fuel_capacity_hint".tr,
                       inputAction: TextInputAction.next,
                       type: TextInputType.name,
                       onTap: () {},
@@ -305,7 +325,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                       },
                       onValidate: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Fuel Capacity is required'.tr;
+                          return 'fuel_capacity_required'.tr;
                         }
                         return null;
                       },
@@ -315,16 +335,21 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
               ),
               const SizedBox(height: 24),
               // --- Preferences Card ---
-              CardHeaderText(title: "Preferences", isUrdu: controller.isUrdu),
+              CardHeaderText(
+                title: "preferences".tr,
+                isUrdu: controller.isUrdu,
+              ),
               _buildCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Distance Unit",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
+                    Text(
+                      "distance_unit".tr,
+                      style: Utils.getTextStyle(
+                        baseSize: 14,
+                        isBold: false,
+                        color: Colors.black,
+                        isUrdu: controller.isUrdu,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -334,16 +359,16 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                         children: [
                           ChoiceChip(
                             label: Text(
-                              "Kilometers (km)",
-                              style: TextStyle(
-                                fontFamily: "D-FONT-R",
-                                fontSize: 15,
+                              "kilometers".tr,
+                              style: Utils.getTextStyle(
+                                baseSize: 14,
+                                isBold: false,
                                 color:
                                     controller.selectedChipName.value ==
                                         "Kilometers"
                                     ? Colors.white
                                     : Colors.black,
-                                fontStyle: FontStyle.normal,
+                                isUrdu: controller.isUrdu,
                               ),
                             ),
                             visualDensity: VisualDensity.compact,
@@ -361,15 +386,15 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                           SizedBox(width: 20),
                           ChoiceChip(
                             label: Text(
-                              "Miles (mi)",
-                              style: TextStyle(
-                                fontFamily: "D-FONT-R",
-                                fontSize: 15,
+                              "miles".tr,
+                              style: Utils.getTextStyle(
+                                baseSize: 14,
+                                isBold: false,
                                 color:
                                     controller.selectedChipName.value == "Miles"
                                     ? Colors.white
                                     : Colors.black,
-                                fontStyle: FontStyle.normal,
+                                isUrdu: controller.isUrdu,
                               ),
                             ),
                             visualDensity: VisualDensity.compact,
@@ -391,7 +416,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
               const SizedBox(height: 24),
               // --- Additional Details Card ---
               CardHeaderText(
-                title: "Additional Details",
+                title: "additional_details".tr,
                 isUrdu: controller.isUrdu,
               ),
               _buildCard(
@@ -403,8 +428,8 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                       isNext: true,
                       obscureText: false,
                       readOnly: false,
-                      labelText: "Chassis Number (optional)".tr,
-                      hintText: "Enter chassis number".tr,
+                      labelText: "chassis_number_optional".tr,
+                      hintText: "chassis_number_hint".tr,
                       inputAction: TextInputAction.next,
                       type: TextInputType.name,
                       onTap: () {},
@@ -420,8 +445,8 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                       isNext: true,
                       obscureText: false,
                       readOnly: false,
-                      labelText: "VIN (Identification number)".tr,
-                      hintText: "Enter VIN".tr,
+                      labelText: "vin_number".tr,
+                      hintText: "vin_hint".tr,
                       inputAction: TextInputAction.next,
                       type: TextInputType.name,
                       onTap: () {},
@@ -447,7 +472,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Active Vehicle",
+                      "active_vehicle".tr,
                       style: Utils.getTextStyle(
                         baseSize: 16,
                         isBold: false,
@@ -480,8 +505,8 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                   readOnly: false,
                   maxLength: 250,
                   maxLines: 4,
-                  labelText: "Note (optional)".tr,
-                  hintText: "Add any additional notes about this vehicle...".tr,
+                  labelText: "note_optional".tr,
+                  hintText: "note_hint".tr,
                   inputAction: TextInputAction.next,
                   type: TextInputType.name,
                   onTap: () {},
@@ -557,6 +582,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                 SearchTextInputField(
                   controller: controller.searchInputController,
                   hintKey: "search".tr,
+                  isUrdu: controller.isUrdu,
                 ),
                 const SizedBox(height: 10),
                 Expanded(
@@ -575,24 +601,26 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: controller.manufacturerId == model.id
-                                ? const Color(0xFF047772).withValues(alpha: 0.1)
+                                ? Utils.appColor.withValues(alpha: 0.1)
                                 : Colors.white,
                             borderRadius: const BorderRadius.all(
                               Radius.circular(40),
                             ),
                             border: Border.all(
                               color: controller.manufacturerId == model.id
-                                  ? const Color(0xFF047772)
+                                  ? Utils.appColor
                                   : Colors.white,
                             ),
                           ),
                           child: Text(
                             model.name,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
+                            // overflow: TextOverflow.ellipsis,
+                            // maxLines: 2,
+                            style: Utils.getTextStyle(
+                              baseSize: 16,
+                              isBold: false,
+                              color: Colors.black,
+                              isUrdu: controller.isUrdu,
                             ),
                           ),
                         ),

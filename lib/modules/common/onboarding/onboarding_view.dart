@@ -1,5 +1,6 @@
 import 'package:drivvo/custom-widget/button/custom_button.dart';
 import 'package:drivvo/utils/constants.dart';
+import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'onboarding_controller.dart';
@@ -48,9 +49,7 @@ class OnboardingView extends GetView<OnboardingController> {
                         ? TextButton(
                             onPressed: () => controller.skipToLogin(),
                             style: TextButton.styleFrom(
-                              backgroundColor: const Color(
-                                0xFF00796B,
-                              ), // Dark Teal
+                              backgroundColor: Utils.appColor,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
@@ -191,9 +190,9 @@ class OnboardingView extends GetView<OnboardingController> {
       decoration: BoxDecoration(
         // Active dot is teal (filled), inactive is outlined or lighter
         color: controller.currentIndex.value == index
-            ? const Color(0xFF00796B)
+            ? Utils.appColor
             : Colors.transparent,
-        border: Border.all(color: const Color(0xFF00796B), width: 1),
+        border: Border.all(color: Utils.appColor, width: 1),
         borderRadius: BorderRadius.circular(4),
       ),
     );

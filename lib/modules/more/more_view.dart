@@ -1,6 +1,7 @@
 import 'package:drivvo/custom-widget/common/card_header_text.dart';
 import 'package:drivvo/modules/more/more_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
+import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -135,35 +136,60 @@ class MoreView extends GetView<MoreController> {
                 icon: Icons.attach_money,
                 title: 'types_expense'.tr,
                 subtitle: 'types_expense_sub'.tr,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutes.GENERAL_VIEW,
+                    arguments: Constants.EXPENSE_TYPES,
+                  );
+                },
               ),
               _buildDivider(),
               _buildTile(
                 icon: Icons.money_off,
                 title: 'types_income'.tr,
                 subtitle: 'types_income_sub'.tr,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutes.GENERAL_VIEW,
+                    arguments: Constants.INCOME_TYPES,
+                  );
+                },
               ),
               _buildDivider(),
               _buildTile(
                 icon: Icons.build_outlined,
                 title: 'types_service'.tr,
                 subtitle: 'types_service_sub'.tr,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutes.GENERAL_VIEW,
+                    arguments: Constants.SERVICE_TYPES,
+                  );
+                },
               ),
               _buildDivider(),
               _buildTile(
                 icon: Icons.credit_card,
                 title: 'payment_methods'.tr,
                 subtitle: 'payment_methods_sub'.tr,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutes.GENERAL_VIEW,
+                    arguments: Constants.PAYMENT_METHOD,
+                  );
+                },
               ),
               _buildDivider(),
               _buildTile(
                 icon: Icons.label_outline,
                 title: 'reasons'.tr,
                 subtitle: 'reasons_sub'.tr,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutes.GENERAL_VIEW,
+                    arguments: Constants.REASONS,
+                  );
+                },
               ),
             ]),
             CardHeaderText(
@@ -202,7 +228,6 @@ class MoreView extends GetView<MoreController> {
                 isBadge: true,
               ),
             ]),
-
             CardHeaderText(
               title: 'section_preferences'.tr,
               isUrdu: controller.isUrdu,
@@ -212,7 +237,9 @@ class MoreView extends GetView<MoreController> {
                 icon: Icons.settings_outlined,
                 title: 'settings'.tr,
                 subtitle: 'settings_sub'.tr,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.SETTINGS);
+                },
               ),
               _buildDivider(),
               _buildTile(
@@ -241,7 +268,92 @@ class MoreView extends GetView<MoreController> {
                 onTap: () {},
               ),
             ]),
-            const SizedBox(height: 80),
+            const SizedBox(height: 20),
+            OutlinedButton.icon(
+              onPressed: () => Get.defaultDialog(
+                title: "",
+                contentPadding: const EdgeInsets.all(0),
+                content: Container(
+                  width: Get.mediaQuery.size.width,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Get.isDarkMode
+                        ? const Color(0xFF39374C)
+                        : Colors.white,
+                  ),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "confirm_logout".tr,
+                          textAlign: TextAlign.center,
+                          style: Utils.getTextStyle(
+                            baseSize: 14,
+                            isBold: false,
+                            color: Colors.black,
+                            isUrdu: controller.isUrdu,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Get.back(),
+                            child: Text(
+                              "no".tr,
+                              style: Utils.getTextStyle(
+                                baseSize: 14,
+                                isBold: true,
+                                color: Colors.black,
+                                isUrdu: controller.isUrdu,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => controller.appService.logOut(),
+                            child: Text(
+                              "yes".tr,
+                              style: Utils.getTextStyle(
+                                baseSize: 14,
+                                isBold: true,
+                                color: Colors.black,
+                                isUrdu: controller.isUrdu,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                barrierDismissible: false,
+                backgroundColor: Colors.transparent,
+              ),
+              icon: Icon(Icons.logout, size: 22),
+              label: Text(
+                'logout'.tr,
+                style: Utils.getTextStyle(
+                  baseSize: 16,
+                  isBold: false,
+                  color: Colors.red,
+                  isUrdu: controller.isUrdu,
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                backgroundColor: Colors.red.withValues(alpha: 0.2),
+                foregroundColor: Colors.red, // Text and Icon color
+                side: BorderSide(color: Colors.red), // Border color
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),

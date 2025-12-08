@@ -1,5 +1,5 @@
-import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/modules/reports/reports_controller.dart';
+import 'package:drivvo/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -9,15 +9,18 @@ class ReportsView extends GetView<ReportsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        name: "reports".tr,
-        isUrdu: controller.isUrdu,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.filter_list_alt, color: Color(0xFF00796B)),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        title: Text(
+          "reports".tr,
+          style: Utils.getTextStyle(
+            baseSize: 18,
+            isBold: true,
+            color: Colors.black,
+            isUrdu: controller.isUrdu,
           ),
-        ],
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -210,7 +213,7 @@ class ReportsView extends GetView<ReportsController> {
       borderRadius: BorderRadius.circular(12),
       boxShadow: [
         BoxShadow(
-          color: Colors.grey.withOpacity(0.05),
+          color: Colors.grey.withValues(alpha: 0.05),
           blurRadius: 10,
           offset: const Offset(0, 5),
         ),

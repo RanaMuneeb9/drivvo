@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/general_model.dart';
 import 'package:drivvo/model/vehicle_model.dart';
+import 'package:drivvo/modules/more/more_controller.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
@@ -19,19 +20,20 @@ class CreateVehiclesController extends GetxController {
   final manufacturerFilterList = <GeneralModel>[].obs;
 
   var selectedYear = 2020.obs;
-  int manufacturerId = 0;
+  String manufacturerId = "";
   var isActiveVehicle = false.obs;
 
   var model = VehicleModel();
   var selectedChipName = "Kilometers".obs;
-  final List<String> vehicleTypesList = ['Car', 'Bike', 'Truck', 'Bus'];
+  final List<String> vehicleTypesList = ['car', 'bike', 'truck', 'bus'];
   final List<String> fuelTypesList = ['Liquids', 'CNG', 'Electric'];
-  final List<String> tankList = ['One Tank', 'Two Tank'];
+  final List<String> tankList = ['one_tank', 'two_tank'];
 
   @override
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+    onSearchManufacturer("");
 
     searchInputController.addListener(() {
       onSearchManufacturer(searchInputController.text);
@@ -58,6 +60,9 @@ class CreateVehiclesController extends GetxController {
                 message: "Vechile is added successfully",
                 success: true,
               );
+
+              final con = Get.find<MoreController>();
+              con.getAllVehicleList();
             },
             onError: (e) {
               Get.back();

@@ -1,4 +1,5 @@
 import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
+import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class CardTextInputField extends StatelessWidget {
@@ -68,9 +69,21 @@ class CardTextInputField extends StatelessWidget {
           readOnly: readOnly,
           obscureText: obscureText,
           keyboardType: type,
+          style: Utils.getTextStyle(
+            baseSize: 14,
+            isBold: false,
+            color: Colors.black,
+            isUrdu: isUrdu,
+          ),
           textInputAction: inputAction,
           decoration: InputDecoration(
             filled: true,
+            errorStyle: Utils.getTextStyle(
+              baseSize: 14,
+              isBold: false,
+              color: Colors.red,
+              isUrdu: isUrdu,
+            ),
             hintText: hintText,
             contentPadding: prefixIcon != null
                 ? const EdgeInsets.symmetric(vertical: 16)

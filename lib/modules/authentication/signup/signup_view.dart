@@ -110,6 +110,7 @@ class SignupView extends GetView<SignupController> {
                         isNext: true,
                         obscureText: controller.showPwd.value,
                         readOnly: false,
+                        isUrdu: controller.isUrdu,
                         labelText: "password".tr,
                         hintText: "enter_your_password".tr,
                         inputAction: TextInputAction.next,
@@ -144,6 +145,7 @@ class SignupView extends GetView<SignupController> {
                         isNext: true,
                         obscureText: controller.showConPwd.value,
                         readOnly: false,
+                        isUrdu: controller.isUrdu,
                         labelText: "confirm_password".tr,
                         hintText: "enter_your_password".tr,
                         inputAction: TextInputAction.done,
@@ -210,7 +212,7 @@ class SignupView extends GetView<SignupController> {
                         style: Utils.getTextStyle(
                           baseSize: 14,
                           isBold: true,
-                          color: const Color(0xFF047772),
+                          color: Utils.appColor,
                           isUrdu: controller.isUrdu,
                         ),
                       ),
@@ -230,7 +232,7 @@ class SignupView extends GetView<SignupController> {
                         style: Utils.getTextStyle(
                           baseSize: 14,
                           isBold: true,
-                          color: const Color(0xFF047772),
+                          color: Utils.appColor,
                           isUrdu: controller.isUrdu,
                         ),
                       ),
@@ -259,7 +261,7 @@ class SignupView extends GetView<SignupController> {
                       style: Utils.getTextStyle(
                         baseSize: 14,
                         isBold: true,
-                        color: const Color(0xFF047772),
+                        color: Utils.appColor,
                         isUrdu: controller.isUrdu,
                       ),
                     ),

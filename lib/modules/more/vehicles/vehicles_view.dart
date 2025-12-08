@@ -5,6 +5,7 @@ import 'package:drivvo/custom-widget/common/refresh_indicator_view.dart';
 import 'package:drivvo/custom-widget/text-input-field/search_text_input_field.dart';
 import 'package:drivvo/modules/more/vehicles/vehicles_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
+import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,15 +16,16 @@ class VehiclesView extends GetView<VehiclesController> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: CustomFloatingActionButton(
-        onPressed: () => Get.toNamed(AppRoutes.CREATE_VEHICLES_VIEW),
+        onPressed: () => Get.toNamed(AppRoutes.CREATE_VEHICLES_VIEW)?.then((e) {
+          controller.getVehicleList();
+        }),
       ),
       appBar: CustomAppBar(
         name: "Vehicles",
         isUrdu: controller.isUrdu,
-        bgColor: const Color(0xFF047772),
+        bgColor: Utils.appColor,
         textColor: Colors.white,
         centerTitle: true,
-        showBackBtn: true,
       ),
       body: SafeArea(
         child: Column(
@@ -32,6 +34,7 @@ class VehiclesView extends GetView<VehiclesController> {
             SearchTextInputField(
               controller: controller.searchInputController,
               hintKey: "search",
+              isUrdu: controller.isUrdu,
             ),
             SizedBox(height: 20),
             Obx(

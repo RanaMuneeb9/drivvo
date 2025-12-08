@@ -4,6 +4,7 @@ import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/custom-widget/common/profile_image.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
 import 'package:drivvo/modules/common/update-profile/update_profile_controller.dart';
+import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,6 +19,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
         name: "update_profile".tr,
         isUrdu: controller.isUrdu,
         centerTitle: true,
+        arrowColor: Colors.black,
       ),
       body: SafeArea(
         child: Column(
@@ -50,9 +52,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                                   height: 130,
                                   child: controller.filePath.isNotEmpty
                                       ? CircleAvatar(
-                                          foregroundColor: const Color(
-                                            0xFF047772,
-                                          ),
+                                          foregroundColor: Utils.appColor,
                                           backgroundImage: FileImage(
                                             File(controller.filePath.value),
                                           ),
