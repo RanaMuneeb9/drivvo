@@ -12,6 +12,8 @@ import 'package:drivvo/modules/common/onboarding/onboarding_bindings.dart';
 import 'package:drivvo/modules/common/onboarding/onboarding_view.dart';
 import 'package:drivvo/modules/common/update-profile/update_profile_bindings.dart';
 import 'package:drivvo/modules/common/update-profile/update_profile_view.dart';
+import 'package:drivvo/modules/home/expense/create_expense_binding.dart';
+import 'package:drivvo/modules/home/expense/create_expense_view.dart';
 import 'package:drivvo/modules/home/filter/home_filter_binding.dart';
 import 'package:drivvo/modules/home/filter/home_filter_view.dart';
 import 'package:drivvo/modules/home/refueling/create_refueling_binding.dart';
@@ -130,6 +132,12 @@ class AppPages {
       name: AppRoutes.CREATE_REFUELING_VIEW,
       page: () => CreateRefuelingView(),
       binding: CreateRefuelingBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.CREATE_EXPENSE_VIEW,
+      page: () => CreateExpenseView(),
+      binding: CreateExpenseBinding(),
     ),
   ];
 }

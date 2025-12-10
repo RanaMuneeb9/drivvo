@@ -1,5 +1,4 @@
 import 'package:drivvo/custom-widget/button/custom_floating_action_button.dart';
-import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/custom-widget/common/error_refresh_view.dart';
 import 'package:drivvo/custom-widget/common/refresh_indicator_view.dart';
 import 'package:drivvo/custom-widget/text-input-field/search_text_input_field.dart';
@@ -18,7 +17,7 @@ class GeneralView extends GetView<GeneralController> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
-          Get.back(result: "");
+          Get.back(result: controller.selectedTitle);
         }
       },
       child: Scaffold(
@@ -30,22 +29,44 @@ class GeneralView extends GetView<GeneralController> {
             )?.then((e) => controller.loadDataByTitle());
           },
         ),
-        appBar: CustomAppBar(
-          name: controller.title.tr,
-          isUrdu: controller.isUrdu,
-          bgColor: Utils.appColor,
-          textColor: Colors.white,
-          centerTitle: true,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            onPressed: () => Get.back(result: controller.selectedTitle),
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+          ),
+          title: Text(
+            controller.title.tr,
+            style: Utils.getTextStyle(
+              baseSize: 18,
+              isBold: true,
+              color: Colors.white,
+              isUrdu: controller.isUrdu,
+            ),
+          ),
+          centerTitle: false,
         ),
         body: SafeArea(
           child: Column(
             children: [
-              SizedBox(height: 20),
-              SearchTextInputField(
-                controller: controller.searchInputController,
-                hintKey: "search_by_name",
-                isUrdu: controller.isUrdu,
+              Container(
+                padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                width: double.maxFinite,
+                decoration: BoxDecoration(
+                  color: Utils.appColor,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
+                ),
+                child: SearchTextInputField(
+                  controller: controller.searchInputController,
+                  hintKey: "search_by_name",
+                  isUrdu: controller.isUrdu,
+                  fillColors: Colors.white,
+                ),
               ),
+
               SizedBox(height: 20),
               Obx(
                 () => Expanded(
@@ -60,9 +81,9 @@ class GeneralView extends GetView<GeneralController> {
                           itemBuilder: (context, index) {
                             final model = controller.generalFilterList[index];
                             return GestureDetector(
-                              onTap: () {
-                                Get.back(result: model.name);
-                              },
+                              onTap: () => controller.selectedTitle.isNotEmpty
+                                  ? Get.back(result: model.name)
+                                  : null,
                               child: Container(
                                 width: double.maxFinite,
                                 margin: const EdgeInsets.only(
@@ -70,22 +91,22 @@ class GeneralView extends GetView<GeneralController> {
                                   right: 10,
                                   bottom: 10,
                                 ),
-                                padding: controller.isUrdu
-                                    ? const EdgeInsets.only(
-                                        right: 16,
-                                        top: 10,
-                                        bottom: 10,
-                                      )
-                                    : const EdgeInsets.only(
-                                        left: 16,
-                                        top: 4,
-                                        bottom: 4,
-                                      ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 10,
+                                ),
                                 decoration: BoxDecoration(
                                   //color: const Color(0xFFF7F7F7),
                                   color: Colors.white,
                                   border: Border.all(
-                                    color: Colors.grey.shade400,
+                                    color:
+                                        controller.selectedTitle == model.name
+                                        ? Utils.appColor
+                                        : Colors.grey.shade400,
+                                    width:
+                                        controller.selectedTitle == model.name
+                                        ? 2
+                                        : 1,
                                   ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -101,8 +122,8 @@ class GeneralView extends GetView<GeneralController> {
                                           Text(
                                             model.name,
                                             style: Utils.getTextStyle(
-                                              baseSize: 15,
-                                              isBold: true,
+                                              baseSize: 16,
+                                              isBold: false,
                                               color: Colors.black,
                                               isUrdu: controller.isUrdu,
                                             ),
@@ -113,7 +134,7 @@ class GeneralView extends GetView<GeneralController> {
                                               style: Utils.getTextStyle(
                                                 baseSize: 14,
                                                 isBold: false,
-                                                color: Colors.black,
+                                                color: Colors.grey.shade500,
                                                 isUrdu: controller.isUrdu,
                                               ),
                                             ),
@@ -123,17 +144,21 @@ class GeneralView extends GetView<GeneralController> {
                                               style: Utils.getTextStyle(
                                                 baseSize: 14,
                                                 isBold: false,
-                                                color: Colors.black,
+                                                color: Colors.grey.shade700,
                                                 isUrdu: controller.isUrdu,
                                               ),
                                             ),
                                         ],
                                       ),
                                     ),
-                                    IconButton(
-                                      onPressed: () =>
-                                          controller.deleteItem(model),
-                                      icon: Icon(
+                                    InkWell(
+                                      onTap: () => Utils.showAlertDialog(
+                                        confirmMsg: "are_you_sure_delete".tr,
+                                        onTapYes: () =>
+                                            controller.deleteItem(model),
+                                        isUrdu: controller.isUrdu,
+                                      ),
+                                      child: Icon(
                                         Icons.delete_forever_outlined,
                                         size: 24,
                                         color: Colors.red,

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/general_model.dart';
-import 'package:drivvo/model/vehicle_model.dart';
+import 'package:drivvo/model/vehicle/vehicle_model.dart';
 import 'package:drivvo/modules/more/more_controller.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';

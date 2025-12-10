@@ -1,5 +1,5 @@
 class RefuelingModel {
-  late String id;
+  late String userId;
   late String vehicleId;
   late String time;
   late String date;
@@ -13,9 +13,10 @@ class RefuelingModel {
   late bool missedPrevious;
   late String paymentMethod;
   late String notes;
+  late String driverName;
 
   RefuelingModel() {
-    id = "";
+    userId = "";
     vehicleId = "";
     time = "";
     date = "";
@@ -29,10 +30,11 @@ class RefuelingModel {
     missedPrevious = false;
     paymentMethod = "";
     notes = "";
+    driverName = "";
   }
 
   RefuelingModel.fromJson(Map<String, dynamic> json) {
-    id = json["id"] ?? "";
+    userId = json["user_id"] ?? "";
     vehicleId = json["vehicle_id"] ?? "";
     time = json["time"] ?? "";
     date = json["date"] ?? "";
@@ -46,11 +48,12 @@ class RefuelingModel {
     missedPrevious = json["missed_previous"] ?? false;
     paymentMethod = json["payment_method"] ?? "";
     notes = json["notes"] ?? "";
+    driverName = json["driver_name"] ?? "";
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "id": id,
+      "id": userId,
       "vehicle_id": vehicleId,
       "time": time,
       "date": date,
@@ -64,6 +67,7 @@ class RefuelingModel {
       "missed_previous": missedPrevious,
       "payment_method": paymentMethod,
       "notes": notes,
+      "driver_name": driverName,
     };
   }
 }

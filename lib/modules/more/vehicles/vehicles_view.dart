@@ -25,16 +25,26 @@ class VehiclesView extends GetView<VehiclesController> {
         isUrdu: controller.isUrdu,
         bgColor: Utils.appColor,
         textColor: Colors.white,
-        centerTitle: true,
       ),
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(height: 20),
-            SearchTextInputField(
-              controller: controller.searchInputController,
-              hintKey: "search",
-              isUrdu: controller.isUrdu,
+            Container(
+              padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+              width: double.maxFinite,
+              decoration: BoxDecoration(
+                color: Utils.appColor,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+              child: SearchTextInputField(
+                controller: controller.searchInputController,
+                hintKey: "search_by_name",
+                isUrdu: controller.isUrdu,
+                fillColors: Colors.white,
+              ),
             ),
             SizedBox(height: 20),
             Obx(

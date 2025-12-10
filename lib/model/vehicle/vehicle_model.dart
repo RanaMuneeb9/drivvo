@@ -37,7 +37,7 @@ class VehicleModel {
     manufacturer = json["manufacturer"] ?? "";
     model = json["model"] ?? "";
     licensePlate = json["license_plate"] ?? "";
-    year = json["year"] ?? 0;
+    year = (json["year"] ?? 0).toInt();
     tankConfiguration = json["tank_configuration"] ?? "";
     fuelType = json["fuel_type"] ?? "";
     fuelCapacity = json["fuel_capacity"] ?? "";

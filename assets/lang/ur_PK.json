@@ -313,5 +313,19 @@
   "Compressed natural gas": "سی این جی",
   "Electrical": "الیکٹرک",
   "gas_station_name_required": "گیس اسٹیشن کا نام درج کرنا ضروری ہے",
-  "place_name_required": "مقام کا نام درج کرنا ضروری ہے"
+  "place_name_required": "مقام کا نام درج کرنا ضروری ہے",
+  "are_you_sure_delete": "کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟",
+  "deleted_successfully": "کامیابی کے ساتھ حذف کر دیا گیا",
+  "delete_failed": "حذف کرنا ناکام ہو گیا",
+  "search_by_name": "نام کے ذریعے تلاش کریں",
+  "no_entries_yet": "ابھی تک کوئی اندراج نہیں",
+  "total": "کل",
+  "distance": "فاصلہ",
+  "by_day": "یومیہ",
+  "by_km": "فی کلومیٹر",
+  "daily_average": "یومیہ اوسط",
+  "charts": "چارٹس",
+  "view_all": "سب دیکھیں",
+  "select": "منتخب کریں",
+  "reports": "رپورٹس"
 }

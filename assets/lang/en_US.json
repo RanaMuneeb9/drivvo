@@ -312,5 +312,19 @@
   "Compressed natural gas": "Compressed Natural Gas",
   "Electrical": "Electrical",
   "gas_station_name_required": "Gas station name is required",
-  "place_name_required": "Place name is required"
+  "place_name_required": "Place name is required",
+  "are_you_sure_delete": "Are you sure you want to delete it?",
+  "deleted_successfully": "Deleted successfully",
+  "delete_failed": "Delete failed",
+  "search_by_name": "Search by name",
+  "no_entries_yet": "No entries yet",
+  "total": "Total",
+  "distance": "Distance",
+  "by_day": "By day",
+  "by_km": "By km",
+  "daily_average": "Daily average",
+  "charts": "Charts",
+  "view_all": "View All",
+  "select": "Select",
+  "reports": "Reports"
 }

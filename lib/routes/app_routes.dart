@@ -31,4 +31,6 @@ abstract class AppRoutes {
   static const DATE_RANGE = '/common/date_range';
   // ignore: constant_identifier_names
   static const CREATE_REFUELING_VIEW = '/home/create_refueling_view';
+  // ignore: constant_identifier_names
+  static const CREATE_EXPENSE_VIEW = '/home/create_expense_view';
 }

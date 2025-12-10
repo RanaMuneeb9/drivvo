@@ -22,7 +22,6 @@ class HomeView extends GetView<HomeController> {
                 onTap: () {
                   Get.toNamed(AppRoutes.CREATE_REFUELING_VIEW);
                   controller.toggleFab();
-                  // Handle Refueling action
                 },
               ),
               const SizedBox(height: 12),
@@ -30,8 +29,8 @@ class HomeView extends GetView<HomeController> {
                 icon: Icons.receipt_long_outlined,
                 label: 'expense'.tr,
                 onTap: () {
+                 Get.toNamed(AppRoutes.CREATE_EXPENSE_VIEW);
                   controller.toggleFab();
-                  // Handle Expense action
                 },
               ),
               const SizedBox(height: 12),

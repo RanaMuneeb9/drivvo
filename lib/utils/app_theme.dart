@@ -12,6 +12,11 @@ class AppTheme {
       scaffoldBackgroundColor: Colors.white,
 
       //dialogBackgroundColor: Colors.white,
+      appBarTheme: AppBarTheme(
+        backgroundColor: Utils.appColor,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+      ),
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: Color(0xFF047772),
       ),
@@ -63,7 +68,8 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         //fillColor: Colors.grey[100],
-        fillColor: const Color(0xFFF7F7F7),
+        // fillColor: const Color(0xFFF7F7F7),
+        fillColor: Colors.white,
         floatingLabelBehavior: FloatingLabelBehavior.auto,
         contentPadding: const EdgeInsets.all(16),
         hintStyle: const TextStyle(color: Color(0xFF8B8B8F)),

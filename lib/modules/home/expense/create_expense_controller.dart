@@ -10,7 +10,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class CreateRefuelingController extends GetxController {
+class CreateExpenseController extends GetxController {
   String? _lastEditedField;
   final formKey = GlobalKey<FormState>();
 
@@ -25,10 +25,10 @@ class CreateRefuelingController extends GetxController {
   final dateController = TextEditingController();
   final timeController = TextEditingController();
   final priceController = TextEditingController();
-  final fuelController = TextEditingController();
+  final expenseTypeController = TextEditingController();
   final litersController = TextEditingController();
   final totalCostController = TextEditingController();
-  final gasStationCostController = TextEditingController();
+  final placeController = TextEditingController();
   final paymentMethodController = TextEditingController();
   final reasonController = TextEditingController();
 
@@ -42,8 +42,8 @@ class CreateRefuelingController extends GetxController {
     dateController.text = Utils.formatDate(date: now);
     timeController.text = DateFormat('hh:mm a').format(now);
 
-    fuelController.text = "select_fuel".tr;
-    gasStationCostController.text = "select_gas_station".tr;
+    expenseTypeController.text = "select_expense_type".tr;
+    placeController.text = "select_your_place".tr;
     paymentMethodController.text = "select_payment_method".tr;
     reasonController.text = "select_reason".tr;
   }
@@ -55,8 +55,8 @@ class CreateRefuelingController extends GetxController {
     priceController.dispose();
     totalCostController.dispose();
     litersController.dispose();
-    fuelController.dispose();
-    gasStationCostController.dispose();
+    expenseTypeController.dispose();
+    placeController.dispose();
     paymentMethodController.dispose();
     reasonController.dispose();
     super.onClose();
@@ -223,8 +223,8 @@ class CreateRefuelingController extends GetxController {
         "price": priceController.text.trim(),
         "liter": litersController.text.trim(),
         "total_cost": totalCostController.text.trim(),
-        "fuel_type": fuelController.text.trim(),
-        "fuel_station": gasStationCostController.text.trim(),
+        "fuel_type": expenseTypeController.text.trim(),
+        "fuel_station": placeController.text.trim(),
         "full_tank": isFullTank.value,
         "missed_previous": missedPreviousRefueling.value,
         "payment_method": paymentMethodController.text.trim(),
@@ -238,13 +238,20 @@ class CreateRefuelingController extends GetxController {
             .doc(appService.appUser.value.id)
             .collection(DatabaseTables.REFUELING)
             .doc()
-            .set(map);
+            .set(map)
+            .then((e) {
+              if (Get.isDialogOpen == true) Get.back();
+              Get.back();
 
-        if (Get.isDialogOpen == true) Get.back();
-        Get.back();
-        Utils.showSnackBar(message: "refueling_added".tr, success: true);
+              Utils.showSnackBar(message: "refueling_added".tr, success: true);
+            })
+            .catchError((e) {
+              if (Get.isDialogOpen == true) Get.back();
+              Utils.showSnackBar(message: "something_wrong".tr, success: false);
+            });
       } catch (e) {
         if (Get.isDialogOpen == true) Get.back();
+
         Utils.showSnackBar(message: "something_wrong".tr, success: false);
       }
     }

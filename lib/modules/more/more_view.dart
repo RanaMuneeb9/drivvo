@@ -113,7 +113,7 @@ class MoreView extends GetView<MoreController> {
                 onTap: () {
                   Get.toNamed(
                     AppRoutes.GENERAL_VIEW,
-                    arguments: Constants.FUEL,
+                    arguments: {"title": Constants.FUEL, "selected_title": ""},
                   );
                 },
               ),
@@ -125,7 +125,10 @@ class MoreView extends GetView<MoreController> {
                 onTap: () {
                   Get.toNamed(
                     AppRoutes.GENERAL_VIEW,
-                    arguments: Constants.GAS_STATIONS,
+                    arguments: {
+                      "title": Constants.GAS_STATIONS,
+                      "selected_title": "",
+                    },
                   );
                 },
               ),
@@ -137,7 +140,10 @@ class MoreView extends GetView<MoreController> {
                 onTap: () {
                   Get.toNamed(
                     AppRoutes.GENERAL_VIEW,
-                    arguments: Constants.PLACES,
+                    arguments: {
+                      "title": Constants.PLACES,
+                      "selected_title": "",
+                    },
                   );
                 },
               ),
@@ -154,7 +160,10 @@ class MoreView extends GetView<MoreController> {
                 onTap: () {
                   Get.toNamed(
                     AppRoutes.GENERAL_VIEW,
-                    arguments: Constants.EXPENSE_TYPES,
+                    arguments: {
+                      "title": Constants.EXPENSE_TYPES,
+                      "selected_title": "",
+                    },
                   );
                 },
               ),
@@ -166,7 +175,10 @@ class MoreView extends GetView<MoreController> {
                 onTap: () {
                   Get.toNamed(
                     AppRoutes.GENERAL_VIEW,
-                    arguments: Constants.INCOME_TYPES,
+                    arguments: {
+                      "title": Constants.INCOME_TYPES,
+                      "selected_title": "",
+                    },
                   );
                 },
               ),
@@ -178,7 +190,10 @@ class MoreView extends GetView<MoreController> {
                 onTap: () {
                   Get.toNamed(
                     AppRoutes.GENERAL_VIEW,
-                    arguments: Constants.SERVICE_TYPES,
+                    arguments: {
+                      "title": Constants.SERVICE_TYPES,
+                      "selected_title": "",
+                    },
                   );
                 },
               ),
@@ -190,7 +205,10 @@ class MoreView extends GetView<MoreController> {
                 onTap: () {
                   Get.toNamed(
                     AppRoutes.GENERAL_VIEW,
-                    arguments: Constants.PAYMENT_METHOD,
+                    arguments: {
+                      "title": Constants.PAYMENT_METHOD,
+                      "selected_title": "",
+                    },
                   );
                 },
               ),
@@ -202,7 +220,10 @@ class MoreView extends GetView<MoreController> {
                 onTap: () {
                   Get.toNamed(
                     AppRoutes.GENERAL_VIEW,
-                    arguments: Constants.REASONS,
+                    arguments: {
+                      "title": Constants.PAYMENT_METHOD,
+                      "selected_title": "",
+                    },
                   );
                 },
               ),

@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:drivvo/custom-widget/button/more_option_button.dart';
-import 'package:drivvo/custom-widget/common/build_custom_card.dart';
-import 'package:drivvo/custom-widget/common/card_header_text.dart';
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
@@ -64,14 +62,14 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CardHeaderText(
-                title: "date_and_time".tr,
-                isUrdu: controller.isUrdu,
-              ),
-              BuildCustomCard(
-                child: Column(
-                  children: [
-                    CardTextInputField(
+              // CardHeaderText(
+              //   title: "date_and_time".tr,
+              //   isUrdu: controller.isUrdu,
+              // ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CardTextInputField(
                       isRequired: true,
                       isNext: true,
                       obscureText: false,
@@ -80,7 +78,7 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                       isUrdu: controller.isUrdu,
                       labelText: "date".tr,
                       hintText: "select_date".tr,
-                      sufixIcon: Icon(Icons.date_range),
+                      sufixIcon: Icon(Icons.date_range, color: Utils.appColor),
                       onSaved: (value) {},
                       onTap: () => controller.selectDate(),
                       onValidate: (value) {
@@ -90,8 +88,10 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
-                    CardTextInputField(
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CardTextInputField(
                       isRequired: true,
                       isNext: true,
                       obscureText: false,
@@ -100,7 +100,7 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                       isUrdu: controller.isUrdu,
                       labelText: "time".tr,
                       hintText: "select_time".tr,
-                      sufixIcon: Icon(Icons.av_timer),
+                      sufixIcon: Icon(Icons.av_timer, color: Utils.appColor),
                       onSaved: (value) {},
                       onTap: () => controller.selectTime(),
                       onValidate: (value) {
@@ -110,8 +110,8 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                         return null;
                       },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               TextInputField(
@@ -152,41 +152,43 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                 ),
               ),
               const SizedBox(height: 16),
-
               // Fuel Section
-              CardHeaderText(
-                title: "fuel_and_price".tr,
+              // CardHeaderText(
+              //   title: "fuel_and_price".tr,
+              //   isUrdu: controller.isUrdu,
+              // ),
+              CardTextInputField(
                 isUrdu: controller.isUrdu,
+                isRequired: true,
+                isNext: true,
+                obscureText: false,
+                readOnly: true,
+                labelText: "fuel".tr,
+                hintText: "select_fuel".tr,
+                controller: controller.fuelController,
+                sufixIcon: Icon(Icons.keyboard_arrow_down),
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutes.GENERAL_VIEW,
+                    arguments: {
+                      "title": Constants.FUEL,
+                      "selected_title": controller.fuelController.text,
+                    },
+                  )?.then((e) => controller.fuelController.text = e);
+                },
+                onSaved: (value) {},
+                onValidate: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'fuel_required'.tr;
+                  }
+                  return null;
+                },
               ),
-              BuildCustomCard(
-                child: Column(
-                  children: [
-                    CardTextInputField(
-                      isUrdu: controller.isUrdu,
-                      isRequired: true,
-                      isNext: true,
-                      obscureText: false,
-                      readOnly: true,
-                      labelText: "fuel".tr,
-                      hintText: "select_fuel".tr,
-                      controller: controller.fuelController,
-                      sufixIcon: Icon(Icons.keyboard_arrow_down),
-                      onTap: () {
-                        Get.toNamed(
-                          AppRoutes.GENERAL_VIEW,
-                          arguments: Constants.FUEL,
-                        )?.then((e) => controller.fuelController.text = e);
-                      },
-                      onSaved: (value) {},
-                      onValidate: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'fuel_required'.tr;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextInputFieldWithController(
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextInputFieldWithController(
                       isUrdu: controller.isUrdu,
                       isRequired: true,
                       isNext: true,
@@ -198,7 +200,7 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                       inputAction: TextInputAction.next,
                       type: TextInputType.number,
                       onChange: (value) {
-                        controller.model.value.price = double.parse(value!);
+                        //controller.model.value.price = double.parse(value!);
                         controller.onPriceChanged(value);
                       },
                       onTap: () {},
@@ -210,8 +212,10 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
-                    TextInputFieldWithController(
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextInputFieldWithController(
                       isUrdu: controller.isUrdu,
                       isRequired: true,
                       isNext: true,
@@ -223,7 +227,7 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                       inputAction: TextInputAction.next,
                       type: TextInputType.number,
                       onChange: (value) {
-                        controller.model.value.totalCost = double.parse(value!);
+                        // controller.model.value.totalCost = double.parse(value!);
                         controller.onTotalCostChanged(value);
                       },
                       onTap: () {},
@@ -235,8 +239,10 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
-                    TextInputFieldWithController(
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextInputFieldWithController(
                       isUrdu: controller.isUrdu,
                       isRequired: true,
                       isNext: true,
@@ -248,7 +254,7 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                       inputAction: TextInputAction.next,
                       type: TextInputType.number,
                       onChange: (value) {
-                        controller.model.value.liter = double.parse(value!);
+                        //controller.model.value.liter = double.parse(value!);
                         controller.onLitersChanged(value);
                       },
                       onTap: () {},
@@ -260,15 +266,15 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                         return null;
                       },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               _buildSwitchRow(
                 icon: Icons.local_gas_station_outlined,
                 label: 'are_you_filling_this_tank'.tr,
-                value: controller.isFillingTank,
-                onChanged: (val) => controller.isFillingTank.value = val,
+                value: controller.isFullTank,
+                onChanged: (val) => controller.isFullTank.value = val,
               ),
               const SizedBox(height: 16),
               TextInputField(
@@ -283,7 +289,7 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                 type: TextInputType.name,
                 onTap: () {},
                 onSaved: (value) {
-                  controller.model.value.odometer = double.parse(value!);
+                  controller.model.value.driverName = value!;
                 },
                 onValidate: (value) => null,
               ),
@@ -321,7 +327,11 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                             onTap: () {
                               Get.toNamed(
                                 AppRoutes.GENERAL_VIEW,
-                                arguments: Constants.GAS_STATIONS,
+                                arguments: {
+                                  "title": Constants.GAS_STATIONS,
+                                  "selected_title":
+                                      controller.gasStationCostController.text,
+                                },
                               )?.then(
                                 (e) =>
                                     controller.gasStationCostController.text =
@@ -345,7 +355,11 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                             onTap: () {
                               Get.toNamed(
                                 AppRoutes.GENERAL_VIEW,
-                                arguments: Constants.PAYMENT_METHOD,
+                                arguments: {
+                                  "title": Constants.PAYMENT_METHOD,
+                                  "selected_title":
+                                      controller.paymentMethodController.text,
+                                },
                               )?.then(
                                 (e) =>
                                     controller.paymentMethodController.text = e,
@@ -368,7 +382,11 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                             onTap: () {
                               Get.toNamed(
                                 AppRoutes.GENERAL_VIEW,
-                                arguments: Constants.REASONS,
+                                arguments: {
+                                  "title": Constants.REASONS,
+                                  "selected_title":
+                                      controller.reasonController.text,
+                                },
                               )?.then(
                                 (e) => controller.reasonController.text = e,
                               );
@@ -478,7 +496,7 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
           ? EdgeInsets.only(right: 10)
           : EdgeInsets.only(left: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F7),
+        color: Colors.white,
         border: Border.all(color: Colors.grey.shade400),
         borderRadius: BorderRadius.circular(8),
       ),

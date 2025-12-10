@@ -19,4 +19,6 @@ class DatabaseTables {
   static const String GAS_STATIONS = "GasStations";
   // ignore: constant_identifier_names
   static const String PLACES = "Places";
+  // ignore: constant_identifier_names
+  static const String REFUELING = "Refueling";
 }

@@ -11,6 +11,7 @@ class GeneralController extends GetxController {
   late AppService appService;
   var isLoading = false.obs;
   var title = "";
+  var selectedTitle = "";
 
   var generalFilterList = <GeneralModel>[].obs;
   List<GeneralModel> generalList = [];
@@ -23,7 +24,9 @@ class GeneralController extends GetxController {
   @override
   void onInit() {
     appService = Get.find<AppService>();
-    title = Get.arguments ?? "";
+    final result = Get.arguments as Map<String, dynamic>? ?? {};
+    title = result["title"] ?? "";
+    selectedTitle = result["selected_title"] ?? "";
     super.onInit();
 
     searchInputController.addListener(() {
@@ -103,6 +106,7 @@ class GeneralController extends GetxController {
           .doc(item.id)
           .delete();
 
+      Get.back();
       Get.back();
       loadDataByTitle();
 

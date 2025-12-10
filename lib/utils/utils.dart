@@ -111,6 +111,74 @@ class Utils {
     );
   }
 
+  static void showAlertDialog({
+    required String confirmMsg,
+    required Function onTapYes,
+    required bool isUrdu,
+  }) {
+    Get.defaultDialog(
+      title: "",
+      contentPadding: const EdgeInsets.all(0),
+      content: Container(
+        width: Get.mediaQuery.size.width,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Get.isDarkMode ? const Color(0xFF39374C) : Colors.white,
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                confirmMsg.tr,
+                textAlign: TextAlign.center,
+                style: getTextStyle(
+                  baseSize: 14,
+                  isBold: false,
+                  color: Colors.black,
+                  isUrdu: isUrdu,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Get.back(),
+                  child: Text(
+                    "no".tr,
+                    style: getTextStyle(
+                      baseSize: 14,
+                      isBold: true,
+                      color: Colors.black,
+                      isUrdu: isUrdu,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => onTapYes(),
+                  child: Text(
+                    "yes".tr,
+                    style: getTextStyle(
+                      baseSize: 14,
+                      isBold: true,
+                      color: Colors.black,
+                      isUrdu: isUrdu,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      barrierDismissible: false,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
   static String formatDate({dynamic date}) {
     if (date == null) {
       return "--";
