@@ -18,8 +18,16 @@ import 'package:drivvo/modules/home/expense/type/expense_type_binding.dart';
 import 'package:drivvo/modules/home/expense/type/expense_type_view.dart';
 import 'package:drivvo/modules/home/filter/home_filter_binding.dart';
 import 'package:drivvo/modules/home/filter/home_filter_view.dart';
+import 'package:drivvo/modules/home/income/create_income_binding.dart';
+import 'package:drivvo/modules/home/income/create_income_view.dart';
 import 'package:drivvo/modules/home/refueling/create_refueling_binding.dart';
 import 'package:drivvo/modules/home/refueling/create_refueling_view.dart';
+import 'package:drivvo/modules/home/route/create_route_binding.dart';
+import 'package:drivvo/modules/home/route/create_route_view.dart';
+import 'package:drivvo/modules/home/service/create_service_binding.dart';
+import 'package:drivvo/modules/home/service/create_service_view.dart';
+import 'package:drivvo/modules/home/service/type/service_type_binding.dart';
+import 'package:drivvo/modules/home/service/type/service_type_view.dart';
 import 'package:drivvo/modules/more/general/create/create_general_bindings.dart';
 import 'package:drivvo/modules/more/general/create/create_general_view.dart';
 import 'package:drivvo/modules/more/general/general_bindings.dart';
@@ -146,6 +154,30 @@ class AppPages {
       name: AppRoutes.EXPENSE_TYPE_VIEW,
       page: () => ExpenseTypeView(),
       binding: ExpenseTypeBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.CRAETE_INCOME_VIEW,
+      page: () => CreateIncomeView(),
+      binding: CreateIncomeBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.CRAETE_SERVICE_VIEW,
+      page: () => CreateServiceView(),
+      binding: CreateServiceBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.SERVICE_TYPE_VIEW,
+      page: () => ServiceTypeView(),
+      binding: ServiceTypeBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.CRAETE_ROUTE_VIEW,
+      page: () => CreateRouteView(),
+      binding: CreateRouteBinding(),
     ),
   ];
 }

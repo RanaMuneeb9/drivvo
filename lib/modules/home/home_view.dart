@@ -19,6 +19,7 @@ class HomeView extends GetView<HomeController> {
               _buildFabMenuItem(
                 icon: Icons.local_gas_station_outlined,
                 label: 'refueling'.tr,
+                bgColor: Color(0xFFFB9601),
                 onTap: () {
                   Get.toNamed(AppRoutes.CREATE_REFUELING_VIEW);
                   controller.toggleFab();
@@ -28,8 +29,9 @@ class HomeView extends GetView<HomeController> {
               _buildFabMenuItem(
                 icon: Icons.receipt_long_outlined,
                 label: 'expense'.tr,
+                bgColor: Colors.red,
                 onTap: () {
-                 Get.toNamed(AppRoutes.CREATE_EXPENSE_VIEW);
+                  Get.toNamed(AppRoutes.CREATE_EXPENSE_VIEW);
                   controller.toggleFab();
                 },
               ),
@@ -37,18 +39,30 @@ class HomeView extends GetView<HomeController> {
               _buildFabMenuItem(
                 icon: Icons.build_outlined,
                 label: 'service'.tr,
+                bgColor: Colors.brown,
                 onTap: () {
+                  Get.toNamed(AppRoutes.CRAETE_SERVICE_VIEW);
                   controller.toggleFab();
-                  // Handle Service action
                 },
               ),
               const SizedBox(height: 12),
               _buildFabMenuItem(
                 icon: Icons.attach_money,
                 label: 'income'.tr,
+                bgColor: Colors.green,
                 onTap: () {
+                  Get.toNamed(AppRoutes.CRAETE_INCOME_VIEW);
                   controller.toggleFab();
-                  // Handle Income action
+                },
+              ),
+              const SizedBox(height: 12),
+              _buildFabMenuItem(
+                icon: Icons.route,
+                label: 'route'.tr,
+                bgColor: Color(0xFF5E7E8D),
+                onTap: () {
+                  Get.toNamed(AppRoutes.CRAETE_ROUTE_VIEW);
+                  controller.toggleFab();
                 },
               ),
               const SizedBox(height: 12),
@@ -532,6 +546,7 @@ class HomeView extends GetView<HomeController> {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
+    Color? bgColor,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -564,7 +579,7 @@ class HomeView extends GetView<HomeController> {
           onPressed: onTap,
           shape: const CircleBorder(),
           foregroundColor: Colors.white,
-          backgroundColor: Utils.appColor,
+          backgroundColor: bgColor,
           heroTag: null,
           child: Icon(icon, color: Colors.white, size: 20),
         ),

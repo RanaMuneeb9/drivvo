@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
-import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
-import 'package:drivvo/modules/home/expense/create_expense_controller.dart';
+import 'package:drivvo/modules/home/income/create_income_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
@@ -12,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-class CreateExpenseView extends GetView<CreateExpenseController> {
-  const CreateExpenseView({super.key});
+class CreateIncomeView extends GetView<CreateIncomeController> {
+  const CreateIncomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +26,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'expense'.tr,
+          'income'.tr,
           style: Utils.getTextStyle(
             baseSize: 18,
             isBold: true,
@@ -37,7 +36,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
         ),
         actions: [
           IconButton(
-            onPressed: () => controller.saveRefueling(),
+            onPressed: () => controller.saveIncome(),
             icon: Text(
               "save".tr,
               style: Utils.getTextStyle(
@@ -61,10 +60,6 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // CardHeaderText(
-              //   title: "date_and_time".tr,
-              //   isUrdu: controller.isUrdu,
-              // ),
               Row(
                 children: [
                   Expanded(
@@ -151,190 +146,57 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                 ),
               ),
               const SizedBox(height: 16),
-              FormLabelText(
-                title: "expense_details".tr,
-                isUrdu: controller.isUrdu,
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "total_cost".tr,
-                    style: Utils.getTextStyle(
-                      baseSize: 16,
-                      isBold: false,
-                      color: Colors.black,
-                      isUrdu: controller.isUrdu,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Obx(
-                        () => Text(
-                          controller.totalAmount.value.toString(),
-                          style: Utils.getTextStyle(
-                            baseSize: 16,
-                            isBold: true,
-                            color: Utils.appColor,
-                            isUrdu: controller.isUrdu,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        "|",
-                        style: Utils.getTextStyle(
-                          baseSize: 16,
-                          isBold: true,
-                          color: Colors.grey.shade400,
-                          isUrdu: controller.isUrdu,
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      InkWell(
-                        onTap: () {
-                          final list = controller.expenseTypesList
-                              .where((e) => e.isChecked.value == true)
-                              .toList();
-                          Get.toNamed(
-                            AppRoutes.EXPENSE_TYPE_VIEW,
-                            arguments: list,
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Utils.appColor),
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "add".tr,
-                                style: Utils.getTextStyle(
-                                  baseSize: 14,
-                                  isBold: false,
-                                  color: Utils.appColor,
-                                  isUrdu: controller.isUrdu,
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                              Icon(
-                                Icons.add,
-                                size: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Utils.appColor,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Obx(
-                () => controller.expenseTypesList.isNotEmpty
-                    ? Container(
-                        padding: EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: Column(
-                          children: [
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: controller.expenseTypesList.length,
-                              itemBuilder: (context, index) {
-                                final model =
-                                    controller.expenseTypesList[index];
-                                return Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              model.name,
-                                              style: Utils.getTextStyle(
-                                                baseSize: 15,
-                                                isBold: false,
-                                                color: Colors.grey.shade600,
-                                                isUrdu: controller.isUrdu,
-                                              ),
-                                            ),
-                                            Text(
-                                              model.value.toString(),
-                                              style: Utils.getTextStyle(
-                                                baseSize: 14,
-                                                isBold: false,
-                                                color: Colors.black,
-                                                isUrdu: controller.isUrdu,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        InkWell(
-                                          onTap: () =>
-                                              controller.removeItem(index),
-                                          child: Icon(
-                                            Icons.close,
-                                            size: 20,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    index !=
-                                            controller.expenseTypesList.length -
-                                                1
-                                        ? Divider()
-                                        : SizedBox(),
-                                  ],
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      )
-                    : SizedBox(),
-              ),
-
-              const SizedBox(height: 16),
               CardTextInputField(
                 isUrdu: controller.isUrdu,
-                isRequired: false,
+                isRequired: true,
                 isNext: true,
                 obscureText: false,
                 readOnly: true,
-                labelText: "place".tr,
+                labelText: "income_type".tr,
                 hintText: "".tr,
-                controller: controller.placeController,
+                controller: controller.incomeTypeController,
                 sufixIcon: Icon(Icons.keyboard_arrow_down),
                 onTap: () {
                   Get.toNamed(
                     AppRoutes.GENERAL_VIEW,
                     arguments: {
-                      "title": Constants.PLACES,
-                      "selected_title": controller.placeController.text,
+                      "title": Constants.INCOME_TYPES,
+                      "selected_title": controller.incomeTypeController.text,
                     },
-                  )?.then((e) => controller.placeController.text = e);
+                  )?.then((e) {
+                    if (e != null) controller.incomeTypeController.text = e;
+                  });
                 },
                 onSaved: (value) {},
-                onValidate: (value) => null,
+                onValidate: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'income_type_required'.tr;
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextInputField(
+                isUrdu: controller.isUrdu,
+                isRequired: true,
+                isNext: true,
+                obscureText: false,
+                readOnly: false,
+                labelText: "value".tr,
+                hintText: "100".tr,
+                inputAction: TextInputAction.next,
+                type: TextInputType.number,
+                onTap: () {},
+                onSaved: (value) {
+                  controller.model.value.value =
+                      double.tryParse(value ?? '') ?? 0.0;
+                },
+                onValidate: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'income_required'.tr;
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               TextInputField(
@@ -351,52 +213,6 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                 onSaved: (value) {
                   controller.model.value.driverName = value!;
                 },
-                onValidate: (value) => null,
-              ),
-              const SizedBox(height: 16),
-              CardTextInputField(
-                isUrdu: controller.isUrdu,
-                isRequired: false,
-                isNext: true,
-                obscureText: false,
-                readOnly: true,
-                labelText: "payment_method".tr,
-                hintText: "select_payment_method".tr,
-                controller: controller.paymentMethodController,
-                sufixIcon: Icon(Icons.keyboard_arrow_down),
-                onTap: () {
-                  Get.toNamed(
-                    AppRoutes.GENERAL_VIEW,
-                    arguments: {
-                      "title": Constants.PAYMENT_METHOD,
-                      "selected_title": controller.paymentMethodController.text,
-                    },
-                  )?.then((e) => controller.paymentMethodController.text = e);
-                },
-                onSaved: (value) {},
-                onValidate: (value) => null,
-              ),
-              const SizedBox(height: 16),
-              CardTextInputField(
-                isUrdu: controller.isUrdu,
-                isRequired: false,
-                isNext: true,
-                obscureText: false,
-                readOnly: true,
-                labelText: "reason".tr,
-                hintText: "select_reason".tr,
-                controller: controller.reasonController,
-                sufixIcon: Icon(Icons.keyboard_arrow_down),
-                onTap: () {
-                  Get.toNamed(
-                    AppRoutes.GENERAL_VIEW,
-                    arguments: {
-                      "title": Constants.REASONS,
-                      "selected_title": controller.reasonController.text,
-                    },
-                  )?.then((e) => controller.reasonController.text = e);
-                },
-                onSaved: (value) {},
                 onValidate: (value) => null,
               ),
               const SizedBox(height: 16),
@@ -532,7 +348,11 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                       isUrdu: controller.isUrdu,
                     ),
                   ),
-                  const Icon(Icons.camera_alt, color: Colors.black, size: 18),
+                  const Icon(
+                    Icons.photo_library,
+                    color: Colors.black,
+                    size: 18,
+                  ),
                 ],
               ),
             ),

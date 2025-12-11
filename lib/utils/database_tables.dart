@@ -21,4 +21,12 @@ class DatabaseTables {
   static const String PLACES = "Places";
   // ignore: constant_identifier_names
   static const String REFUELING = "Refueling";
+  // ignore: constant_identifier_names
+  static const String EXPENSES = "Expenses";
+  // ignore: constant_identifier_names
+  static const String INCOMES = "Incomes";
+  // ignore: constant_identifier_names
+  static const String SERVICES = "Services";
+  // ignore: constant_identifier_names
+  static const String ROUTES = "Routes";
 }

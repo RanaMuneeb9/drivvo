@@ -4,7 +4,7 @@ import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
-import 'package:drivvo/modules/home/expense/create_expense_controller.dart';
+import 'package:drivvo/modules/home/service/create_service_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-class CreateExpenseView extends GetView<CreateExpenseController> {
-  const CreateExpenseView({super.key});
+class CreateServiceView extends GetView<CreateServiceController> {
+  const CreateServiceView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'expense'.tr,
+          'service'.tr,
           style: Utils.getTextStyle(
             baseSize: 18,
             isBold: true,
@@ -37,7 +37,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
         ),
         actions: [
           IconButton(
-            onPressed: () => controller.saveRefueling(),
+            onPressed: () => controller.saveService(),
             icon: Text(
               "save".tr,
               style: Utils.getTextStyle(
@@ -61,10 +61,6 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // CardHeaderText(
-              //   title: "date_and_time".tr,
-              //   isUrdu: controller.isUrdu,
-              // ),
               Row(
                 children: [
                   Expanded(
@@ -152,7 +148,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
               ),
               const SizedBox(height: 16),
               FormLabelText(
-                title: "expense_details".tr,
+                title: "service_details".tr,
                 isUrdu: controller.isUrdu,
               ),
               const SizedBox(height: 10),
@@ -160,7 +156,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "total_cost".tr,
+                    "total_service_cost".tr,
                     style: Utils.getTextStyle(
                       baseSize: 16,
                       isBold: false,
@@ -195,11 +191,11 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                       SizedBox(width: 10),
                       InkWell(
                         onTap: () {
-                          final list = controller.expenseTypesList
+                          final list = controller.serviceTyesList
                               .where((e) => e.isChecked.value == true)
                               .toList();
                           Get.toNamed(
-                            AppRoutes.EXPENSE_TYPE_VIEW,
+                            AppRoutes.SERVICE_TYPE_VIEW,
                             arguments: list,
                           );
                         },
@@ -241,7 +237,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
               ),
               const SizedBox(height: 4),
               Obx(
-                () => controller.expenseTypesList.isNotEmpty
+                () => controller.serviceTyesList.isNotEmpty
                     ? Container(
                         padding: EdgeInsets.all(14),
                         decoration: BoxDecoration(
@@ -253,10 +249,9 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                             ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: controller.expenseTypesList.length,
+                              itemCount: controller.serviceTyesList.length,
                               itemBuilder: (context, index) {
-                                final model =
-                                    controller.expenseTypesList[index];
+                                final model = controller.serviceTyesList[index];
                                 return Column(
                                   children: [
                                     Row(
@@ -299,7 +294,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                                       ],
                                     ),
                                     index !=
-                                            controller.expenseTypesList.length -
+                                            controller.serviceTyesList.length -
                                                 1
                                         ? Divider()
                                         : SizedBox(),
@@ -349,7 +344,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                 type: TextInputType.name,
                 onTap: () {},
                 onSaved: (value) {
-                  controller.model.value.driverName = value!;
+                  controller.model.value.driverName = value ?? '';
                 },
                 onValidate: (value) => null,
               ),

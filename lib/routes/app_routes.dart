@@ -35,4 +35,12 @@ abstract class AppRoutes {
   static const CREATE_EXPENSE_VIEW = '/home/create_expense_view';
   // ignore: constant_identifier_names
   static const EXPENSE_TYPE_VIEW = '/home/expense_type_view';
+  // ignore: constant_identifier_names
+  static const CRAETE_INCOME_VIEW = '/home/create_income_view';
+  // ignore: constant_identifier_names
+  static const SERVICE_TYPE_VIEW = '/home/service_type_view';
+  // ignore: constant_identifier_names
+  static const CRAETE_SERVICE_VIEW = '/home/create_service_view';
+  // ignore: constant_identifier_names
+  static const CRAETE_ROUTE_VIEW = '/home/create_route_view';
 }

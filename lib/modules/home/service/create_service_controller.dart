@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:drivvo/model/expense/expense_model.dart';
 import 'package:drivvo/model/expense/expense_type_model.dart';
+import 'package:drivvo/model/refueling/refueling_model.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
@@ -11,16 +11,16 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class CreateExpenseController extends GetxController {
+class CreateServiceController extends GetxController {
   late AppService appService;
   final formKey = GlobalKey<FormState>();
 
-  var expenseTypesList = <ExpenseTypeModel>[].obs;
+  var serviceTyesList = <ExpenseTypeModel>[].obs;
 
   var totalAmount = 0.0.obs;
 
   var filePath = "".obs;
-  var model = ExpenseModel().obs;
+  var model = RefuelingModel().obs;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
@@ -54,6 +54,12 @@ class CreateExpenseController extends GetxController {
     paymentMethodController.dispose();
     reasonController.dispose();
     super.onClose();
+  }
+
+  void onSelectFuelType(String? type) {
+    if (type != null) {
+      model.value.fuelType = type;
+    }
   }
 
   void selectDate() async {
@@ -129,7 +135,7 @@ class CreateExpenseController extends GetxController {
     }
   }
 
-  Future<void> saveRefueling() async {
+  Future<void> saveService() async {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
@@ -148,21 +154,21 @@ class CreateExpenseController extends GetxController {
         "reason": reasonController.text.trim(),
         "file_path": filePath.value,
         "notes": model.value.notes,
-        "expense_types": expenseTypesList.map((e) => e.toJson()).toList(),
+        "expense_types": serviceTyesList.map((e) => e.toJson()).toList(),
       };
 
       try {
         await FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id)
-            .collection(DatabaseTables.EXPENSES)
+            .collection(DatabaseTables.SERVICES)
             .doc()
             .set(map)
             .then((e) {
               if (Get.isDialogOpen == true) Get.back();
               Get.back();
 
-              Utils.showSnackBar(message: "expense_added".tr, success: true);
+              Utils.showSnackBar(message: "service_added".tr, success: true);
             })
             .catchError((e) {
               if (Get.isDialogOpen == true) Get.back();
@@ -177,14 +183,14 @@ class CreateExpenseController extends GetxController {
   }
 
   void removeItem(int index) {
-    if (index < 0 || index >= expenseTypesList.length) return;
-    expenseTypesList.removeAt(index);
+    if (index < 0 || index >= serviceTyesList.length) return;
+    serviceTyesList.removeAt(index);
     calculateTotal();
-    expenseTypesList.refresh();
+    serviceTyesList.refresh();
   }
 
   void calculateTotal() {
-    totalAmount.value = expenseTypesList
+    totalAmount.value = serviceTyesList
         .where((e) => e.isChecked.value)
         .fold(0.0, (a1, e) => a1 + (double.tryParse(e.value.value) ?? 0));
   }

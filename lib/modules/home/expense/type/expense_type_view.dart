@@ -2,6 +2,7 @@ import 'package:drivvo/custom-widget/button/custom_floating_action_button.dart';
 import 'package:drivvo/custom-widget/common/error_refresh_view.dart';
 import 'package:drivvo/custom-widget/common/refresh_indicator_view.dart';
 import 'package:drivvo/custom-widget/text-input-field/search_text_input_field.dart';
+import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
 import 'package:drivvo/modules/home/expense/type/expense_type_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/constants.dart';
@@ -94,11 +95,22 @@ class ExpenseTypeView extends GetView<ExpenseTypeController> {
                               () => Column(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.only(right: 10),
+                                    padding: controller.isUrdu
+                                        ? const EdgeInsets.only(right: 10)
+                                        : const EdgeInsets.only(left: 10),
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
+                                        Text(
+                                          model.name,
+                                          style: Utils.getTextStyle(
+                                            baseSize: 16,
+                                            isBold: false,
+                                            color: Colors.black,
+                                            isUrdu: controller.isUrdu,
+                                          ),
+                                        ),
                                         Checkbox(
                                           value: model.isChecked.value,
                                           onChanged: (bool? value) {
@@ -106,55 +118,70 @@ class ExpenseTypeView extends GetView<ExpenseTypeController> {
                                                 !model.isChecked.value;
                                           },
                                         ),
-                                        Expanded(
-                                          child: Text(
-                                            model.name,
-                                            style: Utils.getTextStyle(
-                                              baseSize: 16,
-                                              isBold: false,
-                                              color: Colors.black,
-                                              isUrdu: controller.isUrdu,
-                                            ),
-                                          ),
-                                        ),
-                                        if (model.isChecked.value)
-                                          Expanded(
-                                            child: TextFormField(
-                                              initialValue: model.value.value,
-                                              style: Utils.getTextStyle(
-                                                baseSize: 14,
-                                                isBold: false,
-                                                color: Colors.black,
-                                                isUrdu: controller.isUrdu,
-                                              ),
-                                              decoration: InputDecoration(
-                                                contentPadding:
-                                                    const EdgeInsets.all(0),
-                                                border: UnderlineInputBorder(),
-                                                errorBorder:
-                                                    UnderlineInputBorder(),
-                                                enabledBorder:
-                                                    UnderlineInputBorder(),
-                                                focusedBorder:
-                                                    UnderlineInputBorder(),
-                                                label: Text("value".tr),
-                                              ),
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              textInputAction:
-                                                  TextInputAction.done,
-                                              onChanged: (value) {
-                                                model.value.value = value;
-                                              },
-                                              onSaved: (value) {},
-                                              validator: (value) {
-                                                return;
-                                              },
-                                            ),
-                                          ),
+                                        //   if (model.isChecked.value)
+                                        //     Expanded(
+                                        //       child: TextFormField(
+                                        //         initialValue: model.value.value,
+                                        //         style: Utils.getTextStyle(
+                                        //           baseSize: 14,
+                                        //           isBold: false,
+                                        //           color: Colors.black,
+                                        //           isUrdu: controller.isUrdu,
+                                        //         ),
+                                        //         decoration: InputDecoration(
+                                        //           contentPadding:
+                                        //               const EdgeInsets.all(0),
+                                        //           border: UnderlineInputBorder(),
+                                        //           errorBorder:
+                                        //               UnderlineInputBorder(),
+                                        //           enabledBorder:
+                                        //               UnderlineInputBorder(),
+                                        //           focusedBorder:
+                                        //               UnderlineInputBorder(),
+                                        //           label: Text("value".tr),
+                                        //         ),
+                                        //         keyboardType:
+                                        //             TextInputType.number,
+                                        //         textInputAction:
+                                        //             TextInputAction.done,
+                                        //         onChanged: (value) {
+                                        //           model.value.value = value;
+                                        //         },
+                                        //         onSaved: (value) {},
+                                        //         validator: (value) {
+                                        //           return;
+                                        //         },
+                                        //       ),
+                                        //     ),
                                       ],
                                     ),
                                   ),
+                                  if (model.isChecked.value)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0,
+                                      ),
+                                      child: TextInputField(
+                                        initialValue: model.value.value,
+                                        isUrdu: controller.isUrdu,
+                                        isRequired: false,
+                                        isNext: true,
+                                        obscureText: false,
+                                        readOnly: false,
+                                        labelText: "value".tr,
+                                        hintText: "100".tr,
+                                        inputAction: TextInputAction.next,
+                                        type: TextInputType.number,
+                                        onTap: () {},
+                                        onSaved: (value) {},
+                                        onChange: (value) {
+                                          model.value.value = value ?? '';
+                                        },
+                                        onValidate: (value) => null,
+                                      ),
+                                    ),
+                                  if (model.isChecked.value)
+                                    SizedBox(height: 10),
                                   Divider(),
                                 ],
                               ),

@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
-import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
-import 'package:drivvo/modules/home/expense/create_expense_controller.dart';
+import 'package:drivvo/modules/home/route/create_route_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
@@ -12,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-class CreateExpenseView extends GetView<CreateExpenseController> {
-  const CreateExpenseView({super.key});
+class CreateRouteView extends GetView<CreateRouteController> {
+  const CreateRouteView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +26,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'expense'.tr,
+          'route'.tr,
           style: Utils.getTextStyle(
             baseSize: 18,
             isBold: true,
@@ -37,7 +36,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
         ),
         actions: [
           IconButton(
-            onPressed: () => controller.saveRefueling(),
+            onPressed: () => controller.saveRoute(),
             icon: Text(
               "save".tr,
               style: Utils.getTextStyle(
@@ -61,10 +60,28 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // CardHeaderText(
-              //   title: "date_and_time".tr,
-              //   isUrdu: controller.isUrdu,
-              // ),
+              TextInputField(
+                isUrdu: controller.isUrdu,
+                isRequired: true,
+                isNext: true,
+                obscureText: false,
+                readOnly: false,
+                labelText: "origin".tr,
+                hintText: "multan".tr,
+                inputAction: TextInputAction.next,
+                type: TextInputType.text,
+                onTap: () {},
+                onSaved: (value) {
+                  controller.model.value.origin = value!;
+                },
+                onValidate: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'origin_required'.tr;
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -73,16 +90,16 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                       isNext: true,
                       obscureText: false,
                       readOnly: true,
-                      controller: controller.dateController,
+                      controller: controller.startDateController,
                       isUrdu: controller.isUrdu,
-                      labelText: "date".tr,
+                      labelText: "start_date".tr,
                       hintText: "select_date".tr,
                       sufixIcon: Icon(Icons.date_range, color: Utils.appColor),
                       onSaved: (value) {},
-                      onTap: () => controller.selectDate(),
+                      onTap: () => controller.selectDate(isStartDate: true),
                       onValidate: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'date_required'.tr;
+                          return 'start_date_required'.tr;
                         }
                         return null;
                       },
@@ -95,16 +112,64 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                       isNext: true,
                       obscureText: false,
                       readOnly: true,
-                      controller: controller.timeController,
+                      controller: controller.startTimeController,
                       isUrdu: controller.isUrdu,
-                      labelText: "time".tr,
+                      labelText: "start_time".tr,
                       hintText: "select_time".tr,
                       sufixIcon: Icon(Icons.av_timer, color: Utils.appColor),
                       onSaved: (value) {},
-                      onTap: () => controller.selectTime(),
+                      onTap: () => controller.selectTime(isStartTime: true),
                       onValidate: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'time_required'.tr;
+                          return 'start_time_required'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: CardTextInputField(
+                      isRequired: true,
+                      isNext: true,
+                      obscureText: false,
+                      readOnly: true,
+                      controller: controller.endDateController,
+                      isUrdu: controller.isUrdu,
+                      labelText: "end_date".tr,
+                      hintText: "select_date".tr,
+                      sufixIcon: Icon(Icons.date_range, color: Utils.appColor),
+                      onSaved: (value) {},
+                      onTap: () => controller.selectDate(isStartDate: false),
+                      onValidate: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'end_date_required'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: CardTextInputField(
+                      isRequired: true,
+                      isNext: true,
+                      obscureText: false,
+                      readOnly: true,
+                      controller: controller.endTimeController,
+                      isUrdu: controller.isUrdu,
+                      labelText: "end_time".tr,
+                      hintText: "select_time".tr,
+                      sufixIcon: Icon(Icons.av_timer, color: Utils.appColor),
+                      onSaved: (value) {},
+                      onTap: () => controller.selectTime(isStartTime: false),
+                      onValidate: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'end_time_required'.tr;
                         }
                         return null;
                       },
@@ -119,18 +184,18 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                 isNext: true,
                 obscureText: false,
                 readOnly: false,
-                labelText: "odometer".tr,
-                hintText: "100".tr,
+                labelText: "initial_odometer".tr,
+                hintText: "km".tr,
                 inputAction: TextInputAction.next,
                 type: TextInputType.number,
                 onTap: () {},
                 onSaved: (value) {
-                  controller.model.value.odometer =
+                  controller.model.value.initialOdometer =
                       double.tryParse(value ?? '') ?? 0.0;
                 },
                 onValidate: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'odometer_required'.tr;
+                    return 'initial_odometer_required'.tr;
                   }
                   return null;
                 },
@@ -151,191 +216,119 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                 ),
               ),
               const SizedBox(height: 16),
-              FormLabelText(
-                title: "expense_details".tr,
+              TextInputField(
                 isUrdu: controller.isUrdu,
+                isRequired: true,
+                isNext: true,
+                obscureText: false,
+                readOnly: false,
+                labelText: "destination".tr,
+                hintText: "multan".tr,
+                inputAction: TextInputAction.next,
+                type: TextInputType.text,
+                onTap: () {},
+                onSaved: (value) {
+                  controller.model.value.destination = value!;
+                },
+                onValidate: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'destination_required'.tr;
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "total_cost".tr,
+              const SizedBox(height: 16),
+              TextInputField(
+                isUrdu: controller.isUrdu,
+                isRequired: true,
+                isNext: true,
+                obscureText: false,
+                readOnly: false,
+                labelText: "final_odometer".tr,
+                hintText: "km".tr,
+                inputAction: TextInputAction.next,
+                type: TextInputType.number,
+                onTap: () {},
+                onSaved: (value) {
+                  controller.model.value.finalOdometer =
+                      double.tryParse(value ?? '') ?? 0.0;
+                },
+                onValidate: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'final_odometer_required'.tr;
+                  }
+                  return null;
+                },
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    '${'last_odometer'.tr}: 2200 km',
                     style: Utils.getTextStyle(
-                      baseSize: 16,
+                      baseSize: 12,
                       isBold: false,
-                      color: Colors.black,
+                      color: Colors.grey[600]!,
                       isUrdu: controller.isUrdu,
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Obx(
-                        () => Text(
-                          controller.totalAmount.value.toString(),
-                          style: Utils.getTextStyle(
-                            baseSize: 16,
-                            isBold: true,
-                            color: Utils.appColor,
-                            isUrdu: controller.isUrdu,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        "|",
-                        style: Utils.getTextStyle(
-                          baseSize: 16,
-                          isBold: true,
-                          color: Colors.grey.shade400,
-                          isUrdu: controller.isUrdu,
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      InkWell(
-                        onTap: () {
-                          final list = controller.expenseTypesList
-                              .where((e) => e.isChecked.value == true)
-                              .toList();
-                          Get.toNamed(
-                            AppRoutes.EXPENSE_TYPE_VIEW,
-                            arguments: list,
-                          );
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Utils.appColor),
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "add".tr,
-                                style: Utils.getTextStyle(
-                                  baseSize: 14,
-                                  isBold: false,
-                                  color: Utils.appColor,
-                                  isUrdu: controller.isUrdu,
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                              Icon(
-                                Icons.add,
-                                size: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Utils.appColor,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextInputField(
+                      isUrdu: controller.isUrdu,
+                      isRequired: true,
+                      isNext: true,
+                      obscureText: false,
+                      readOnly: false,
+                      labelText: "value_per_km".tr,
+                      hintText: "100".tr,
+                      inputAction: TextInputAction.next,
+                      type: TextInputType.number,
+                      onTap: () {},
+                      onSaved: (value) {
+                        controller.model.value.valuePerKm =
+                            double.tryParse(value ?? '') ?? 0.0;
+                      },
+                      onValidate: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'value_per_km_required'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextInputField(
+                      isUrdu: controller.isUrdu,
+                      isRequired: true,
+                      isNext: true,
+                      obscureText: false,
+                      readOnly: false,
+                      labelText: "total".tr,
+                      hintText: "100".tr,
+                      inputAction: TextInputAction.next,
+                      type: TextInputType.number,
+                      onTap: () {},
+                      onSaved: (value) {
+                        controller.model.value.total = double.parse(value!);
+                      },
+                      onValidate: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'total_required'.tr;
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
-              Obx(
-                () => controller.expenseTypesList.isNotEmpty
-                    ? Container(
-                        padding: EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: Column(
-                          children: [
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: controller.expenseTypesList.length,
-                              itemBuilder: (context, index) {
-                                final model =
-                                    controller.expenseTypesList[index];
-                                return Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              model.name,
-                                              style: Utils.getTextStyle(
-                                                baseSize: 15,
-                                                isBold: false,
-                                                color: Colors.grey.shade600,
-                                                isUrdu: controller.isUrdu,
-                                              ),
-                                            ),
-                                            Text(
-                                              model.value.toString(),
-                                              style: Utils.getTextStyle(
-                                                baseSize: 14,
-                                                isBold: false,
-                                                color: Colors.black,
-                                                isUrdu: controller.isUrdu,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        InkWell(
-                                          onTap: () =>
-                                              controller.removeItem(index),
-                                          child: Icon(
-                                            Icons.close,
-                                            size: 20,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    index !=
-                                            controller.expenseTypesList.length -
-                                                1
-                                        ? Divider()
-                                        : SizedBox(),
-                                  ],
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      )
-                    : SizedBox(),
-              ),
 
-              const SizedBox(height: 16),
-              CardTextInputField(
-                isUrdu: controller.isUrdu,
-                isRequired: false,
-                isNext: true,
-                obscureText: false,
-                readOnly: true,
-                labelText: "place".tr,
-                hintText: "".tr,
-                controller: controller.placeController,
-                sufixIcon: Icon(Icons.keyboard_arrow_down),
-                onTap: () {
-                  Get.toNamed(
-                    AppRoutes.GENERAL_VIEW,
-                    arguments: {
-                      "title": Constants.PLACES,
-                      "selected_title": controller.placeController.text,
-                    },
-                  )?.then((e) => controller.placeController.text = e);
-                },
-                onSaved: (value) {},
-                onValidate: (value) => null,
-              ),
               const SizedBox(height: 16),
               TextInputField(
                 isUrdu: controller.isUrdu,
@@ -349,31 +342,8 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                 type: TextInputType.name,
                 onTap: () {},
                 onSaved: (value) {
-                  controller.model.value.driverName = value!;
+                  controller.model.value.driverName = value ?? '';
                 },
-                onValidate: (value) => null,
-              ),
-              const SizedBox(height: 16),
-              CardTextInputField(
-                isUrdu: controller.isUrdu,
-                isRequired: false,
-                isNext: true,
-                obscureText: false,
-                readOnly: true,
-                labelText: "payment_method".tr,
-                hintText: "select_payment_method".tr,
-                controller: controller.paymentMethodController,
-                sufixIcon: Icon(Icons.keyboard_arrow_down),
-                onTap: () {
-                  Get.toNamed(
-                    AppRoutes.GENERAL_VIEW,
-                    arguments: {
-                      "title": Constants.PAYMENT_METHOD,
-                      "selected_title": controller.paymentMethodController.text,
-                    },
-                  )?.then((e) => controller.paymentMethodController.text = e);
-                },
-                onSaved: (value) {},
                 onValidate: (value) => null,
               ),
               const SizedBox(height: 16),
@@ -449,7 +419,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                 type: TextInputType.name,
                 onTap: () {},
                 onSaved: (value) {
-                  controller.model.value.notes = value ?? '';
+                  controller.model.value.notes = value!;
                 },
                 onValidate: (value) => null,
               ),

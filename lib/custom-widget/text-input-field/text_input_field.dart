@@ -73,6 +73,7 @@ class TextInputField extends StatelessWidget {
             prefixIcon: prefixIcon,
             suffixIcon: sufixIcon,
           ),
+          onChanged: onChange != null ? (v) => onChange!(v) : null,
           onTap: onTap != null ? () => onTap!() : null,
           onSaved: (value) => onSaved(value),
           validator: (value) => onValidate(value),
