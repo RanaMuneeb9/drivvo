@@ -13,7 +13,6 @@ class RootController extends GetxController {
   List<Widget> pages = [
     const HomeView(),
     const ReportsView(),
-    //const QuickMenuView(),
     const ReminderView(),
     const MoreView(),
   ];

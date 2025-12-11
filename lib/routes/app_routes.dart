@@ -33,4 +33,6 @@ abstract class AppRoutes {
   static const CREATE_REFUELING_VIEW = '/home/create_refueling_view';
   // ignore: constant_identifier_names
   static const CREATE_EXPENSE_VIEW = '/home/create_expense_view';
+  // ignore: constant_identifier_names
+  static const EXPENSE_TYPE_VIEW = '/home/expense_type_view';
 }

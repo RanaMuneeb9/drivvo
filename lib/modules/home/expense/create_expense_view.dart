@@ -150,50 +150,130 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                   ),
                 ),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   FormLabelText(title: "expense".tr, isUrdu: controller.isUrdu),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      final list = controller.expenseTypesList
+                          .where((e) => e.isChecked.value == true)
+                          .toList();
+                      Get.toNamed(AppRoutes.EXPENSE_TYPE_VIEW, arguments: list);
+                    },
                     icon: Icon(Icons.add, color: Utils.appColor),
                   ),
                 ],
               ),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade400),
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                ),
-              ),
-              const SizedBox(height: 50),
-              CardTextInputField(
-                isUrdu: controller.isUrdu,
-                isRequired: true,
-                isNext: true,
-                obscureText: false,
-                readOnly: true,
-                labelText: "expense".tr,
-                hintText: "".tr,
-                controller: controller.expenseTypeController,
-                sufixIcon: Icon(Icons.keyboard_arrow_down),
-                onTap: () {
-                  Get.toNamed(
-                    AppRoutes.GENERAL_VIEW,
-                    arguments: {
-                      "title": Constants.EXPENSE_TYPES,
-                      "selected_title": controller.expenseTypeController.text,
-                    },
-                  )?.then((e) => controller.expenseTypeController.text = e);
-                },
-                onSaved: (value) {},
-                onValidate: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'expense_type_required'.tr;
-                  }
-                  return null;
-                },
+              Obx(
+                () => controller.expenseTypesList.isNotEmpty
+                    ? Container(
+                        padding: EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
+                        child: Column(
+                          children: [
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: controller.expenseTypesList.length,
+                              itemBuilder: (context, index) {
+                                final model =
+                                    controller.expenseTypesList[index];
+                                return Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "${index + 1}. ",
+                                              style: Utils.getTextStyle(
+                                                baseSize: 15,
+                                                isBold: false,
+                                                color: Colors.black,
+                                                isUrdu: controller.isUrdu,
+                                              ),
+                                            ),
+                                            Text(
+                                              model.name,
+                                              style: Utils.getTextStyle(
+                                                baseSize: 15,
+                                                isBold: false,
+                                                color: Colors.black,
+                                                isUrdu: controller.isUrdu,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              model.value.toString(),
+                                              style: Utils.getTextStyle(
+                                                baseSize: 14,
+                                                isBold: false,
+                                                color: Colors.black,
+                                                isUrdu: controller.isUrdu,
+                                              ),
+                                            ),
+                                            SizedBox(width: 10),
+                                            InkWell(
+                                              onTap: () =>
+                                                  controller.removeItem(index),
+                                              child: Icon(
+                                                Icons.close,
+                                                size: 20,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                  ],
+                                );
+                              },
+                            ),
+                            Divider(height: 0, endIndent: 30, thickness: 1),
+                            SizedBox(height: 4),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 30.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "total".tr,
+                                    style: Utils.getTextStyle(
+                                      baseSize: 16,
+                                      isBold: true,
+                                      color: Colors.black,
+                                      isUrdu: controller.isUrdu,
+                                    ),
+                                  ),
+                                  Text(
+                                    controller.totalAmount.value.toString(),
+                                    style: Utils.getTextStyle(
+                                      baseSize: 16,
+                                      isBold: true,
+                                      color: Colors.black,
+                                      isUrdu: controller.isUrdu,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : SizedBox(),
               ),
               const SizedBox(height: 16),
               CardTextInputField(

@@ -115,7 +115,7 @@ class AppTheme {
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith<Color>((states) {
           if (states.contains(WidgetState.selected)) {
-            return Colors.pink[300]!;
+            return Utils.appColor;
           } else if (states.contains(WidgetState.disabled)) {
             return Colors.transparent;
           }

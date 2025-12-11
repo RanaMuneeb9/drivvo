@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivvo/model/expense/expense_type_model.dart';
 import 'package:drivvo/model/refueling/refueling_model.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
@@ -13,6 +14,10 @@ import 'package:intl/intl.dart';
 class CreateExpenseController extends GetxController {
   String? _lastEditedField;
   final formKey = GlobalKey<FormState>();
+
+  var expenseTypesList = <ExpenseTypeModel>[].obs;
+
+  var totalAmount = 0.0.obs;
 
   late AppService appService;
 
@@ -255,5 +260,18 @@ class CreateExpenseController extends GetxController {
         Utils.showSnackBar(message: "something_wrong".tr, success: false);
       }
     }
+  }
+
+  void removeItem(int index) {
+    if (index < 0 || index >= expenseTypesList.length) return;
+    expenseTypesList.removeAt(index);
+    calculateTotal();
+    expenseTypesList.refresh();
+  }
+
+  void calculateTotal() {
+    totalAmount.value = expenseTypesList
+        .where((e) => e.isChecked.value)
+        .fold(0.0, (a1, e) => a1 + (double.tryParse(e.value.value) ?? 0));
   }
 }
