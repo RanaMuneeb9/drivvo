@@ -118,6 +118,7 @@ class LoginController extends GetxController {
         map["name"] = user.displayName;
         map["photoUrl"] = user.photoURL;
         map["sign_in_method"] = Constants.GOOGLE;
+        map["last_odometer"] = "0";
 
         await db
             .collection(DatabaseTables.USER_PROFILE)

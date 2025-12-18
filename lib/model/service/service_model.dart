@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class RefuelingModel {
+class ServiceModel {
   late String userId;
   late String vehicleId;
   late String time;
@@ -8,7 +8,7 @@ class RefuelingModel {
   late String odometer;
   late String price;
   late String liter;
-  late String totalCost;
+  late String totalAmount;
   late String fuelType;
   late String fuelStation;
   late bool fullTank;
@@ -16,17 +16,17 @@ class RefuelingModel {
   late String paymentMethod;
   late String notes;
   late String driverName;
-  late DateTime createdAt;
+  // late DateTime createdAt;
 
-  RefuelingModel() {
+  ServiceModel() {
     userId = "";
     vehicleId = "";
     time = "";
     date = DateTime.now();
     odometer = "";
-    price = "0";
-    liter = "0";
-    totalCost = "0";
+    price = "";
+    liter = "";
+    totalAmount = "";
     fuelType = "";
     fuelStation = "";
     fullTank = true;
@@ -34,10 +34,10 @@ class RefuelingModel {
     paymentMethod = "";
     notes = "";
     driverName = "";
-    createdAt = DateTime.now();
+    // createdAt = DateTime.now();
   }
 
-  RefuelingModel.fromJson(Map<String, dynamic> json) {
+  ServiceModel.fromJson(Map<String, dynamic> json) {
     userId = json["user_id"] ?? "";
     vehicleId = json["vehicle_id"] ?? "";
     time = json["time"] ?? "";
@@ -45,7 +45,7 @@ class RefuelingModel {
     odometer = json["odometer"] ?? "";
     price = json["price"] ?? "";
     liter = json["liter"] ?? "";
-    totalCost = json["total_cost"] ?? "";
+    totalAmount = json["total_amount"] ?? "";
     fuelType = json["fuel_type"] ?? "";
     fuelStation = json["fuel_station"] ?? "";
     fullTank = json["full_tank"] ?? true;
@@ -53,7 +53,7 @@ class RefuelingModel {
     paymentMethod = json["payment_method"] ?? "";
     notes = json["notes"] ?? "";
     driverName = json["driver_name"] ?? "";
-    //createdAt = (json["created_at"] as Timestamp?)?.toDate() ?? DateTime.now();
+    // createdAt = (json["created_at"] as Timestamp?)?.toDate() ?? DateTime.now();
   }
 
   Map<String, dynamic> toJson() {
@@ -61,11 +61,11 @@ class RefuelingModel {
       "id": userId,
       "vehicle_id": vehicleId,
       "time": time,
-      "date": date,
+      "date": Timestamp.fromDate(date),
       "odometer": odometer,
       "price": price,
       "liter": liter,
-      "total_cost": totalCost,
+      "total_amount": totalAmount,
       "fuel_type": fuelType,
       "fuel_station": fuelStation,
       "full_tank": fullTank,

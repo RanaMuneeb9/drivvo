@@ -1,3 +1,8 @@
+import 'package:drivvo/model/expense/expense_model.dart';
+import 'package:drivvo/model/income/income_model.dart';
+import 'package:drivvo/model/refueling/refueling_model.dart';
+import 'package:drivvo/model/service/service_model.dart';
+
 class AppUser {
   late String id;
   late String firstName;
@@ -17,6 +22,13 @@ class AppUser {
   late String productId;
   late String purchaseToken;
 
+  late String lastOdometer;
+
+  late List<RefuelingModel> refuelingList;
+  late List<ExpenseModel> expenseList;
+  late List<ServiceModel> serviceList;
+  late List<IncomeModel> incomeList;
+
   AppUser() {
     id = "";
     firstName = "";
@@ -35,6 +47,13 @@ class AppUser {
     isSubscribed = false;
     productId = "";
     purchaseToken = "";
+
+    lastOdometer = "";
+
+    refuelingList = [];
+    expenseList = [];
+    serviceList = [];
+    incomeList = [];
   }
 
   AppUser.fromJson(Map<String, dynamic> json) {
@@ -55,6 +74,32 @@ class AppUser {
     isSubscribed = json["isEntitled"] ?? false;
     productId = json["productId"] ?? "";
     purchaseToken = json["purchaseToken"] ?? "";
+
+    lastOdometer = json["last_odometer"] ?? "";
+
+    refuelingList =
+        (json["refueling_list"] as List<dynamic>?)
+            ?.map((e) => RefuelingModel.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
+
+    expenseList =
+        (json["expense_list"] as List<dynamic>?)
+            ?.map((e) => ExpenseModel.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
+
+    serviceList =
+        (json["service_list"] as List<dynamic>?)
+            ?.map((e) => ServiceModel.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
+
+    incomeList =
+        (json["income_list"] as List<dynamic>?)
+            ?.map((e) => IncomeModel.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
   }
 
   Map<String, dynamic> toJson() {
@@ -69,11 +114,6 @@ class AppUser {
       "license_category": licenseCategory,
       "license_issue_date": licenseIssueDate,
       "license_expiry_date": licenseExpiryDate,
-
-      // Subscription fields
-      "isEntitled": isSubscribed,
-      "productId": productId,
-      "purchaseToken": purchaseToken,
     };
   }
 }

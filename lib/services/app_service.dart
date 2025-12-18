@@ -83,6 +83,7 @@ class AppService extends GetxService {
         }
       }
     } catch (e) {
+      debugPrint("getUserProfile error: ${e.runtimeType}");
       Utils.showSnackBar(message: "Failed to load profile", success: false);
     }
   }

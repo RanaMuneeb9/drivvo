@@ -1,14 +1,40 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivvo/model/app_user.dart';
+import 'package:drivvo/model/timeline_entry.dart';
+import 'package:drivvo/model/vehicle/vehicle_model.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
+import 'package:drivvo/utils/database_tables.dart';
+import 'package:drivvo/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
   late AppService appService;
+  final FirebaseFirestore db = FirebaseFirestore.instance;
+
+  final now = DateTime.now();
+  var appUser = AppUser();
+
+  // Loading state
+  var isLoading = true.obs;
+
+  // Timeline entries grouped by month
+  var groupedEntries = <String, List<TimelineEntry>>{}.obs;
+
+  // All timeline entries sorted by date
+  var allEntries = <TimelineEntry>[].obs;
+
+  // Current vehicle
+  var currentVehicle = VehicleModel().obs;
 
   @override
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+    loadTimelineData();
+    loadCurrentVehicle();
   }
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
@@ -17,5 +43,399 @@ class HomeController extends GetxController {
 
   void toggleFab() {
     isFabExpanded.value = !isFabExpanded.value;
+  }
+
+  // Refresh timeline data
+  Future<void> refreshData() async {
+    await loadTimelineData();
+  }
+
+  // Load current vehicle
+  Future<void> loadCurrentVehicle() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+
+      final snapshot = await db
+          .collection(DatabaseTables.USER_PROFILE)
+          .doc(user.uid)
+          .collection(DatabaseTables.VEHICLES)
+          .where('active_vehicle', isEqualTo: true)
+          .limit(1)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        currentVehicle.value = VehicleModel.fromJson(
+          snapshot.docs.first.data(),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error loading current vehicle: $e");
+    }
+  }
+
+  Future<void> loadTimelineData() async {
+    try {
+      isLoading.value = true;
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        isLoading.value = false;
+        return;
+      }
+
+      var docSnapshot = await db
+          .collection(DatabaseTables.USER_PROFILE)
+          .doc(user.uid)
+          .get();
+      if (docSnapshot.exists) {
+        Map<String, dynamic>? data = docSnapshot.data();
+        if (data != null) {
+          appUser = AppUser.fromJson(data);
+        }
+      }
+
+      final List<TimelineEntry> entries = [];
+
+      for (var data in appUser.refuelingList) {
+        entries.add(
+          TimelineEntry(
+            type: TimelineEntryType.refueling,
+            title: 'refueling'.tr,
+            // odometer: '${data.odometer} km',
+            date: data.date,
+            odometer: data.odometer,
+            amount: 'Rs${data.totalCost}',
+            isIncome: false,
+            icon: Icons.local_gas_station,
+            iconBgColor: const Color(0xFFFB9601),
+          ),
+        );
+      }
+
+      for (var data in appUser.expenseList) {
+        entries.add(
+          TimelineEntry(
+            type: TimelineEntryType.expense,
+            title: 'expense'.tr,
+            odometer: '${data.odometer} km',
+            // date: data.createdAt,
+            date: data.date,
+            amount: 'Rs${data.totalAmount}',
+            isIncome: false,
+            icon: Icons.receipt_long,
+            iconBgColor: Colors.red,
+          ),
+        );
+      }
+
+      for (var data in appUser.serviceList) {
+        entries.add(
+          TimelineEntry(
+            type: TimelineEntryType.service,
+            title: 'service'.tr,
+            // odometer: '${data.odometer} km',
+            date: data.date,
+            odometer: data.odometer,
+            amount: 'Rs${data.totalAmount}',
+            isIncome: false,
+            icon: Icons.build,
+            iconBgColor: Colors.brown,
+          ),
+        );
+      }
+
+      for (var data in appUser.incomeList) {
+        entries.add(
+          TimelineEntry(
+            type: TimelineEntryType.income,
+            title: data.incomeType.isNotEmpty ? data.incomeType : 'income'.tr,
+            // odometer: '${data.odometer} km',
+            date: data.date,
+            odometer: data.odometer,
+            amount: 'Rs${data.value}',
+            isIncome: true,
+            icon: Icons.attach_money,
+            iconBgColor: Colors.green,
+          ),
+        );
+      }
+
+      // // Load Route entries
+      // final routeSnapshot = await db
+      //     .collection(DatabaseTables.USER_PROFILE)
+      //     .doc(user.uid)
+      //     .collection(DatabaseTables.ROUTES)
+      //     .get();
+
+      // for (var doc in routeSnapshot.docs) {
+      //   final data = RouteModel.fromJson(doc.data());
+      //   //Parse date from startDate string
+      //   DateTime routeDate = DateTime.now();
+      //   try {
+      //     final parts = data.startDate.split('/');
+      //     if (parts.length == 3) {
+      //       routeDate = DateTime(
+      //         int.parse(parts[2]),
+      //         int.parse(parts[1]),
+      //         int.parse(parts[0]),
+      //       );
+      //     }
+      //   } catch (e) {
+      //     debugPrint("Error parsing route date: $e");
+      //   }
+
+      //   entries.add(
+      //     TimelineEntry(
+      //       type: TimelineEntryType.route,
+      //       title: data.origin.isNotEmpty ? data.origin : 'route'.tr,
+      //       odometer: '${data.finalOdometer} km',
+      //       // date: routeDate,
+      //       date: data.startDate,
+      //       amount: 'Rs${data.total.toInt()}',
+      //       isIncome: true,
+      //       icon: Icons.route,
+      //       iconBgColor: const Color(0xFF5E7E8D),
+      //     ),
+      //   );
+      // }
+
+      // Sort entries by date (newest first)
+      entries.sort((a, b) => b.date.compareTo(a.date));
+      allEntries.value = entries;
+
+      // Group entries by month-year
+      final Map<String, List<TimelineEntry>> grouped = {};
+      for (var entry in entries) {
+        final key = entry.monthYearKey;
+        if (!grouped.containsKey(key)) {
+          grouped[key] = [];
+        }
+        grouped[key]!.add(entry);
+      }
+      groupedEntries.value = grouped;
+
+      isLoading.value = false;
+    } catch (e) {
+      debugPrint("Error loading timeline data: $e");
+      isLoading.value = false;
+      Utils.showSnackBar(
+        message: "Failed to load timeline data",
+        success: false,
+      );
+    }
+  }
+
+  //! Load all timeline data from Firebase
+  // Future<void> loadTimelineData() async {
+  //   try {
+  //     isLoading.value = true;
+  //     final user = FirebaseAuth.instance.currentUser;
+  //     if (user == null) {
+  //       isLoading.value = false;
+  //       return;
+  //     }
+
+  //     final List<TimelineEntry> entries = [];
+
+  //     final formater = DateFormat("dd MMM yyyy");
+
+  //     // Load Refueling entries
+  //     final refuelingSnapshot = await db
+  //         .collection(DatabaseTables.USER_PROFILE)
+  //         .doc(user.uid)
+  //         .collection(DatabaseTables.REFUELING)
+  //         .get();
+
+  //     for (var doc in refuelingSnapshot.docs) {
+  //       final data = RefuelingModel.fromJson(doc.data());
+  //       entries.add(
+  //         TimelineEntry(
+  //           type: TimelineEntryType.refueling,
+  //           title: 'refueling'.tr,
+  //           odometer: '${data.odometer} km',
+  //           // date: data.createdAt,
+  //           date: formater.parse(data.date),
+  //           amount: 'Rs${data.totalCost}',
+  //           isIncome: false,
+  //           icon: Icons.local_gas_station,
+  //           iconBgColor: const Color(0xFFFB9601),
+  //         ),
+  //       );
+  //     }
+
+  //     // Load Expense entries
+  //     final expenseSnapshot = await db
+  //         .collection(DatabaseTables.USER_PROFILE)
+  //         .doc(user.uid)
+  //         .collection(DatabaseTables.EXPENSES)
+  //         .get();
+
+  //     for (var doc in expenseSnapshot.docs) {
+  //       final data = ExpenseModel.fromJson(doc.data());
+  //       entries.add(
+  //         TimelineEntry(
+  //           type: TimelineEntryType.expense,
+  //           title: 'expense'.tr,
+  //           odometer: '${data.odometer} km',
+  //       // date: data.createdAt,
+  //           date: formater.parse(data.date),
+  //           amount: 'Rs${data.totalAmount}',
+  //           isIncome: false,
+  //           icon: Icons.receipt_long,
+  //           iconBgColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+
+  //     // Load Service entries
+  //     final serviceSnapshot = await db
+  //         .collection(DatabaseTables.USER_PROFILE)
+  //         .doc(user.uid)
+  //         .collection(DatabaseTables.SERVICES)
+  //         .get();
+
+  //     for (var doc in serviceSnapshot.docs) {
+  //       final data = ServiceModel.fromJson(doc.data());
+  //       entries.add(
+  //         TimelineEntry(
+  //           type: TimelineEntryType.service,
+  //           title: 'service'.tr,
+  //           odometer: '${data.odometer} km',
+  //    // date: data.createdAt,
+  //           date: formater.parse(data.date),
+  //           amount: 'Rs${data.totalAmount}',
+  //           isIncome: false,
+  //           icon: Icons.build,
+  //           iconBgColor: Colors.brown,
+  //         ),
+  //       );
+  //     }
+
+  //     // Load Income entries
+  //     final incomeSnapshot = await db
+  //         .collection(DatabaseTables.USER_PROFILE)
+  //         .doc(user.uid)
+  //         .collection(DatabaseTables.INCOMES)
+  //         .get();
+
+  //     for (var doc in incomeSnapshot.docs) {
+  //       final data = IncomeModel.fromJson(doc.data());
+  //       entries.add(
+  //         TimelineEntry(
+  //           type: TimelineEntryType.income,
+  //           title: data.incomeType.isNotEmpty ? data.incomeType : 'income'.tr,
+  //           odometer: '${data.odometer} km',
+  //          // date: data.createdAt,
+  //           date: formater.parse(data.date),
+  //           amount: 'Rs${data.value}',
+  //           isIncome: true,
+  //           icon: Icons.attach_money,
+  //           iconBgColor: Colors.green,
+  //         ),
+  //       );
+  //     }
+
+  //     // Load Route entries
+  //     final routeSnapshot = await db
+  //         .collection(DatabaseTables.USER_PROFILE)
+  //         .doc(user.uid)
+  //         .collection(DatabaseTables.ROUTES)
+  //         .get();
+
+  //     for (var doc in routeSnapshot.docs) {
+  //       final data = RouteModel.fromJson(doc.data());
+  //       // Parse date from startDate string
+  //       DateTime routeDate = DateTime.now();
+  //       try {
+  //         final parts = data.startDate.split('/');
+  //         if (parts.length == 3) {
+  //           routeDate = DateTime(
+  //             int.parse(parts[2]),
+  //             int.parse(parts[1]),
+  //             int.parse(parts[0]),
+  //           );
+  //         }
+  //       } catch (e) {
+  //         debugPrint("Error parsing route date: $e");
+  //       }
+
+  //       entries.add(
+  //         TimelineEntry(
+  //           type: TimelineEntryType.route,
+  //           title: data.origin.isNotEmpty ? data.origin : 'route'.tr,
+  //           odometer: '${data.finalOdometer.toInt()} km',
+  //           date: routeDate,
+  //           amount: 'Rs${data.total.toInt()}',
+  //           isIncome: true,
+  //           icon: Icons.route,
+  //           iconBgColor: const Color(0xFF5E7E8D),
+  //         ),
+  //       );
+  //     }
+
+  //     // Sort entries by date (newest first)
+  //     entries.sort((a, b) => b.date.compareTo(a.date));
+  //     allEntries.value = entries;
+
+  //     // Group entries by month-year
+  //     final Map<String, List<TimelineEntry>> grouped = {};
+  //     for (var entry in entries) {
+  //       final key = entry.monthYearKey;
+  //       if (!grouped.containsKey(key)) {
+  //         grouped[key] = [];
+  //       }
+  //       grouped[key]!.add(entry);
+  //     }
+  //     groupedEntries.value = grouped;
+
+  //     isLoading.value = false;
+  //   } catch (e) {
+  //     debugPrint("Error loading timeline data: $e");
+  //     isLoading.value = false;
+  //     Utils.showSnackBar(
+  //       message: "Failed to load timeline data",
+  //       success: false,
+  //     );
+  //   }
+  // }
+
+  // Get the user's account creation date
+  DateTime get accountCreatedDate {
+    final user = FirebaseAuth.instance.currentUser;
+    return user?.metadata.creationTime ?? DateTime.now();
+  }
+
+  DateTime getStartDate() {
+    if (allEntries.isNotEmpty) {
+      return allEntries.last.date;
+    } else {
+      return now;
+    }
+  }
+
+  DateTime getEndDate() {
+    if (allEntries.isNotEmpty) {
+      return allEntries.first.date;
+    } else {
+      return now;
+    }
+  }
+
+  double getFirstOdometer() {
+    if (allEntries.isNotEmpty) {
+      final odo = double.parse(allEntries.last.odometer);
+      return odo;
+    } else {
+      return 0.0;
+    }
+  }
+
+  double getlastOdometer() {
+    if (allEntries.isNotEmpty) {
+      final odo = double.parse(allEntries.first.odometer);
+      return odo;
+    } else {
+      return 0.0;
+    }
   }
 }

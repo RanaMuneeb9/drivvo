@@ -418,5 +418,16 @@
   "refueling_notifications": "Refuelling notifications",
   "tire_pressure_notifications": "Tire pressure notifications",
   "gas_station_notifications": "Gas station notifications",
-  "vibrate_when_notifying": "Vibrate when notifying"
+  "vibrate_when_notifying": "Vibrate when notifying",
+  "period": "Period",
+  "balance": "Balance",
+  "General": "General",
+  "Refueling": "Refueling",
+  "Expense": "Expense",
+  "Income": "Income",
+  "Service": "Service",
+  "select_vehicle": "Select Vehicle",
+  "welcome_to": "Welcome to",
+  "started_monitoring_your_vehicle": "Started monitoring your vehicle\nexpenses with Drivvo.",
+   "odometer_greater_than_last": "Odometer should be greater than last odometer"
 }

@@ -189,13 +189,24 @@ class CreateRouteView extends GetView<CreateRouteController> {
                 inputAction: TextInputAction.next,
                 type: TextInputType.number,
                 onTap: () {},
+                onChange: (v) {
+                  if (v != null || v!.isNotEmpty) {
+                    controller.initalOdometer.value = int.parse(v);
+                  }
+                },
                 onSaved: (value) {
-                  controller.model.value.initialOdometer =
-                      double.tryParse(value ?? '') ?? 0.0;
+                  controller.model.value.initialOdometer = value!;
                 },
                 onValidate: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'initial_odometer_required'.tr;
+                  if (value != null) {
+                    if (value.isNotEmpty) {
+                      final c = int.parse(value);
+                      if (c <= controller.lastOdometer.value) {
+                        return "odometer_greater_than_last".tr;
+                      }
+                    } else if (value.isEmpty) {
+                      return 'initial_odometer_required'.tr;
+                    }
                   }
                   return null;
                 },
@@ -204,13 +215,15 @@ class CreateRouteView extends GetView<CreateRouteController> {
                 alignment: Alignment.centerRight,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    '${'last_odometer'.tr}: 2200 km',
-                    style: Utils.getTextStyle(
-                      baseSize: 12,
-                      isBold: false,
-                      color: Colors.grey[600]!,
-                      isUrdu: controller.isUrdu,
+                  child: Obx(
+                    () => Text(
+                      '${'last_odometer'.tr}: ${controller.lastOdometer.value} km',
+                      style: Utils.getTextStyle(
+                        baseSize: 12,
+                        isBold: false,
+                        color: Colors.grey[600]!,
+                        isUrdu: controller.isUrdu,
+                      ),
                     ),
                   ),
                 ),
@@ -230,10 +243,7 @@ class CreateRouteView extends GetView<CreateRouteController> {
                 onSaved: (value) {
                   controller.model.value.destination = value!;
                 },
-                onValidate: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'destination_required'.tr;
-                  }
+                onValidate: (v) {
                   return null;
                 },
               ),
@@ -250,31 +260,40 @@ class CreateRouteView extends GetView<CreateRouteController> {
                 type: TextInputType.number,
                 onTap: () {},
                 onSaved: (value) {
-                  controller.model.value.finalOdometer =
-                      double.tryParse(value ?? '') ?? 0.0;
+                  controller.model.value.finalOdometer = value!;
                 },
                 onValidate: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'final_odometer_required'.tr;
+                  if (value != null) {
+                    if (value.isNotEmpty) {
+                      final c = int.parse(value);
+                      if (c <= controller.initalOdometer.value) {
+                        return "Final odometer should be greater than initial odometer"
+                            .tr;
+                      }
+                    } else if (value.isEmpty) {
+                      return 'final_odometer_required'.tr;
+                    }
                   }
                   return null;
                 },
               ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    '${'last_odometer'.tr}: 2200 km',
-                    style: Utils.getTextStyle(
-                      baseSize: 12,
-                      isBold: false,
-                      color: Colors.grey[600]!,
-                      isUrdu: controller.isUrdu,
-                    ),
-                  ),
-                ),
-              ),
+              // Align(
+              //   alignment: Alignment.centerRight,
+              //   child: Padding(
+              //     padding: const EdgeInsets.only(top: 8),
+              //     child: Obx(
+              //       () => Text(
+              //         '${'last_odometer'.tr}: ${controller.lastOdometer.value} km',
+              //         style: Utils.getTextStyle(
+              //           baseSize: 12,
+              //           isBold: false,
+              //           color: Colors.grey[600]!,
+              //           isUrdu: controller.isUrdu,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
               const SizedBox(height: 16),
               Row(
                 children: [

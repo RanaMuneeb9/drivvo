@@ -1,14 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class RouteModel {
   late String userId;
   late String vehicleId;
   late String origin;
-  late String startDate;
+  late DateTime startDate;
   late String startTime;
-  late String endDate;
+  late DateTime endDate;
   late String endTime;
-  late double initialOdometer;
+  late String initialOdometer;
   late String destination;
-  late double finalOdometer;
+  late String finalOdometer;
   late double valuePerKm;
   late double total;
   late String driverName;
@@ -20,13 +22,13 @@ class RouteModel {
     userId = "";
     vehicleId = "";
     origin = "";
-    startDate = "";
+    startDate = DateTime.now();
     startTime = "";
-    endDate = "";
+    endDate = DateTime.now();
     endTime = "";
-    initialOdometer = 0.0;
+    initialOdometer = "";
     destination = "";
-    finalOdometer = 0.0;
+    finalOdometer = "";
     valuePerKm = 0.0;
     total = 0.0;
     driverName = "";
@@ -39,13 +41,13 @@ class RouteModel {
     userId = json["user_id"] ?? "";
     vehicleId = json["vehicle_id"] ?? "";
     origin = json["origin"] ?? "";
-    startDate = json["start_date"] ?? "";
+    startDate = (json["start_date"] as Timestamp?)?.toDate() ?? DateTime.now();
     startTime = json["start_time"] ?? "";
-    endDate = json["end_date"] ?? "";
+    endDate = (json["end_date"] as Timestamp?)?.toDate() ?? DateTime.now();
     endTime = json["end_time"] ?? "";
-    initialOdometer = (json["initial_odometer"] ?? 0).toDouble();
+    initialOdometer = json["initial_odometer"] ?? "";
     destination = json["destination"] ?? "";
-    finalOdometer = (json["final_odometer"] ?? 0).toDouble();
+    finalOdometer = json["final_odometer"] ?? "";
     valuePerKm = (json["value_per_km"] ?? 0).toDouble();
     total = (json["total"] ?? 0).toDouble();
     driverName = json["driver_name"] ?? "";

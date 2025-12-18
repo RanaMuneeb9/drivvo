@@ -54,6 +54,7 @@ class SignupController extends GetxController {
           map["first_name"] = firstNameController.text.trim();
           map["last_name"] = lastNameController.text.trim();
           map["sign_in_method"] = "email";
+          map["last_odometer"] = "0";
 
           await db
               .collection(DatabaseTables.USER_PROFILE)

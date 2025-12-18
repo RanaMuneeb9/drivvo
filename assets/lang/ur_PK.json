@@ -415,5 +415,16 @@
   "refueling_notifications": "ایندھن بھرنے کی نوٹیفیکیشن",
   "tire_pressure_notifications": "ٹائر پریشر کی نوٹیفیکیشن",
   "gas_station_notifications": "پٹرول پمپ کی نوٹیفیکیشن",
-  "vibrate_when_notifying": "مطلع کرتے وقت وائبریٹ کریں"
+  "vibrate_when_notifying": "مطلع کرتے وقت وائبریٹ کریں",
+  "period": "مدت",
+  "balance": "بیلنس",
+  "General": "عمومی",
+  "Refueling": "ایندھن بھروانا",
+  "Expense": "خرچ",
+  "Income": "آمدنی",
+  "Service": "سروس",
+  "select_vehicle": "گاڑی منتخب کریں",
+  "welcome_to": "خوش آمدید",
+  "started_monitoring_your_vehicle": "Drivvo کے ساتھ اپنی گاڑی کے\nاخراجات کی نگرانی شروع کی۔",
+    "odometer_greater_than_last": "اوڈومیٹر پچھلی ریڈنگ سے زیادہ ہونا چاہیے"
 }

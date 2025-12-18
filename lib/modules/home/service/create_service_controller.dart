@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/expense/expense_type_model.dart';
-import 'package:drivvo/model/refueling/refueling_model.dart';
+import 'package:drivvo/model/service/service_model.dart';
+import 'package:drivvo/modules/home/home_controller.dart';
+import 'package:drivvo/modules/reports/reports_controller.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
@@ -18,9 +20,10 @@ class CreateServiceController extends GetxController {
   var serviceTyesList = <ExpenseTypeModel>[].obs;
 
   var totalAmount = 0.0.obs;
+  var lastOdometer = 0.obs;
 
   var filePath = "".obs;
-  var model = RefuelingModel().obs;
+  var model = ServiceModel().obs;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
@@ -35,7 +38,9 @@ class CreateServiceController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+    getProfile();
     final now = DateTime.now();
+    model.value.date = now;
     dateController.text = Utils.formatDate(date: now);
     timeController.text = DateFormat('hh:mm a').format(now);
 
@@ -54,6 +59,11 @@ class CreateServiceController extends GetxController {
     paymentMethodController.dispose();
     reasonController.dispose();
     super.onClose();
+  }
+
+  Future<void> getProfile() async {
+    await appService.getUserProfile();
+    lastOdometer.value = int.parse(appService.appUser.value.lastOdometer);
   }
 
   void onSelectFuelType(String? type) {
@@ -76,7 +86,7 @@ class CreateServiceController extends GetxController {
       final date = Utils.formatDate(date: picked);
 
       dateController.text = date;
-      model.value.date = date;
+      model.value.date = picked;
     }
   }
 
@@ -145,9 +155,9 @@ class CreateServiceController extends GetxController {
         "user_id": appService.appUser.value.id,
         "vehicle_id": "",
         "time": timeController.text.trim(),
-        "date": dateController.text.trim(),
+        "date": model.value.date,
         "odometer": model.value.odometer,
-        "total_amount": totalAmount.value,
+        "total_amount": totalAmount.value.toString(),
         "place": placeController.text.trim(),
         "driver_name": model.value.driverName,
         "payment_method": paymentMethodController.text.trim(),
@@ -155,6 +165,7 @@ class CreateServiceController extends GetxController {
         "file_path": filePath.value,
         "notes": model.value.notes,
         "expense_types": serviceTyesList.map((e) => e.toJson()).toList(),
+        "created_at": DateTime.now(),
       };
 
       try {
@@ -163,12 +174,29 @@ class CreateServiceController extends GetxController {
             .doc(appService.appUser.value.id)
             .collection(DatabaseTables.SERVICES)
             .doc()
-            .set(map)
-            .then((e) {
+            .set(map);
+
+        await FirebaseFirestore.instance
+            .collection(DatabaseTables.USER_PROFILE)
+            .doc(appService.appUser.value.id)
+            .set({
+              'service_list': FieldValue.arrayUnion([map]),
+            }, SetOptions(merge: true))
+            .then((e) async {
+              //!Update last Odometer
+              await FirebaseFirestore.instance
+                  .collection(DatabaseTables.USER_PROFILE)
+                  .doc(appService.appUser.value.id)
+                  .update({"last_odometer": model.value.odometer});
               if (Get.isDialogOpen == true) Get.back();
               Get.back();
 
               Utils.showSnackBar(message: "service_added".tr, success: true);
+              final home = Get.find<HomeController>();
+              home.loadTimelineData();
+
+              final report = Get.find<ReportsController>();
+              report.calculateAllReports();
             })
             .catchError((e) {
               if (Get.isDialogOpen == true) Get.back();

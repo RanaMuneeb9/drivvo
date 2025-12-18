@@ -1,39 +1,44 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class IncomeModel {
   late String userId;
   late String vehicleId;
   late String time;
-  late String date;
-  late double odometer;
+  late DateTime date;
+  late String odometer;
   late String incomeType;
-  late double value;
+  late String value;
   late String driverName;
   late String filePath;
   late String notes;
+  //late DateTime createdAt;
 
   IncomeModel() {
     userId = "";
     vehicleId = "";
     time = "";
-    date = "";
-    odometer = 0.0;
+    date = DateTime.now();
+    odometer = "";
     incomeType = "";
-    value = 0.0;
+    value = "";
     driverName = "";
     filePath = "";
     notes = "";
+    // createdAt = DateTime.now();
   }
 
   IncomeModel.fromJson(Map<String, dynamic> json) {
     userId = json["user_id"] ?? "";
     vehicleId = json["vehicle_id"] ?? "";
     time = json["time"] ?? "";
-    date = json["date"] ?? "";
-    odometer = (json["odometer"] ?? 0).toDouble();
+    date = (json["date"] as Timestamp?)?.toDate() ?? DateTime.now();
+    odometer = json["odometer"] ?? "";
     incomeType = json["income_type"] ?? "";
-    value = (json["value"] ?? 0).toDouble();
+    value = json["value"] ?? "";
     driverName = json["driver_name"] ?? "";
     filePath = json["file_path"] ?? "";
     notes = json["notes"] ?? "";
+    // createdAt = (json["created_at"] as Timestamp?)?.toDate() ?? DateTime.now();
   }
 
   Map<String, dynamic> toJson() {
@@ -50,5 +55,4 @@ class IncomeModel {
       "notes": notes,
     };
   }
-
 }

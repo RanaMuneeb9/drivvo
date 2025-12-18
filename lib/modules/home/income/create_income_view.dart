@@ -120,12 +120,18 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                 type: TextInputType.number,
                 onTap: () {},
                 onSaved: (value) {
-                  controller.model.value.odometer =
-                      double.tryParse(value ?? '') ?? 0.0;
+                  controller.model.value.odometer = value ?? '';
                 },
                 onValidate: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'odometer_required'.tr;
+                  if (value != null) {
+                    if (value.isNotEmpty) {
+                      final c = int.parse(value);
+                      if (c <= controller.lastOdometer.value) {
+                        return "odometer_greater_than_last".tr;
+                      }
+                    } else if (value.isEmpty) {
+                      return 'odometer_required'.tr;
+                    }
                   }
                   return null;
                 },
@@ -134,13 +140,15 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                 alignment: Alignment.centerRight,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    '${'last_odometer'.tr}: 2200 km',
-                    style: Utils.getTextStyle(
-                      baseSize: 12,
-                      isBold: false,
-                      color: Colors.grey[600]!,
-                      isUrdu: controller.isUrdu,
+                  child: Obx(
+                    () => Text(
+                      '${'last_odometer'.tr}: ${controller.lastOdometer.value} km',
+                      style: Utils.getTextStyle(
+                        baseSize: 12,
+                        isBold: false,
+                        color: Colors.grey[600]!,
+                        isUrdu: controller.isUrdu,
+                      ),
                     ),
                   ),
                 ),
@@ -188,8 +196,7 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                 type: TextInputType.number,
                 onTap: () {},
                 onSaved: (value) {
-                  controller.model.value.value =
-                      double.tryParse(value ?? '') ?? 0.0;
+                  controller.model.value.value = value ?? '';
                 },
                 onValidate: (value) {
                   if (value == null || value.isEmpty) {

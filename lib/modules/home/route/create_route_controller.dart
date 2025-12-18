@@ -16,7 +16,10 @@ class CreateRouteController extends GetxController {
   late AppService appService;
 
   var filePath = "".obs;
+  var lastOdometer = 0.obs;
   var model = RouteModel().obs;
+
+  var initalOdometer = 0.obs;
 
   final startDateController = TextEditingController();
   final endDateController = TextEditingController();
@@ -30,7 +33,10 @@ class CreateRouteController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+    getProfile();
     final now = DateTime.now();
+    model.value.startDate = now;
+    model.value.endDate = now.add(Duration(days: 1));
     startDateController.text = Utils.formatDate(date: now);
     startTimeController.text = DateFormat('hh:mm a').format(now);
     endDateController.text = Utils.formatDate(date: now);
@@ -47,6 +53,11 @@ class CreateRouteController extends GetxController {
     endTimeController.dispose();
     reasonController.dispose();
     super.onClose();
+  }
+
+  Future<void> getProfile() async {
+    await appService.getUserProfile();
+    lastOdometer.value = int.parse(appService.appUser.value.lastOdometer);
   }
 
   void onSelectReason(String? reason) {
@@ -70,10 +81,10 @@ class CreateRouteController extends GetxController {
 
       if (isStartDate) {
         startDateController.text = date;
-        model.value.startDate = date;
+        model.value.startDate = picked;
       } else {
         endDateController.text = date;
-        model.value.endDate = date;
+        model.value.endDate = picked;
       }
     }
   }
@@ -149,9 +160,9 @@ class CreateRouteController extends GetxController {
         "user_id": appService.appUser.value.id,
         "vehicle_id": "",
         "origin": model.value.origin,
-        "start_date": startDateController.text.trim(),
+        "start_date": model.value.startDate,
         "start_time": startTimeController.text.trim(),
-        "end_date": endDateController.text.trim(),
+        "end_date": model.value.endDate,
         "end_time": endTimeController.text.trim(),
         "initial_odometer": model.value.initialOdometer,
         "destination": model.value.destination,
@@ -170,11 +181,27 @@ class CreateRouteController extends GetxController {
             .doc(appService.appUser.value.id)
             .collection(DatabaseTables.ROUTES)
             .doc()
-            .set(map);
+            .set(map)
+            .then((e) async {
+              //!Update last Odometer
+              await FirebaseFirestore.instance
+                  .collection(DatabaseTables.USER_PROFILE)
+                  .doc(appService.appUser.value.id)
+                  .update({"last_odometer": model.value.finalOdometer});
 
-        if (Get.isDialogOpen == true) Get.back();
-        Get.back();
-        Utils.showSnackBar(message: "route_added".tr, success: true);
+              if (Get.isDialogOpen == true) Get.back();
+              Get.back();
+              Utils.showSnackBar(message: "route_added".tr, success: true);
+              // final home = Get.find<HomeController>();
+              // home.loadTimelineData();
+
+              // final report = Get.find<ReportsController>();
+              // report.calculateAllReports();
+            })
+            .catchError((e) {
+              if (Get.isDialogOpen == true) Get.back();
+              Utils.showSnackBar(message: "something_wrong".tr, success: false);
+            });
       } catch (e) {
         if (Get.isDialogOpen == true) Get.back();
         Utils.showSnackBar(message: "something_wrong".tr, success: false);
