@@ -16,7 +16,6 @@ class ServiceModel {
   late String paymentMethod;
   late String notes;
   late String driverName;
-  // late DateTime createdAt;
 
   ServiceModel() {
     userId = "";
@@ -34,7 +33,6 @@ class ServiceModel {
     paymentMethod = "";
     notes = "";
     driverName = "";
-    // createdAt = DateTime.now();
   }
 
   ServiceModel.fromJson(Map<String, dynamic> json) {
@@ -53,26 +51,5 @@ class ServiceModel {
     paymentMethod = json["payment_method"] ?? "";
     notes = json["notes"] ?? "";
     driverName = json["driver_name"] ?? "";
-    // createdAt = (json["created_at"] as Timestamp?)?.toDate() ?? DateTime.now();
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": userId,
-      "vehicle_id": vehicleId,
-      "time": time,
-      "date": Timestamp.fromDate(date),
-      "odometer": odometer,
-      "price": price,
-      "liter": liter,
-      "total_amount": totalAmount,
-      "fuel_type": fuelType,
-      "fuel_station": fuelStation,
-      "full_tank": fullTank,
-      "missed_previous": missedPrevious,
-      "payment_method": paymentMethod,
-      "notes": notes,
-      "driver_name": driverName,
-    };
   }
 }

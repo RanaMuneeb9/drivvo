@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/app_user.dart';
+import 'package:drivvo/model/date_range_model.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
@@ -20,6 +21,15 @@ class AppService extends GetxService {
 
   bool onBoarding = false;
   bool importData = false;
+  var currentVehicleId = "".obs;
+  var currentVehicle = "".obs;
+
+  var refuelingFilter = true.obs;
+  var expenseFilter = true.obs;
+  var incomeFilter = true.obs;
+  var serviceFilter = true.obs;
+  var routeFilter = true.obs;
+  var selectedDateRange = Rxn<DateRangeModel>();
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
   String _languageCode = "";
@@ -38,8 +48,17 @@ class AppService extends GetxService {
   Future<void> onInit() async {
     super.onInit();
 
+    currentVehicleId.value =
+        _box.read<String>(Constants.CURRENT_VEHICLE_ID) ?? "";
+    currentVehicle.value = _box.read<String>(Constants.CURRENT_VEHICLE) ?? "";
     onBoarding = _box.read<bool>(Constants.ONBOARDING) ?? false;
     importData = _box.read<bool>(Constants.IMPORT_DATA) ?? false;
+
+    refuelingFilter.value = _box.read<bool>(Constants.REFUELING_FILTER) ?? true;
+    expenseFilter.value = _box.read<bool>(Constants.EXPENSE_FILTER) ?? true;
+    incomeFilter.value = _box.read<bool>(Constants.INCOME_FILTER) ?? true;
+    serviceFilter.value = _box.read<bool>(Constants.SERVICE_FILTER) ?? true;
+    routeFilter.value = _box.read<bool>(Constants.ROUTE_FILTER) ?? true;
 
     //for the needs in setting
     savedLanguage = _box.read<String>(Constants.LANGUAGE_CODE) ?? 'en';
@@ -93,6 +112,16 @@ class AppService extends GetxService {
     await _box.write(Constants.USER_PROFILE, user.toJson());
   }
 
+  Future<void> setCurrentVehicleId(String id) async {
+    currentVehicleId.value = id;
+    await _box.write(Constants.CURRENT_VEHICLE_ID, id);
+  }
+
+  Future<void> setCurrentVehicle(String name) async {
+    currentVehicle.value = name;
+    await _box.write(Constants.CURRENT_VEHICLE, name);
+  }
+
   Future<void> setOnboarding({required bool value}) async {
     onBoarding = value;
     await _box.write(Constants.ONBOARDING, value);
@@ -101,6 +130,31 @@ class AppService extends GetxService {
   Future<void> setImportData({required bool value}) async {
     importData = value;
     await _box.write(Constants.IMPORT_DATA, value);
+  }
+
+  Future<void> setRefuelingFilter({required bool value}) async {
+    refuelingFilter.value = value;
+    await _box.write(Constants.REFUELING_FILTER, value);
+  }
+
+  Future<void> setExpenseFilter({required bool value}) async {
+    expenseFilter.value = value;
+    await _box.write(Constants.EXPENSE_FILTER, value);
+  }
+
+  Future<void> setIncomeFilter({required bool value}) async {
+    incomeFilter.value = value;
+    await _box.write(Constants.INCOME_FILTER, value);
+  }
+
+  Future<void> setServiceFilter({required bool value}) async {
+    serviceFilter.value = value;
+    await _box.write(Constants.SERVICE_FILTER, value);
+  }
+
+  Future<void> setRouteFilter({required bool value}) async {
+    routeFilter.value = value;
+    await _box.write(Constants.ROUTE_FILTER, value);
   }
 
   Future<void> logOut() async {

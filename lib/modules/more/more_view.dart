@@ -88,7 +88,8 @@ class MoreView extends GetView<MoreController> {
                   subtitle: controller.registeredVehicles.value > 1
                       ? '${controller.registeredVehicles.value} ${"vehicles_registered".tr}'
                       : '${controller.registeredVehicles.value} ${"vehicle_registered".tr}',
-                  onTap: () => Get.toNamed(AppRoutes.VEHICLES_VIEW),
+                  onTap: () =>
+                      Get.toNamed(AppRoutes.VEHICLES_VIEW, arguments: false),
                 ),
               ),
               _buildDivider(),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/route/route_model.dart';
+import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
@@ -26,6 +27,8 @@ class CreateRouteController extends GetxController {
   final startTimeController = TextEditingController();
   final endTimeController = TextEditingController();
   final reasonController = TextEditingController();
+  final originController = TextEditingController();
+  final destinationController = TextEditingController();
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
@@ -39,10 +42,12 @@ class CreateRouteController extends GetxController {
     model.value.endDate = now.add(Duration(days: 1));
     startDateController.text = Utils.formatDate(date: now);
     startTimeController.text = DateFormat('hh:mm a').format(now);
-    endDateController.text = Utils.formatDate(date: now);
+    endDateController.text = Utils.formatDate(date: now.add(Duration(days: 1)));
     endTimeController.text = DateFormat('hh:mm a').format(now);
 
     reasonController.text = "select_reason".tr;
+    originController.text = "select_origin".tr;
+    destinationController.text = "select_destination".tr;
   }
 
   @override
@@ -52,12 +57,15 @@ class CreateRouteController extends GetxController {
     endDateController.dispose();
     endTimeController.dispose();
     reasonController.dispose();
+    originController.dispose();
+    destinationController.dispose();
     super.onClose();
   }
 
   Future<void> getProfile() async {
     await appService.getUserProfile();
-    lastOdometer.value = int.parse(appService.appUser.value.lastOdometer);
+    lastOdometer.value =
+        int.tryParse(appService.appUser.value.lastOdometer) ?? 0;
   }
 
   void onSelectReason(String? reason) {
@@ -158,14 +166,14 @@ class CreateRouteController extends GetxController {
 
       final map = {
         "user_id": appService.appUser.value.id,
-        "vehicle_id": "",
-        "origin": model.value.origin,
+        "vehicle_id": appService.currentVehicleId.value,
+        "origin": originController.text.trim(),
         "start_date": model.value.startDate,
         "start_time": startTimeController.text.trim(),
         "end_date": model.value.endDate,
         "end_time": endTimeController.text.trim(),
         "initial_odometer": model.value.initialOdometer,
-        "destination": model.value.destination,
+        "destination": destinationController.text.trim(),
         "final_odometer": model.value.finalOdometer,
         "value_per_km": model.value.valuePerKm,
         "total": model.value.total,
@@ -179,24 +187,23 @@ class CreateRouteController extends GetxController {
         await FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id)
-            .collection(DatabaseTables.ROUTES)
-            .doc()
-            .set(map)
+            .set({
+              'route_list': FieldValue.arrayUnion([map]),
+            }, SetOptions(merge: true))
             .then((e) async {
               //!Update last Odometer
               await FirebaseFirestore.instance
                   .collection(DatabaseTables.USER_PROFILE)
                   .doc(appService.appUser.value.id)
                   .update({"last_odometer": model.value.finalOdometer});
-
               if (Get.isDialogOpen == true) Get.back();
               Get.back();
-              Utils.showSnackBar(message: "route_added".tr, success: true);
-              // final home = Get.find<HomeController>();
-              // home.loadTimelineData();
 
-              // final report = Get.find<ReportsController>();
-              // report.calculateAllReports();
+              Utils.showSnackBar(message: "route_added".tr, success: true);
+              if (Get.isRegistered<HomeController>()) {
+                Get.find<HomeController>().loadTimelineData(forceFetch: true);
+              }
+              ;
             })
             .catchError((e) {
               if (Get.isDialogOpen == true) Get.back();

@@ -1,23 +1,28 @@
 import 'package:drivvo/model/date_range_model.dart';
+import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
+import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:get/get.dart';
 
 class FilterController extends GetxController {
-  // Category switch states
-  var refueling = true.obs;
-  var expenses = true.obs;
-  var incomes = true.obs;
-  var services = true.obs;
-  var pouters = true.obs;
+  late AppService appService;
+
   var checklist = true.obs;
 
   @override
   void onInit() {
+    appService = Get.find<AppService>();
     super.onInit();
-    if (dateRangeList.isNotEmpty) {
-      onSelectDateRange(dateRangeList.first);
+    if (appService.selectedDateRange.value != null) {
+      selectedDateIndex.value = appService.selectedDateRange.value!.id;
+      customDate.value = appService.selectedDateRange.value!.dateString;
+    } else if (dateRangeList.isNotEmpty) {
+      final model = dateRangeList.first;
+      selectedDateIndex.value = model.id;
+      customDate.value = model.dateString;
+      appService.selectedDateRange.value = model;
     }
   }
 
@@ -40,17 +45,15 @@ class FilterController extends GetxController {
     ],
   );
 
-  void clearFilters() {
-    refueling.value = false;
-    expenses.value = false;
-    incomes.value = false;
-    services.value = false;
-    pouters.value = false;
-    checklist.value = false;
-  }
-
   void toggleMoreOptions() {
     moreOptionsExpanded.value = !moreOptionsExpanded.value;
+  }
+
+  void getBackToMain() {
+    if (Get.isRegistered<HomeController>()) {
+      Get.find<HomeController>().loadTimelineData(forceFetch: true);
+    }
+    Get.back();
   }
 
   void onSelectDateRange(DateRangeModel model) {
@@ -74,12 +77,22 @@ class FilterController extends GetxController {
           selectedDateIndex.value = model.id;
           customDate.value =
               "${Utils.formatDate(date: fromDate)} ${"to".tr} ${Utils.formatDate(date: toDate)}";
+          appService.selectedDateRange.value = model;
+          if (Get.isRegistered<HomeController>()) {
+            Get.find<HomeController>().loadTimelineData(forceFetch: true);
+          }
         }
       });
     } else {
       customDate.value = model.dateString;
       // "${Utils.formatDate(date: model.startDate)} ${"to".tr} ${Utils.formatDate(date: model.endDate)}";
       selectedDateIndex.value = model.id;
+      appService.selectedDateRange.value = model;
+      Future.delayed(Duration.zero, () {
+        if (Get.isRegistered<HomeController>()) {
+          Get.find<HomeController>().loadTimelineData(forceFetch: true);
+        }
+      });
     }
   }
 }

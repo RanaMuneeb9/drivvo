@@ -97,12 +97,13 @@ class ReportsController extends GetxController {
       arguments: {"startDate": startDate.value, "endDate": endDate.value},
     );
     if (result != null) {
-      DateTime sd = result["startDate"];
-      DateTime ed = result["endDate"];
-
-      startDate.value = DateTime(sd.year, sd.month, sd.day);
-      endDate.value = DateTime(ed.year, ed.month, ed.day);
-      calculateAllReports();
+      final sd = result["startDate"] as DateTime?;
+      final ed = result["endDate"] as DateTime?;
+      if (sd != null && ed != null) {
+        startDate.value = DateTime(sd.year, sd.month, sd.day);
+        endDate.value = DateTime(ed.year, ed.month, ed.day);
+        calculateAllReports();
+      }
     }
   }
 

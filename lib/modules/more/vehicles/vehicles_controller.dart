@@ -16,9 +16,12 @@ class VehiclesController extends GetxController {
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
+  var isFromHome = false.obs;
+
   @override
   void onInit() {
     appService = Get.find<AppService>();
+    isFromHome.value = Get.arguments is bool ? Get.arguments as bool : false;
     super.onInit();
 
     searchInputController.addListener(() {
@@ -26,6 +29,12 @@ class VehiclesController extends GetxController {
     });
 
     getVehicleList();
+  }
+
+  void getBackToHome({required VehicleModel vehicle}) {
+    appService.setCurrentVehicle(vehicle.name);
+    appService.setCurrentVehicleId(vehicle.id);
+    Get.back();
   }
 
   Future<void> getVehicleList() async {

@@ -123,16 +123,17 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                   controller.model.value.odometer = value ?? '';
                 },
                 onValidate: (value) {
-                  if (value != null) {
-                    if (value.isNotEmpty) {
-                      final c = int.parse(value);
-                      if (c <= controller.lastOdometer.value) {
-                        return "odometer_greater_than_last".tr;
-                      }
-                    } else if (value.isEmpty) {
-                      return 'odometer_required'.tr;
-                    }
+                  if (value == null || value.isEmpty) {
+                    return 'odometer_required'.tr;
                   }
+                  final parsedValue = int.tryParse(value);
+                  if (parsedValue == null) {
+                    return 'invalid_odometer'.tr;
+                  }
+                  if (parsedValue <= controller.lastOdometer.value) {
+                    return "odometer_greater_than_last".tr;
+                  }
+
                   return null;
                 },
               ),
@@ -202,6 +203,7 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                   if (value == null || value.isEmpty) {
                     return 'income_required'.tr;
                   }
+
                   return null;
                 },
               ),

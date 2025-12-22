@@ -11,7 +11,6 @@ class IncomeModel {
   late String driverName;
   late String filePath;
   late String notes;
-  //late DateTime createdAt;
 
   IncomeModel() {
     userId = "";
@@ -24,7 +23,6 @@ class IncomeModel {
     driverName = "";
     filePath = "";
     notes = "";
-    // createdAt = DateTime.now();
   }
 
   IncomeModel.fromJson(Map<String, dynamic> json) {
@@ -38,21 +36,5 @@ class IncomeModel {
     driverName = json["driver_name"] ?? "";
     filePath = json["file_path"] ?? "";
     notes = json["notes"] ?? "";
-    // createdAt = (json["created_at"] as Timestamp?)?.toDate() ?? DateTime.now();
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "user_id": userId,
-      "vehicle_id": vehicleId,
-      "time": time,
-      "date": date,
-      "odometer": odometer,
-      "income_type": incomeType,
-      "value": value,
-      "driver_name": driverName,
-      "file_path": filePath,
-      "notes": notes,
-    };
   }
 }

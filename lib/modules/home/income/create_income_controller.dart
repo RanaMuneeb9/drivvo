@@ -50,7 +50,8 @@ class CreateIncomeController extends GetxController {
 
   Future<void> getProfile() async {
     await appService.getUserProfile();
-    lastOdometer.value = int.parse(appService.appUser.value.lastOdometer);
+    lastOdometer.value =
+        int.tryParse(appService.appUser.value.lastOdometer) ?? 0;
   }
 
   void onSelectIncomeType(String? type) {
@@ -141,7 +142,7 @@ class CreateIncomeController extends GetxController {
       Utils.showProgressDialog(context);
       final map = {
         "user_id": appService.appUser.value.id,
-        "vehicle_id": "",
+        "vehicle_id": appService.currentVehicleId.value,
         "time": timeController.text.trim(),
         "date": model.value.date,
         "odometer": model.value.odometer,
@@ -154,13 +155,6 @@ class CreateIncomeController extends GetxController {
       };
 
       try {
-        // await FirebaseFirestore.instance
-        //     .collection(DatabaseTables.USER_PROFILE)
-        //     .doc(appService.appUser.value.id)
-        //     .collection(DatabaseTables.INCOMES)
-        //     .doc()
-        //     .set(map);
-
         await FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id)
@@ -177,11 +171,14 @@ class CreateIncomeController extends GetxController {
               Get.back();
 
               Utils.showSnackBar(message: "income_added".tr, success: true);
-              final home = Get.find<HomeController>();
-              await home.loadTimelineData();
+              if (Get.isRegistered<HomeController>()) {
+          Get.find<HomeController>().loadTimelineData(forceFetch: true);
+        }
 
-              final report = Get.find<ReportsController>();
-              report.calculateAllReports();
+              if (Get.isRegistered<ReportsController>()) {
+                final report = Get.find<ReportsController>();
+                report.calculateAllReports();
+              }
             })
             .catchError((e) {
               if (Get.isDialogOpen == true) Get.back();

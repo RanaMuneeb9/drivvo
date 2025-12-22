@@ -63,7 +63,8 @@ class CreateServiceController extends GetxController {
 
   Future<void> getProfile() async {
     await appService.getUserProfile();
-    lastOdometer.value = int.parse(appService.appUser.value.lastOdometer);
+    lastOdometer.value =
+        int.tryParse(appService.appUser.value.lastOdometer) ?? 0;
   }
 
   void onSelectFuelType(String? type) {
@@ -153,7 +154,7 @@ class CreateServiceController extends GetxController {
 
       final map = {
         "user_id": appService.appUser.value.id,
-        "vehicle_id": "",
+        "vehicle_id": appService.currentVehicleId.value,
         "time": timeController.text.trim(),
         "date": model.value.date,
         "odometer": model.value.odometer,
@@ -172,13 +173,6 @@ class CreateServiceController extends GetxController {
         await FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id)
-            .collection(DatabaseTables.SERVICES)
-            .doc()
-            .set(map);
-
-        await FirebaseFirestore.instance
-            .collection(DatabaseTables.USER_PROFILE)
-            .doc(appService.appUser.value.id)
             .set({
               'service_list': FieldValue.arrayUnion([map]),
             }, SetOptions(merge: true))
@@ -191,12 +185,13 @@ class CreateServiceController extends GetxController {
               if (Get.isDialogOpen == true) Get.back();
               Get.back();
 
-              Utils.showSnackBar(message: "service_added".tr, success: true);
-              final home = Get.find<HomeController>();
-              home.loadTimelineData();
-
-              final report = Get.find<ReportsController>();
-              report.calculateAllReports();
+              if (Get.isRegistered<HomeController>()) {
+                Get.find<HomeController>().loadTimelineData(forceFetch: true);
+              }
+              if (Get.isRegistered<ReportsController>()) {
+                final report = Get.find<ReportsController>();
+                report.calculateAllReports();
+              }
             })
             .catchError((e) {
               if (Get.isDialogOpen == true) Get.back();

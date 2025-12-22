@@ -1,13 +1,7 @@
+import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 
-enum TimelineEntryType {
-  refueling,
-  expense,
-  service,
-  income,
-  route,
-  welcome,
-}
+enum TimelineEntryType { refueling, expense, service, income, route, welcome }
 
 class TimelineEntry {
   final TimelineEntryType type;
@@ -19,6 +13,12 @@ class TimelineEntry {
   final IconData icon;
   final Color iconBgColor;
 
+  //!For Routes
+  final String? origin;
+  final String? routeOdometer;
+  final DateTime? routeStartDate;
+  final DateTime? routeEndDate;
+
   TimelineEntry({
     required this.type,
     required this.title,
@@ -28,22 +28,43 @@ class TimelineEntry {
     required this.isIncome,
     required this.icon,
     required this.iconBgColor,
+    this.origin,
+    this.routeOdometer,
+    this.routeStartDate,
+    this.routeEndDate,
   });
+  
+  String get routeStartFormattedDate {
+    return date.day.toString().padLeft(2, '0');
+  }
 
-  // Format date as "dd MMM" (e.g., "17 dec")
   String get formattedDate {
-    const months = [
-      'jan', 'feb', 'mar', 'apr', 'may', 'jun',
-      'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
-    ];
-    return '${date.day.toString().padLeft(2, '0')} ${months[date.month - 1]}';
+    return Utils.formatAccountDate(date);
+  }
+
+  // String get routeStartFormattedDate {
+  //   return Utils.formatAccountDate(routeStartDate ?? DateTime.now());
+  // }
+
+  String get routeEndFormattedDate {
+    return Utils.formatAccountDate(routeEndDate ?? DateTime.now());
   }
 
   // Get month-year key for grouping (e.g., "DECEMBER 2025")
   String get monthYearKey {
     const months = [
-      'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
-      'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
+      'JANUARY',
+      'FEBRUARY',
+      'MARCH',
+      'APRIL',
+      'MAY',
+      'JUNE',
+      'JULY',
+      'AUGUST',
+      'SEPTEMBER',
+      'OCTOBER',
+      'NOVEMBER',
+      'DECEMBER',
     ];
     return '${months[date.month - 1]} ${date.year}';
   }

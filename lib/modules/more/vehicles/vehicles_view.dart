@@ -60,7 +60,11 @@ class VehiclesView extends GetView<VehiclesController> {
                         itemBuilder: (context, index) {
                           final model = controller.filterVehiclesList[index];
                           return GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              controller.isFromHome.value
+                                  ? controller.getBackToHome(vehicle: model)
+                                  : null;
+                            },
                             child: Container(
                               width: double.maxFinite,
                               margin: const EdgeInsets.only(

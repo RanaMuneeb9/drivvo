@@ -30,20 +30,20 @@ class HomeFilterView extends GetView<FilterController> {
             isUrdu: controller.isUrdu,
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: controller.clearFilters,
-            child: Text(
-              'clear_filters'.tr,
-              style: Utils.getTextStyle(
-                baseSize: 14,
-                isBold: false,
-                color: Colors.white,
-                isUrdu: controller.isUrdu,
-              ),
-            ),
-          ),
-        ],
+        // actions: [
+        //   TextButton(
+        //     onPressed: controller.clearFilters,
+        //     child: Text(
+        //       'clear_filters'.tr,
+        //       style: Utils.getTextStyle(
+        //         baseSize: 14,
+        //         isBold: false,
+        //         color: Colors.white,
+        //         isUrdu: controller.isUrdu,
+        //       ),
+        //     ),
+        //   ),
+        // ],
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
         ),
@@ -62,35 +62,44 @@ class HomeFilterView extends GetView<FilterController> {
                   ),
 
                   // Dropdown
-                  DropdownButtonFormField<DateRangeModel>(
-                    initialValue: controller.dateRangeList.first,
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                    style: const TextStyle(color: Colors.black, fontSize: 16),
-                    items: controller.dateRangeList
-                        .map<DropdownMenuItem<DateRangeModel>>((element) {
-                          return DropdownMenuItem<DateRangeModel>(
-                            value: element,
-                            child: Text(
-                              element.title.tr,
-                              style: Utils.getTextStyle(
-                                baseSize: 14,
-                                isBold: false,
-                                color: Colors.black,
-                                isUrdu: controller.isUrdu,
+                  Obx(
+                    () => DropdownButtonFormField<DateRangeModel>(
+                      value: controller.dateRangeList.firstWhere(
+                        (element) =>
+                            element.id == controller.selectedDateIndex.value,
+                        orElse: () => controller.dateRangeList.first,
+                      ),
+                      icon: const Icon(Icons.keyboard_arrow_down),
+                      style: const TextStyle(color: Colors.black, fontSize: 16),
+                      items: controller.dateRangeList
+                          .map<DropdownMenuItem<DateRangeModel>>((element) {
+                            return DropdownMenuItem<DateRangeModel>(
+                              value: element,
+                              child: Text(
+                                element.title.tr,
+                                style: Utils.getTextStyle(
+                                  baseSize: 14,
+                                  isBold: false,
+                                  color: Colors.black,
+                                  isUrdu: controller.isUrdu,
+                                ),
                               ),
-                            ),
-                          );
-                        })
-                        .toList(),
-                    onChanged: (DateRangeModel? value) =>
-                        controller.onSelectDateRange(value!),
-                    validator: (value) {
-                      if (value == null) {
-                        return "time_period_required".tr;
-                      } else {
-                        return null;
-                      }
-                    },
+                            );
+                          })
+                          .toList(),
+                      onChanged: (DateRangeModel? value) {
+                        if (value != null) {
+                          controller.onSelectDateRange(value);
+                        }
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                          return "time_period_required".tr;
+                        } else {
+                          return null;
+                        }
+                      },
+                    ),
                   ),
 
                   const SizedBox(height: 10),
@@ -121,8 +130,8 @@ class HomeFilterView extends GetView<FilterController> {
                     () => _buildCategoryItem(
                       'refueling'.tr,
                       Icons.local_gas_station_outlined,
-                      controller.refueling.value,
-                      (v) => controller.refueling.value = v,
+                      controller.appService.refuelingFilter.value,
+                      (v) => controller.appService.refuelingFilter.value = v,
                       controller,
                     ),
                   ),
@@ -130,8 +139,8 @@ class HomeFilterView extends GetView<FilterController> {
                     () => _buildCategoryItem(
                       'expenses'.tr,
                       Icons.receipt_long_outlined,
-                      controller.expenses.value,
-                      (v) => controller.expenses.value = v,
+                      controller.appService.expenseFilter.value,
+                      (v) => controller.appService.expenseFilter.value = v,
                       controller,
                     ),
                   ),
@@ -139,8 +148,8 @@ class HomeFilterView extends GetView<FilterController> {
                     () => _buildCategoryItem(
                       'incomes'.tr,
                       Icons.account_balance_wallet_outlined,
-                      controller.incomes.value,
-                      (v) => controller.incomes.value = v,
+                      controller.appService.incomeFilter.value,
+                      (v) => controller.appService.incomeFilter.value = v,
                       controller,
                     ),
                   ),
@@ -148,8 +157,8 @@ class HomeFilterView extends GetView<FilterController> {
                     () => _buildCategoryItem(
                       'services'.tr,
                       Icons.settings_outlined,
-                      controller.services.value,
-                      (v) => controller.services.value = v,
+                      controller.appService.serviceFilter.value,
+                      (v) => controller.appService.serviceFilter.value = v,
                       controller,
                     ),
                   ),
@@ -157,8 +166,8 @@ class HomeFilterView extends GetView<FilterController> {
                     () => _buildCategoryItem(
                       'pouters'.tr,
                       Icons.alt_route_outlined,
-                      controller.pouters.value,
-                      (v) => controller.pouters.value = v,
+                      controller.appService.routeFilter.value,
+                      (v) => controller.appService.routeFilter.value = v,
                       controller,
                     ),
                   ),
@@ -268,9 +277,7 @@ class HomeFilterView extends GetView<FilterController> {
             ),
             child: CustomButton(
               title: "apply_filter".tr,
-              onTap: () {
-                Get.back();
-              },
+              onTap: () => controller.getBackToMain(),
             ),
           ),
         ],

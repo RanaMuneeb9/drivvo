@@ -60,20 +60,30 @@ class CreateRouteView extends GetView<CreateRouteController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextInputField(
+              CardTextInputField(
                 isUrdu: controller.isUrdu,
                 isRequired: true,
                 isNext: true,
                 obscureText: false,
-                readOnly: false,
+                readOnly: true,
                 labelText: "origin".tr,
-                hintText: "multan".tr,
-                inputAction: TextInputAction.next,
-                type: TextInputType.text,
-                onTap: () {},
-                onSaved: (value) {
-                  controller.model.value.origin = value!;
+                hintText: "select_origin".tr,
+                controller: controller.originController,
+                sufixIcon: Icon(Icons.keyboard_arrow_down),
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutes.GENERAL_VIEW,
+                    arguments: {
+                      "title": Constants.PLACES,
+                      "selected_title": controller.originController.text,
+                    },
+                  )?.then((e) {
+                    if (e != null) {
+                      controller.originController.text = e;
+                    }
+                  });
                 },
+                onSaved: (value) {},
                 onValidate: (value) {
                   if (value == null || value.isEmpty) {
                     return 'origin_required'.tr;
@@ -190,7 +200,7 @@ class CreateRouteView extends GetView<CreateRouteController> {
                 type: TextInputType.number,
                 onTap: () {},
                 onChange: (v) {
-                  if (v != null || v!.isNotEmpty) {
+                  if (v != null && v.isNotEmpty) {
                     controller.initalOdometer.value = int.parse(v);
                   }
                 },
@@ -229,21 +239,32 @@ class CreateRouteView extends GetView<CreateRouteController> {
                 ),
               ),
               const SizedBox(height: 16),
-              TextInputField(
+              CardTextInputField(
                 isUrdu: controller.isUrdu,
                 isRequired: true,
                 isNext: true,
                 obscureText: false,
-                readOnly: false,
+                readOnly: true,
                 labelText: "destination".tr,
-                hintText: "multan".tr,
-                inputAction: TextInputAction.next,
-                type: TextInputType.text,
-                onTap: () {},
-                onSaved: (value) {
-                  controller.model.value.destination = value!;
+                hintText: "".tr,
+                controller: controller.destinationController,
+                sufixIcon: Icon(Icons.keyboard_arrow_down),
+                onTap: () {
+                  Get.toNamed(
+                    AppRoutes.GENERAL_VIEW,
+                    arguments: {
+                      "title": Constants.PLACES,
+                      "selected_title": controller.destinationController.text,
+                    },
+                  )?.then((e) => controller.destinationController.text = e);
                 },
-                onValidate: (v) {
+                onSaved: (value) {},
+                onValidate: (value) {
+                  if (value == null ||
+                      value.isEmpty ||
+                      value == "select_destination".tr) {
+                    return 'destination_required'.tr;
+                  }
                   return null;
                 },
               ),
@@ -310,8 +331,7 @@ class CreateRouteView extends GetView<CreateRouteController> {
                       type: TextInputType.number,
                       onTap: () {},
                       onSaved: (value) {
-                        controller.model.value.valuePerKm =
-                            double.tryParse(value ?? '') ?? 0.0;
+                        controller.model.value.valuePerKm = value!;
                       },
                       onValidate: (value) {
                         if (value == null || value.isEmpty) {
@@ -335,7 +355,7 @@ class CreateRouteView extends GetView<CreateRouteController> {
                       type: TextInputType.number,
                       onTap: () {},
                       onSaved: (value) {
-                        controller.model.value.total = double.parse(value!);
+                        controller.model.value.total = value!;
                       },
                       onValidate: (value) {
                         if (value == null || value.isEmpty) {

@@ -44,14 +44,18 @@ class CreateVehiclesController extends GetxController {
     if (formStateKey.currentState?.validate() == true) {
       formStateKey.currentState?.save();
 
-      Utils.showProgressDialog(Get.context!);
-      final map = model.toJson();
-
-      await FirebaseFirestore.instance
+      final ref = FirebaseFirestore.instance
           .collection(DatabaseTables.USER_PROFILE)
           .doc(appService.appUser.value.id)
-          .collection(DatabaseTables.VEHICLES)
-          .doc()
+          .collection(DatabaseTables.VEHICLES);
+
+      final id = ref.doc().id;
+
+      Utils.showProgressDialog(Get.context!);
+      final map = model.toJson(id);
+
+      await ref
+          .doc(id)
           .set(map)
           .then(
             (_) {

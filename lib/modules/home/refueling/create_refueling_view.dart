@@ -129,15 +129,15 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                   controller.model.value.odometer = value ?? '';
                 },
                 onValidate: (value) {
-                  if (value != null) {
-                    if (value.isNotEmpty) {
-                      final c = int.parse(value);
-                      if (c <= controller.lastOdometer.value) {
-                        return "odometer_greater_than_last".tr;
-                      }
-                    } else if (value.isEmpty) {
-                      return 'odometer_required'.tr;
-                    }
+                  if (value == null || value.isEmpty) {
+                    return 'odometer_required'.tr;
+                  }
+                  final c = num.tryParse(value);
+                  if (c == null) {
+                    return 'invalid_odometer_value'.tr;
+                  }
+                  if (c <= controller.lastOdometer.value) {
+                    return "odometer_greater_than_last".tr;
                   }
                   return null;
                 },

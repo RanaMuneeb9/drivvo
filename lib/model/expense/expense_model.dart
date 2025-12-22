@@ -15,7 +15,6 @@ class ExpenseModel {
   late String filePath;
   late String notes;
   late List<ExpenseTypeModel> expenseTypes;
-  // late DateTime createdAt;
 
   ExpenseModel() {
     userId = "";
@@ -31,7 +30,6 @@ class ExpenseModel {
     filePath = "";
     notes = "";
     expenseTypes = [];
-    // createdAt = DateTime.now();
   }
 
   ExpenseModel.fromJson(Map<String, dynamic> json) {
@@ -52,24 +50,5 @@ class ExpenseModel {
             ?.map((e) => ExpenseTypeModel.fromJson(e as Map<String, dynamic>))
             .toList() ??
         [];
-    // createdAt = (json["created_at"] as Timestamp?)?.toDate() ?? DateTime.now();
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "user_id": userId,
-      "vehicle_id": vehicleId,
-      "time": time,
-      "date": date,
-      "odometer": odometer,
-      "total_amount": totalAmount,
-      "place": place,
-      "driver_name": driverName,
-      "payment_method": paymentMethod,
-      "reason": reason,
-      "file_path": filePath,
-      "notes": notes,
-      "expense_types": expenseTypes.map((e) => e.toJson()).toList(),
-    };
   }
 }

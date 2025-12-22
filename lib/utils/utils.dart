@@ -69,6 +69,30 @@ class Utils {
     );
   }
 
+  // Format date as "dd MMM" (e.g., "17 dec")
+  static String formatAccountDate(DateTime date) {
+    const months = [
+      'jan',
+      'feb',
+      'mar',
+      'apr',
+      'may',
+      'jun',
+      'jul',
+      'aug',
+      'sep',
+      'oct',
+      'nov',
+      'dec',
+    ];
+    return '${date.day.toString().padLeft(2, '0')} ${months[date.month - 1]}';
+  }
+
+  // !Format date as "dd MMM" (e.g., "17 Dec")
+  // static String formatAccountDate(DateTime date) {
+  //   return DateFormat("dd MMM").format(date).toLowerCase();
+  // }
+
   static void showProgressDialog(BuildContext context) {
     Get.dialog(
       Center(

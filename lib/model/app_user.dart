@@ -1,6 +1,7 @@
 import 'package:drivvo/model/expense/expense_model.dart';
 import 'package:drivvo/model/income/income_model.dart';
 import 'package:drivvo/model/refueling/refueling_model.dart';
+import 'package:drivvo/model/route/route_model.dart';
 import 'package:drivvo/model/service/service_model.dart';
 
 class AppUser {
@@ -28,6 +29,7 @@ class AppUser {
   late List<ExpenseModel> expenseList;
   late List<ServiceModel> serviceList;
   late List<IncomeModel> incomeList;
+  late List<RouteModel> routeList;
 
   AppUser() {
     id = "";
@@ -54,6 +56,7 @@ class AppUser {
     expenseList = [];
     serviceList = [];
     incomeList = [];
+    routeList = [];
   }
 
   AppUser.fromJson(Map<String, dynamic> json) {
@@ -98,6 +101,12 @@ class AppUser {
     incomeList =
         (json["income_list"] as List<dynamic>?)
             ?.map((e) => IncomeModel.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
+
+    routeList =
+        (json["route_list"] as List<dynamic>?)
+            ?.map((e) => RouteModel.fromJson(e as Map<String, dynamic>))
             .toList() ??
         [];
   }

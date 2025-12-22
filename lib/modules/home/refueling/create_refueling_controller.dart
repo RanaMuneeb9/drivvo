@@ -226,7 +226,7 @@ class CreateRefuelingController extends GetxController {
 
       final map = {
         "id": appService.appUser.value.id,
-        "vehicle_id": "",
+        "vehicle_id": appService.currentVehicleId.value,
         "time": timeController.text.trim(),
         "date": model.value.date,
         "odometer": model.value.odometer,
@@ -301,7 +301,7 @@ class CreateRefuelingController extends GetxController {
         Utils.showSnackBar(message: "refueling_added".tr, success: true);
 
         if (Get.isRegistered<HomeController>()) {
-          Get.find<HomeController>().loadTimelineData();
+          Get.find<HomeController>().loadTimelineData(forceFetch: true);
         }
 
         if (Get.isRegistered<ReportsController>()) {

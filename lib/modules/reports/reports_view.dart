@@ -374,7 +374,7 @@ class ReportsView extends GetView<ReportsController> {
             icon: Icons.account_balance_wallet,
             iconBgColor: const Color(0xFFE8F5F4),
             iconColor: Utils.appColor,
-            title: "cost".tr,
+            title: "income".tr,
             total: controller.formatCurrency(controller.incomeCost.value),
             totalColor: Colors.black87,
             byDay: controller.formatCurrency(controller.incomeCostByDay.value),

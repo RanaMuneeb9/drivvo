@@ -11,8 +11,8 @@ class RouteModel {
   late String initialOdometer;
   late String destination;
   late String finalOdometer;
-  late double valuePerKm;
-  late double total;
+  late String valuePerKm;
+  late String total;
   late String driverName;
   late String reason;
   late String filePath;
@@ -29,8 +29,8 @@ class RouteModel {
     initialOdometer = "";
     destination = "";
     finalOdometer = "";
-    valuePerKm = 0.0;
-    total = 0.0;
+    valuePerKm = "";
+    total = "";
     driverName = "";
     reason = "";
     filePath = "";
@@ -48,32 +48,11 @@ class RouteModel {
     initialOdometer = json["initial_odometer"] ?? "";
     destination = json["destination"] ?? "";
     finalOdometer = json["final_odometer"] ?? "";
-    valuePerKm = (json["value_per_km"] ?? 0).toDouble();
-    total = (json["total"] ?? 0).toDouble();
+    valuePerKm = json["value_per_km"] ?? "";
+    total = json["total"] ?? "";
     driverName = json["driver_name"] ?? "";
     reason = json["reason"] ?? "";
     filePath = json["file_path"] ?? "";
     notes = json["notes"] ?? "";
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "user_id": userId,
-      "vehicle_id": vehicleId,
-      "origin": origin,
-      "start_date": startDate,
-      "start_time": startTime,
-      "end_date": endDate,
-      "end_time": endTime,
-      "initial_odometer": initialOdometer,
-      "destination": destination,
-      "final_odometer": finalOdometer,
-      "value_per_km": valuePerKm,
-      "total": total,
-      "driver_name": driverName,
-      "reason": reason,
-      "file_path": filePath,
-      "notes": notes,
-    };
   }
 }
