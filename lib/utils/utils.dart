@@ -352,6 +352,14 @@ class Utils {
     GeneralModel(id: "102", name: "Ural"),
   ];
 
+  static final List<String> vehicleTypesList = ['car', 'bike', 'truck', 'bus'];
+  static final List<String> fuelTypeList = [
+    'Liquids',
+    'Liquefied petroleum gas',
+    'Compressed natural gas',
+    'Electrical',
+  ];
+
   static List<DateRangeModel> getDateRangeList({required List<String> titles}) {
     List<DateRangeModel> list = [];
 

@@ -3,12 +3,13 @@ class VehicleModel {
   late String vehicleType;
   late String name;
   late String manufacturer;
-  late String model;
+  late int modelYear;
   late String licensePlate;
-  late int year;
   late String tankConfiguration;
-  late String fuelType;
-  late String fuelCapacity;
+  late String mainFuelType;
+  late String mainFuelCapacity;
+  late String secFuelType;
+  late String secFuelCapacity;
   late String distanceUnit;
   late String chassisNumber;
   late String identificationNumber;
@@ -19,12 +20,13 @@ class VehicleModel {
     vehicleType = "";
     name = "";
     manufacturer = "";
-    model = "";
+    modelYear = 0;
     licensePlate = "";
-    year = 0;
     tankConfiguration = "";
-    fuelType = "";
-    fuelCapacity = "";
+    mainFuelType = "";
+    mainFuelCapacity = "";
+    secFuelType = "";
+    secFuelCapacity = "";
     distanceUnit = "";
     chassisNumber = "";
     identificationNumber = "";
@@ -36,12 +38,13 @@ class VehicleModel {
     vehicleType = json["vehicle_type"] ?? "";
     name = json["name"] ?? "";
     manufacturer = json["manufacturer"] ?? "";
-    model = json["model"] ?? "";
+    modelYear = json["model_year"] ?? 0;
     licensePlate = json["license_plate"] ?? "";
-    year = (json["year"] ?? 0).toInt();
     tankConfiguration = json["tank_configuration"] ?? "";
-    fuelType = json["fuel_type"] ?? "";
-    fuelCapacity = json["fuel_capacity"] ?? "";
+    mainFuelType = json["main_fuel_type"] ?? "";
+    mainFuelCapacity = json["main_fuel_capacity"] ?? "";
+    secFuelType = json["sec_fuel_type"] ?? "";
+    secFuelCapacity = json["sec_fuel_capacity"] ?? "";
     distanceUnit = json["distance_unit"] ?? "";
     chassisNumber = json["chassis_number"] ?? "";
     identificationNumber = json["identification_number"] ?? "";
@@ -54,12 +57,13 @@ class VehicleModel {
       "vehicle_type": vehicleType,
       "name": name,
       "manufacturer": manufacturer,
-      "model": model,
+      "model_year": modelYear,
       "license_plate": licensePlate,
-      "year": year,
       "tank_configuration": tankConfiguration,
-      "fuel_type": fuelType,
-      "fuel_capacity": fuelCapacity,
+      "main_fuel_type": mainFuelType,
+      "main_fuel_capacity": mainFuelCapacity,
+      "sec_fuel_type": secFuelType,
+      "sec_fuel_capacity": secFuelCapacity,
       "distance_unit": distanceUnit,
       "chassis_number": chassisNumber,
       "identification_number": identificationNumber,

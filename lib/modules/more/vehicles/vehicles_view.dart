@@ -66,7 +66,12 @@ class VehiclesView extends GetView<VehiclesController> {
                             onTap: () {
                               controller.isFromHome.value
                                   ? controller.getBackToHome(vehicle: model)
-                                  : null;
+                                  : Get.toNamed(
+                                      AppRoutes.UPDATE_VEHICLE_VIEW,
+                                      arguments: model,
+                                    )?.then((_) {
+                                      controller.getVehicleList();
+                                    });
                             },
                             child: Container(
                               width: double.maxFinite,
@@ -81,10 +86,24 @@ class VehiclesView extends GetView<VehiclesController> {
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                border: Border.all(
-                                  color: Colors.grey.shade300,
-                                  width: 1,
-                                ),
+                                border: controller.isFromHome.value
+                                    ? controller
+                                                  .appService
+                                                  .currentVehicleId
+                                                  .value ==
+                                              model.id
+                                          ? Border.all(
+                                              color: Utils.appColor,
+                                              width: 1,
+                                            )
+                                          : Border.all(
+                                              color: Colors.grey.shade300,
+                                              width: 1,
+                                            )
+                                    : Border.all(
+                                        color: Colors.grey.shade300,
+                                        width: 1,
+                                      ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
@@ -130,7 +149,7 @@ class VehiclesView extends GetView<VehiclesController> {
                                               ),
                                             ),
                                             Text(
-                                              " ${model.year}",
+                                              " ${model.modelYear}",
                                               style: Utils.getTextStyle(
                                                 baseSize: 14,
                                                 isBold: true,

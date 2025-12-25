@@ -441,5 +441,10 @@
   "monthly_costs": "Monthly Costs",
   "cost_comparison_chart": "Cost Comparison",
   "expense_vs_income": "Expense vs Income",
-  "odometer_history": "Odometer History"
+  "odometer_history": "Odometer History",
+  "date_range": "Date Range",
+  "price_per_liter": "Price per liter",
+  "vehicle_updated_successfully": "Vehicle updated successfully",
+  "vehicle_added_successfully": "Vehicle added successfully",
+  "update_vehicle": "Update Vehicle"
 }

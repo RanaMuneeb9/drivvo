@@ -438,5 +438,10 @@
   "monthly_costs": "ماہانہ اخراجات",
   "cost_comparison_chart": "اخراجات کا موازنہ",
   "expense_vs_income": "اخراجات بمقابلہ آمدنی",
-  "odometer_history": "اوڈومیٹر کی تاریخ"
+  "odometer_history": "اوڈومیٹر کی تاریخ",
+  "date_range": "تاریخ کی حد",
+  "price_per_liter": "قیمت فی لیٹر",
+  "vehicle_updated_successfully": "آپ کی گاڑی کامیابی سے اپ ڈیٹ ہو گئی",
+  "vehicle_added_successfully": "آپ کی گاڑی کامیابی سے شامل ہو گئی",
+  "update_vehicle": "گاڑی اپ ڈیٹ کریں"
 }

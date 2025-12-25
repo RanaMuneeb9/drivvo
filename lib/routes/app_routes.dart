@@ -49,4 +49,6 @@ abstract class AppRoutes {
   static const MAP_VIEW = '/common/map_view';
   // ignore: constant_identifier_names
   static const PLAN_VIEW = '/more/plan_view';
+  // ignore: constant_identifier_names
+  static const UPDATE_VEHICLE_VIEW = '/more/vehicle/update_vehicle';
 }

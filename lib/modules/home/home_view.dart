@@ -325,23 +325,27 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
           ),
-
-          // Free Badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              color: Utils.appColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              'free'.tr,
-              style: Utils.getTextStyle(
-                baseSize: 13,
-                isBold: true,
-                color: Utils.appColor,
-                isUrdu: controller.isUrdu,
+          Column(
+            children: [
+              Text(
+                "last_odometer".tr,
+                style: Utils.getTextStyle(
+                  baseSize: 12,
+                  isBold: false,
+                  color: Colors.grey,
+                  isUrdu: controller.isUrdu,
+                ),
               ),
-            ),
+              Text(
+                "${controller.appService.appUser.value.lastOdometer} km",
+                style: Utils.getTextStyle(
+                  baseSize: 12,
+                  isBold: true,
+                  color: Utils.appColor,
+                  isUrdu: controller.isUrdu,
+                ),
+              ),
+            ],
           ),
         ],
       ),

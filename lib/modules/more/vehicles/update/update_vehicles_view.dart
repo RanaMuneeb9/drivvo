@@ -5,13 +5,13 @@ import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart
 import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/search_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
-import 'package:drivvo/modules/more/vehicles/create/create_vehicles_controller.dart';
+import 'package:drivvo/modules/more/vehicles/update/update_vehicles_controller.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CreateVehiclesView extends GetView<CreateVehiclesController> {
-  const CreateVehiclesView({super.key});
+class UpdateVehiclesView extends GetView<UpdateVehiclesController> {
+  const UpdateVehiclesView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +21,12 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
         backgroundColor: Utils.appColor,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: controller.isFromImportdata.value
-            ? SizedBox()
-            : IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back, color: Colors.white),
-              ),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+        ),
         title: Text(
-          "add_new_vehicle".tr,
+          "update_vehicle".tr,
           style: Utils.getTextStyle(
             baseSize: 18,
             isBold: true,
@@ -114,6 +112,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                     readOnly: false,
                     labelText: "vehicle_name".tr,
                     hintText: "name".tr,
+                    initialValue: controller.model.name,
                     inputAction: TextInputAction.next,
                     type: TextInputType.name,
                     onChange: (value) {},
@@ -204,6 +203,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                     isNext: true,
                     obscureText: false,
                     readOnly: false,
+                    initialValue: controller.model.licensePlate,
                     labelText: "license_plate_optional".tr,
                     hintText: "license_plate_hint".tr,
                     inputAction: TextInputAction.next,
@@ -277,7 +277,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                             children: [
                               const SizedBox(height: 16),
                               Text(
-                                "main_tank".tr,
+                                "main_tank",
                                 style: Utils.getTextStyle(
                                   baseSize: 16,
                                   isBold: true,
@@ -328,6 +328,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                     hintText: "fuel_capacity_hint".tr,
                     inputAction: TextInputAction.next,
                     type: TextInputType.number,
+                    initialValue: controller.model.mainFuelCapacity,
                     onTap: () {},
                     readOnly: false,
                     onSaved: (value) {
@@ -374,15 +375,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                                     .map<DropdownMenuItem<String>>((element) {
                                       return DropdownMenuItem<String>(
                                         value: element,
-                                        child: Text(
-                                          element.tr,
-                                          style: Utils.getTextStyle(
-                                            baseSize: 14,
-                                            isBold: false,
-                                            color: Colors.black,
-                                            isUrdu: controller.isUrdu,
-                                          ),
-                                        ),
+                                        child: Text(element),
                                       );
                                     })
                                     .toList(),
@@ -406,6 +399,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                                 labelText: "fuel_capacity".tr,
                                 hintText: "fuel_capacity_hint".tr,
                                 inputAction: TextInputAction.next,
+                                initialValue: controller.model.secFuelCapacity,
                                 type: TextInputType.number,
                                 onTap: () {},
                                 readOnly: false,
@@ -493,6 +487,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                     readOnly: false,
                     labelText: "chassis_number_optional".tr,
                     hintText: "chassis_number_hint".tr,
+                    initialValue: controller.model.chassisNumber,
                     inputAction: TextInputAction.next,
                     type: TextInputType.name,
                     onTap: () {},
@@ -510,6 +505,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                     readOnly: false,
                     labelText: "vin_number".tr,
                     hintText: "vin_hint".tr,
+                    initialValue: controller.model.identificationNumber,
                     inputAction: TextInputAction.next,
                     type: TextInputType.name,
                     onTap: () {},
@@ -530,6 +526,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                     maxLines: 4,
                     labelText: "note_optional".tr,
                     hintText: "note_hint".tr,
+                    initialValue: controller.model.notes,
                     inputAction: TextInputAction.next,
                     type: TextInputType.name,
                     onTap: () {},

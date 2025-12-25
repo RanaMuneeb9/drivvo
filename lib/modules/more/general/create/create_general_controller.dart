@@ -14,13 +14,6 @@ class CreateGeneralController extends GetxController {
   var title = "";
   var name = "";
 
-  final List<String> fuelTypeList = [
-    'Liquids',
-    'Liquefied petroleum gas',
-    'Compressed natural gas',
-    'Electrical',
-  ];
-
   var fuelType = "";
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;

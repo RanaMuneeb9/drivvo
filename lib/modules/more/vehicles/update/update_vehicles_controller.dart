@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/general_model.dart';
 import 'package:drivvo/model/vehicle/vehicle_model.dart';
-import 'package:drivvo/modules/more/more_controller.dart';
-import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
@@ -10,7 +8,7 @@ import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class CreateVehiclesController extends GetxController {
+class UpdateVehiclesController extends GetxController {
   late AppService appService;
   final formStateKey = GlobalKey<FormState>();
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
@@ -23,8 +21,6 @@ class CreateVehiclesController extends GetxController {
   var selectedYear = 2025.obs;
   String manufacturerId = "";
 
-  var isFromImportdata = false.obs;
-
   var selectedTankIndex = 0.obs;
   var selectedDistanceIndex = 0.obs;
 
@@ -35,53 +31,59 @@ class CreateVehiclesController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
-    isFromImportdata.value = Get.arguments as bool? ?? false;
+
+    model = Get.arguments as VehicleModel;
+
     onSearchManufacturer("");
 
     searchInputController.addListener(() {
       onSearchManufacturer(searchInputController.text);
     });
 
-    model.modelYear = 2025;
-    model.distanceUnit = "Kilometers";
-    model.vehicleType = "car";
-    model.mainFuelType = "Liquids";
-    model.secFuelType = "Liquefied petroleum gas";
+    manufacturerController.text = model.manufacturer;
+
+    final manufacturer = Utils.manufacturers.firstWhereOrNull(
+      (e) => e.name == model.manufacturer,
+    );
+    manufacturerId = manufacturer?.id ?? "";
+
+    if (model.tankConfiguration == "two_tank") {
+      selectedTankIndex.value = 1;
+    }
+
+    if (model.distanceUnit == "Miles") {
+      selectedDistanceIndex.value = 1;
+    }
   }
 
   Future<void> saveData() async {
     if (formStateKey.currentState?.validate() == true) {
       formStateKey.currentState?.save();
 
-      final ref = FirebaseFirestore.instance
+      Utils.showProgressDialog(Get.context!);
+      if (selectedTankIndex.value == 0) {
+        model.secFuelCapacity = "";
+        model.secFuelType = "";
+      }
+
+      final map = model.toJson(model.id);
+
+      FirebaseFirestore.instance
           .collection(DatabaseTables.USER_PROFILE)
           .doc(appService.appUser.value.id)
-          .collection(DatabaseTables.VEHICLES);
-
-      final id = ref.doc().id;
-
-      Utils.showProgressDialog(Get.context!);
-      final map = model.toJson(id);
-
-      await ref
-          .doc(id)
-          .set(map)
+          .collection(DatabaseTables.VEHICLES)
+          .doc(model.id)
+          .update(map)
           .then(
             (_) {
-              if (isFromImportdata.value) {
-                Get.offAllNamed(AppRoutes.ROOT_VIEW);
+              if (appService.currentVehicleId.value == model.id) {
                 appService.setCurrentVehicle(model.name);
-                appService.setCurrentVehicleId(id);
-                return;
               }
               Get.back(closeOverlays: true);
               Utils.showSnackBar(
-                message: "vehicle_added_successfully".tr,
+                message: "vehicle_updated_successfully",
                 success: true,
               );
-
-              final con = Get.find<MoreController>();
-              con.getAllVehicleList();
             },
             onError: (e) {
               Get.back();

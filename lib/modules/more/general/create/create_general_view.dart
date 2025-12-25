@@ -186,7 +186,7 @@ class CreateGeneralView extends GetView<CreateGeneralController> {
                       initialValue: null,
                       icon: const Icon(Icons.keyboard_arrow_down),
                       style: const TextStyle(color: Colors.black, fontSize: 16),
-                      items: controller.fuelTypeList
+                      items: Utils.fuelTypeList
                           .map<DropdownMenuItem<String>>((element) {
                             return DropdownMenuItem<String>(
                               value: element,

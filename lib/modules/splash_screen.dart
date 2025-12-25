@@ -22,8 +22,10 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(milliseconds: 2000), () async {
       if (appService.onBoarding) {
         if (user != null) {
-          if (appService.importData) {
-            Get.offAllNamed(AppRoutes.ROOT_VIEW);
+          if (appService.currentVehicleId.isNotEmpty) {
+            if (appService.importData) {
+              Get.offAllNamed(AppRoutes.ROOT_VIEW);
+            }
           } else {
             Get.offAllNamed(AppRoutes.IMPORT_DATA_VIEW);
           }

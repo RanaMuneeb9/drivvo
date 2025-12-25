@@ -38,6 +38,8 @@ import 'package:drivvo/modules/more/plan/plan_bindings.dart';
 import 'package:drivvo/modules/more/plan/plan_view.dart';
 import 'package:drivvo/modules/more/vehicles/create/create_vehicles_bindings.dart';
 import 'package:drivvo/modules/more/vehicles/create/create_vehicles_view.dart';
+import 'package:drivvo/modules/more/vehicles/update/update_vehicles_bindings.dart';
+import 'package:drivvo/modules/more/vehicles/update/update_vehicles_view.dart';
 import 'package:drivvo/modules/more/vehicles/vehicles_bindings.dart';
 import 'package:drivvo/modules/more/vehicles/vehicles_view.dart';
 import 'package:drivvo/modules/reminder/create/create_reminder_binding.dart';
@@ -202,6 +204,12 @@ class AppPages {
       name: AppRoutes.PLAN_VIEW,
       page: () => PlanView(),
       binding: PlanBindings(),
+    ),
+
+    GetPage(
+      name: AppRoutes.UPDATE_VEHICLE_VIEW,
+      page: () => UpdateVehiclesView(),
+      binding: UpdateVehiclesBindings(),
     ),
   ];
 }

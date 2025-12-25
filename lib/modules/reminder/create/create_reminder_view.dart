@@ -1,3 +1,4 @@
+import 'package:drivvo/custom-widget/reminder/custom_toggle_btn.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
@@ -164,19 +165,25 @@ class CreateReminderView extends GetView<CreateReminderController> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: const EdgeInsets.symmetric(
-                        vertical: 4,
+                        vertical: 6,
                         horizontal: 2,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildToggleButton(
+                          CustomToggleBtn(
                             label: "just_one_time".tr,
                             index: 0,
+                            selectedIndex: controller.selectedIndex.value,
+                            isUrdu: controller.isUrdu,
+                            onTap: () => controller.toggleBtn(0),
                           ),
-                          _buildToggleButton(
+                          CustomToggleBtn(
                             label: "repeat_every".tr,
                             index: 1,
+                            selectedIndex: controller.selectedIndex.value,
+                            isUrdu: controller.isUrdu,
+                            onTap: () => controller.toggleBtn(1),
                           ),
                         ],
                       ),
@@ -256,30 +263,6 @@ class CreateReminderView extends GetView<CreateReminderController> {
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildToggleButton({required String label, required int index}) {
-    final bool isSelected = controller.selectedIndex.value == index;
-
-    return GestureDetector(
-      onTap: () => controller.toggleBtn(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-        decoration: BoxDecoration(
-          color: isSelected ? Utils.appColor : Colors.white,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Text(
-          label,
-          style: Utils.getTextStyle(
-            baseSize: 14,
-            isBold: false,
-            color: isSelected ? Colors.white : Colors.grey,
-            isUrdu: controller.isUrdu,
           ),
         ),
       ),
