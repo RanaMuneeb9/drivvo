@@ -64,7 +64,7 @@ class HomeFilterView extends GetView<FilterController> {
                   // Dropdown
                   Obx(
                     () => DropdownButtonFormField<DateRangeModel>(
-                      value: controller.dateRangeList.firstWhere(
+                      initialValue: controller.dateRangeList.firstWhere(
                         (element) =>
                             element.id == controller.selectedDateIndex.value,
                         orElse: () => controller.dateRangeList.first,

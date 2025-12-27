@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:drivvo/model/expense/expense_model.dart';
-import 'package:drivvo/model/expense/expense_type_model.dart';
+import 'package:drivvo/model/income/income_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/modules/reports/reports_controller.dart';
 import 'package:drivvo/services/app_service.dart';
@@ -13,24 +12,18 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class CreateExpenseController extends GetxController {
-  late AppService appService;
+class CreateIncomeController extends GetxController {
   final formKey = GlobalKey<FormState>();
 
-  var expenseTypesList = <ExpenseTypeModel>[].obs;
-
-  var totalAmount = 0.0.obs;
-  var lastOdometer = 0.obs;
+  late AppService appService;
 
   var filePath = "".obs;
-  var model = ExpenseModel().obs;
+  var lastOdometer = 0.obs;
+  var model = IncomeModel().obs;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
-  final expenseTypeController = TextEditingController();
-  final placeController = TextEditingController();
-  final paymentMethodController = TextEditingController();
-  final reasonController = TextEditingController();
+  final incomeTypeController = TextEditingController();
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
@@ -44,27 +37,26 @@ class CreateExpenseController extends GetxController {
     dateController.text = Utils.formatDate(date: now);
     timeController.text = DateFormat('hh:mm a').format(now);
 
-    expenseTypeController.text = "select_expense_type".tr;
-    placeController.text = "select_your_place".tr;
-    paymentMethodController.text = "select_payment_method".tr;
-    reasonController.text = "select_reason".tr;
+    incomeTypeController.text = "select_income_type".tr;
   }
 
   @override
   void onClose() {
     dateController.dispose();
     timeController.dispose();
-    expenseTypeController.dispose();
-    placeController.dispose();
-    paymentMethodController.dispose();
-    reasonController.dispose();
+    incomeTypeController.dispose();
     super.onClose();
   }
 
   Future<void> getProfile() async {
     await appService.getUserProfile();
-    lastOdometer.value =
-        int.tryParse(appService.appUser.value.lastOdometer) ?? 0;
+    lastOdometer.value = appService.appUser.value.lastOdometer;
+  }
+
+  void onSelectIncomeType(String? type) {
+    if (type != null) {
+      model.value.incomeType = type;
+    }
   }
 
   void selectDate() async {
@@ -140,26 +132,24 @@ class CreateExpenseController extends GetxController {
     }
   }
 
-  Future<void> saveRefueling() async {
+  Future<void> saveIncome() async {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
-      Utils.showProgressDialog(Get.context!);
-
+      final context = Get.context;
+      if (context == null) return;
+      Utils.showProgressDialog(context);
       final map = {
         "user_id": appService.appUser.value.id,
         "vehicle_id": appService.currentVehicleId.value,
         "time": timeController.text.trim(),
         "date": model.value.date,
         "odometer": model.value.odometer,
-        "total_amount": totalAmount.value.toString(),
-        "place": placeController.text.trim(),
+        "income_type": incomeTypeController.text.trim(),
+        "value": model.value.value,
         "driver_name": model.value.driverName,
-        "payment_method": paymentMethodController.text.trim(),
-        "reason": reasonController.text.trim(),
         "file_path": filePath.value,
         "notes": model.value.notes,
-        "expense_types": expenseTypesList.map((e) => e.toJson()).toList(),
         "created_at": DateTime.now(),
       };
 
@@ -168,55 +158,31 @@ class CreateExpenseController extends GetxController {
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id)
             .set({
-              'expense_list': FieldValue.arrayUnion([map]),
-            }, SetOptions(merge: true))
-            .then((e) async {
-              //!Update last Odometer
-              await FirebaseFirestore.instance
-                  .collection(DatabaseTables.USER_PROFILE)
-                  .doc(appService.appUser.value.id)
-                  .update({"last_odometer": model.value.odometer});
+              'income_list': FieldValue.arrayUnion([map]),
+            }, SetOptions(merge: true));
 
-              if (Get.isDialogOpen == true) Get.back();
-              Get.back();
+        // Update last Odometer
+        await FirebaseFirestore.instance
+            .collection(DatabaseTables.USER_PROFILE)
+            .doc(appService.appUser.value.id)
+            .update({"last_odometer": model.value.odometer});
 
-              Utils.showSnackBar(message: "expense_added".tr, success: true);
-              if (Get.isRegistered<HomeController>()) {
-                Get.find<HomeController>().loadTimelineData(forceFetch: true);
-              }
+        if (Get.isDialogOpen == true) Get.back();
+        Get.back();
 
-              final report = Get.find<ReportsController>();
-              report.calculateAllReports();
-            })
-            .catchError((e) {
-              if (Get.isDialogOpen == true) Get.back();
-              Utils.showSnackBar(message: "something_wrong".tr, success: false);
-            });
+        Utils.showSnackBar(message: "income_added".tr, success: true);
+        if (Get.isRegistered<HomeController>()) {
+          Get.find<HomeController>().loadTimelineData(forceFetch: true);
+        }
 
-        // await FirebaseFirestore.instance
-        //     .collection(DatabaseTables.USER_PROFILE)
-        //     .doc(appService.appUser.value.id)
-        //     .collection(DatabaseTables.EXPENSES)
-        //     .doc()
-        //     .set(map);
+        if (Get.isRegistered<ReportsController>()) {
+          final report = Get.find<ReportsController>();
+          report.calculateAllReports();
+        }
       } catch (e) {
         if (Get.isDialogOpen == true) Get.back();
-
         Utils.showSnackBar(message: "something_wrong".tr, success: false);
       }
     }
-  }
-
-  void removeItem(int index) {
-    if (index < 0 || index >= expenseTypesList.length) return;
-    expenseTypesList.removeAt(index);
-    calculateTotal();
-    expenseTypesList.refresh();
-  }
-
-  void calculateTotal() {
-    totalAmount.value = expenseTypesList
-        .where((e) => e.isChecked.value)
-        .fold(0.0, (a1, e) => a1 + (double.tryParse(e.value.value) ?? 0));
   }
 }

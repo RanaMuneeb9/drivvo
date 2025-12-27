@@ -162,7 +162,8 @@ class ExpenseTypeView extends GetView<ExpenseTypeController> {
                                         horizontal: 10.0,
                                       ),
                                       child: TextInputField(
-                                        initialValue: model.value.value,
+                                        initialValue: model.value.value
+                                            .toString(),
                                         isUrdu: controller.isUrdu,
                                         isRequired: false,
                                         isNext: true,
@@ -175,7 +176,15 @@ class ExpenseTypeView extends GetView<ExpenseTypeController> {
                                         onTap: () {},
                                         onSaved: (value) {},
                                         onChange: (value) {
-                                          model.value.value = value ?? '';
+                                          if (value != null &&
+                                              value.isNotEmpty) {
+                                            final parsedValue = int.tryParse(
+                                              value,
+                                            );
+                                            if (parsedValue != null) {
+                                              model.value.value = parsedValue;
+                                            }
+                                          }
                                         },
                                         onValidate: (value) => null,
                                       ),

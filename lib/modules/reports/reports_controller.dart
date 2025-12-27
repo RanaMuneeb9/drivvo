@@ -27,10 +27,10 @@ class ReportsController extends GetxController
   var endDate = DateTime.now().obs;
 
   // General Tab Calculations
-  var totalBalance = 0.0.obs;
-  var totalCost = 0.0.obs;
-  var totalIncome = 0.0.obs;
-  var totalDistance = 0.0.obs;
+  var totalBalance = 0.obs;
+  var totalCost = 0.obs;
+  var totalIncome = 0.obs;
+  var totalDistance = 0.obs;
 
   // Per day / Per km calculations
   var balanceByDay = 0.0.obs;
@@ -42,29 +42,29 @@ class ReportsController extends GetxController
   var dailyAverageDistance = 0.0.obs;
 
   // Refueling Tab
-  var refuelingCost = 0.0.obs;
-  var refuelingDistance = 0.0.obs;
+  var refuelingCost = 0.obs;
+  var refuelingDistance = 0.obs;
   var refuelingCostByDay = 0.0.obs;
   var refuelingCostByKm = 0.0.obs;
   var refuelingDailyAverage = 0.0.obs;
 
   // Expense Tab
-  var expenseCost = 0.0.obs;
-  var expenseDistance = 0.0.obs;
+  var expenseCost = 0.obs;
+  var expenseDistance = 0.obs;
   var expenseCostByDay = 0.0.obs;
   var expenseCostByKm = 0.0.obs;
   var expenseDailyAverage = 0.0.obs;
 
   // Income Tab
-  var incomeCost = 0.0.obs;
-  var incomeDistance = 0.0.obs;
+  var incomeCost = 0.obs;
+  var incomeDistance = 0.obs;
   var incomeCostByDay = 0.0.obs;
   var incomeCostByKm = 0.0.obs;
   var incomeDailyAverage = 0.0.obs;
 
   // Service Tab
-  var serviceCost = 0.0.obs;
-  var serviceDistance = 0.0.obs;
+  var serviceCost = 0.obs;
+  var serviceDistance = 0.obs;
   var serviceCostByDay = 0.0.obs;
   var serviceCostByKm = 0.0.obs;
   var serviceDailyAverage = 0.0.obs;
@@ -73,20 +73,20 @@ class ReportsController extends GetxController
   var selectedChartType = "Select".obs;
 
   // Chart Data
-  var generalMonthlyData = <String, double>{}.obs;
-  var expenseVsIncomeData = <String, Map<String, double>>{}.obs;
-  var refuelingMonthlyData = <String, double>{}.obs;
-  var expenseMonthlyData = <String, double>{}.obs;
-  var incomeMonthlyData = <String, double>{}.obs;
-  var serviceMonthlyData = <String, double>{}.obs;
+  var generalMonthlyData = <String, int>{}.obs;
+  var expenseVsIncomeData = <String, Map<String, int>>{}.obs;
+  var refuelingMonthlyData = <String, int>{}.obs;
+  var expenseMonthlyData = <String, int>{}.obs;
+  var incomeMonthlyData = <String, int>{}.obs;
+  var serviceMonthlyData = <String, int>{}.obs;
   var fuelEfficiencyData = <FlSpot>[].obs;
   var odometerHistoryData = <FlSpot>[].obs;
   var distancePerRefuelingData = <FlSpot>[].obs;
   var fuelPriceData = <FlSpot>[].obs;
-  var expenseTypeDistribution = <String, double>{}.obs;
-  var serviceTypeDistribution = <String, double>{}.obs;
-  var incomeTypeDistribution = <String, double>{}.obs;
-  var fuelTypeDistribution = <String, double>{}.obs;
+  var expenseTypeDistribution = <String, int>{}.obs;
+  var serviceTypeDistribution = <String, int>{}.obs;
+  var incomeTypeDistribution = <String, int>{}.obs;
+  var fuelTypeDistribution = <String, int>{}.obs;
 
   @override
   void onInit() {
@@ -249,9 +249,9 @@ class ReportsController extends GetxController
   }
 
   void _prepareFuelTypeDistribution(List<RefuelingModel> refuelings) {
-    final Map<String, double> distribution = {};
+    final Map<String, int> distribution = {};
     for (var refuel in refuelings) {
-      final double val = double.tryParse(refuel.totalCost) ?? 0;
+      final int val = refuel.totalCost;
       if (val > 0) {
         final type = refuel.fuelType.isEmpty ? "unknown" : refuel.fuelType;
         distribution[type] = (distribution[type] ?? 0) + val;
@@ -261,9 +261,9 @@ class ReportsController extends GetxController
   }
 
   void _prepareIncomeDistribution(List<IncomeModel> incomes) {
-    final Map<String, double> distribution = {};
+    final Map<String, int> distribution = {};
     for (var income in incomes) {
-      final double val = double.tryParse(income.value) ?? 0;
+      final int val = income.value;
       if (val > 0) {
         distribution[income.incomeType] =
             (distribution[income.incomeType] ?? 0) + val;
@@ -273,10 +273,10 @@ class ReportsController extends GetxController
   }
 
   void _prepareServiceTypeDistribution(List<ServiceModel> services) {
-    final Map<String, double> distribution = {};
+    final Map<String, int> distribution = {};
     for (var service in services) {
       for (var type in service.serviceTypes) {
-        final double val = double.tryParse(type.value.value) ?? 0;
+        final int val = type.value.value;
         if (val > 0) {
           distribution[type.name] = (distribution[type.name] ?? 0) + val;
         }
@@ -286,10 +286,10 @@ class ReportsController extends GetxController
   }
 
   void _prepareExpenseTypeDistribution(List<ExpenseModel> expenses) {
-    final Map<String, double> distribution = {};
+    final Map<String, int> distribution = {};
     for (var expense in expenses) {
       for (var type in expense.expenseTypes) {
-        final double val = double.tryParse(type.value.value) ?? 0;
+        final int val = type.value.value;
         if (val > 0) {
           distribution[type.name] = (distribution[type.name] ?? 0) + val;
         }
@@ -306,11 +306,11 @@ class ReportsController extends GetxController
   ) {
     final formatter = DateFormat('MMM yy');
 
-    Map<String, double> getMonthlyMap(
+    Map<String, int> getMonthlyMap(
       List<dynamic> items,
-      double Function(dynamic) getCost,
+      int Function(dynamic) getCost,
     ) {
-      final Map<String, double> map = {};
+      final Map<String, int> map = {};
       for (var item in items) {
         final month = formatter.format(item.date);
         map[month] = (map[month] ?? 0) + getCost(item);
@@ -320,24 +320,24 @@ class ReportsController extends GetxController
 
     refuelingMonthlyData.value = getMonthlyMap(
       refuelings,
-      (item) => double.tryParse((item as RefuelingModel).totalCost) ?? 0,
+      (item) => (item as RefuelingModel).totalCost,
     );
     expenseMonthlyData.value = getMonthlyMap(
       expenses,
-      (item) => double.tryParse((item as ExpenseModel).totalAmount) ?? 0,
+      (item) => (item as ExpenseModel).totalAmount,
     );
     serviceMonthlyData.value = getMonthlyMap(
       services,
-      (item) => double.tryParse((item as ServiceModel).totalAmount) ?? 0,
+      (item) => (item as ServiceModel).totalAmount,
     );
     incomeMonthlyData.value = getMonthlyMap(
       incomes,
-      (item) => double.tryParse((item as IncomeModel).value) ?? 0,
+      (item) => (item as IncomeModel).value,
     );
 
     // General monthly data (combined cost: refuel + expense + service)
-    final Map<String, double> generalMap = {};
-    void merge(Map<String, double> source) {
+    final Map<String, int> generalMap = {};
+    void merge(Map<String, int> source) {
       source.forEach((key, value) {
         generalMap[key] = (generalMap[key] ?? 0) + value;
       });
@@ -349,7 +349,7 @@ class ReportsController extends GetxController
     generalMonthlyData.value = generalMap;
 
     // Preparation of Expense vs Income comparison data
-    final Map<String, Map<String, double>> comparison = {};
+    final Map<String, Map<String, int>> comparison = {};
     final allMonths = {...generalMap.keys, ...incomeMonthlyData.keys};
     for (var month in allMonths) {
       comparison[month] = {
@@ -368,11 +368,7 @@ class ReportsController extends GetxController
 
     // Sort by date/odometer
     final sorted = List<RefuelingModel>.from(allRefuelings);
-    sorted.sort(
-      (a, b) => (double.tryParse(a.odometer) ?? 0).compareTo(
-        double.tryParse(b.odometer) ?? 0,
-      ),
-    );
+    sorted.sort((a, b) => a.odometer.compareTo(b.odometer));
 
     final List<FlSpot> spots = [];
     int validEntryIndex = 0;
@@ -385,10 +381,8 @@ class ReportsController extends GetxController
             startDate.value.subtract(const Duration(days: 1)),
           ) &&
           current.date.isBefore(endDate.value.add(const Duration(days: 1)))) {
-        final dist =
-            (double.tryParse(current.odometer) ?? 0) -
-            (double.tryParse(previous.odometer) ?? 0);
-        final liters = double.tryParse(current.liter) ?? 0;
+        final dist = current.odometer - previous.odometer;
+        final liters = current.liter;
 
         if (liters > 0 && dist > 0) {
           final efficiency = dist / liters;
@@ -419,13 +413,16 @@ class ReportsController extends GetxController
             startDate.value.subtract(const Duration(days: 1)),
           ) &&
           current.date.isBefore(endDate.value.add(const Duration(days: 1)))) {
-        final currentOdo = double.tryParse(current.odometer) ?? 0;
-        final previousOdo = double.tryParse(previous.odometer) ?? 0;
+        final currentOdo = current.odometer;
+        final previousOdo = previous.odometer;
 
         if (currentOdo > previousOdo) {
           final dist = currentOdo - previousOdo;
           spots.add(
-            FlSpot(current.date.millisecondsSinceEpoch.toDouble(), dist),
+            FlSpot(
+              current.date.millisecondsSinceEpoch.toDouble(),
+              dist.toDouble(),
+            ),
           );
         }
       }
@@ -445,9 +442,11 @@ class ReportsController extends GetxController
 
     final List<FlSpot> spots = [];
     for (var refuel in sorted) {
-      final p = double.tryParse(refuel.price) ?? 0;
+      final p = refuel.price;
       if (p > 0) {
-        spots.add(FlSpot(refuel.date.millisecondsSinceEpoch.toDouble(), p));
+        spots.add(
+          FlSpot(refuel.date.millisecondsSinceEpoch.toDouble(), p.toDouble()),
+        );
       }
     }
     fuelPriceData.value = spots;
@@ -481,12 +480,12 @@ class ReportsController extends GetxController
 
     final List<FlSpot> spots = [];
     for (var entry in allEntries) {
-      final odo = double.tryParse(entry['odometer']) ?? 0;
+      int odo = entry['odometer'];
       if (odo > 0) {
         spots.add(
           FlSpot(
             (entry['date'] as DateTime).millisecondsSinceEpoch.toDouble(),
-            odo,
+            odo.toDouble(),
           ),
         );
       }
@@ -538,91 +537,104 @@ class ReportsController extends GetxController
   // }
 
   // Calculation methods
-  double _calculateRefuelingTotal(List<RefuelingModel> list) {
-    double total = 0;
+  int _calculateRefuelingTotal(List<RefuelingModel> list) {
+    int total = 0;
     for (var item in list) {
-      total += double.tryParse(item.totalCost) ?? 0;
+      total += item.totalCost;
     }
     return total;
   }
 
-  double _calculateRefuelingDistance(List<RefuelingModel> list) {
+  int _calculateRefuelingDistance(List<RefuelingModel> list) {
     if (list.isEmpty) return 0;
-    double minOdometer = double.infinity;
-    double maxOdometer = 0;
+    int minOdometer = 0;
+    int maxOdometer = 0;
     for (var item in list) {
-      final odometer = double.tryParse(item.odometer) ?? 0;
+      final odometer = item.odometer;
       if (odometer < minOdometer) minOdometer = odometer;
       if (odometer > maxOdometer) maxOdometer = odometer;
     }
-    return minOdometer == double.infinity ? 0 : maxOdometer - minOdometer;
+    return minOdometer == 0 ? 0 : maxOdometer - minOdometer;
   }
 
-  double _calculateExpenseTotal(List<ExpenseModel> list) {
-    double total = 0;
+  int _calculateExpenseTotal(List<ExpenseModel> list) {
+    int total = 0;
     for (var item in list) {
-      total += double.tryParse(item.totalAmount) ?? 0;
+      total += item.totalAmount;
     }
     return total;
   }
 
-  double _calculateExpenseDistance(List<ExpenseModel> list) {
+  int _calculateExpenseDistance(List<ExpenseModel> list) {
     if (list.isEmpty) return 0;
-    double minOdometer = double.infinity;
-    double maxOdometer = 0;
+    int minOdometer = 0;
+    int maxOdometer = 0;
     for (var item in list) {
-      final odometer = double.tryParse(item.odometer) ?? 0;
+      final odometer = item.odometer;
       if (odometer < minOdometer) minOdometer = odometer;
       if (odometer > maxOdometer) maxOdometer = odometer;
     }
-    return minOdometer == double.infinity ? 0 : maxOdometer - minOdometer;
+    return minOdometer == 0 ? 0 : maxOdometer - minOdometer;
   }
 
-  double _calculateIncomeTotal(List<IncomeModel> list) {
-    double total = 0;
+  // int _calculateRefuelingDistance(List<RefuelingModel> list) {
+  //   if (list.isEmpty) return 0;
+
+  //   int minOdometer = list.first.odometer;
+  //   int maxOdometer = list.first.odometer;
+  //   for (var item in list.skip(1)) {
+  //     final odometer = item.odometer;
+  //     if (odometer < minOdometer) minOdometer = odometer;
+  //     if (odometer > maxOdometer) maxOdometer = odometer;
+  //   }
+  //   return maxOdometer - minOdometer;
+  // }
+
+  int _calculateIncomeTotal(List<IncomeModel> list) {
+    int total = 0;
     for (var item in list) {
-      total += double.tryParse(item.value) ?? 0;
+      total += item.value;
     }
     return total;
   }
 
-  double _calculateIncomeDistance(List<IncomeModel> list) {
+  int _calculateIncomeDistance(List<IncomeModel> list) {
     if (list.isEmpty) return 0;
-    double minOdometer = double.infinity;
-    double maxOdometer = 0;
+    int minOdometer = 0;
+    int maxOdometer = 0;
     for (var item in list) {
-      final odometer = double.tryParse(item.odometer) ?? 0;
+      final odometer = item.odometer;
       if (odometer < minOdometer) minOdometer = odometer;
       if (odometer > maxOdometer) maxOdometer = odometer;
     }
-    return minOdometer == double.infinity ? 0 : maxOdometer - minOdometer;
+    return minOdometer == 0 ? 0 : maxOdometer - minOdometer;
   }
 
-  double _calculateServiceTotal(List<ServiceModel> list) {
-    double total = 0;
+  int _calculateServiceTotal(List<ServiceModel> list) {
+    int total = 0;
     for (var item in list) {
-      total += double.tryParse(item.totalAmount) ?? 0;
+      total += item.totalAmount;
     }
     return total;
   }
 
-  double _calculateServiceDistance(List<ServiceModel> list) {
+  int _calculateServiceDistance(List<ServiceModel> list) {
     if (list.isEmpty) return 0;
-    double minOdometer = double.infinity;
-    double maxOdometer = 0;
+    int minOdometer = 0;
+    int maxOdometer = 0;
     for (var item in list) {
-      final odometer = double.tryParse(item.odometer) ?? 0;
+      final odometer = item.odometer;
       if (odometer < minOdometer) minOdometer = odometer;
       if (odometer > maxOdometer) maxOdometer = odometer;
     }
-    return minOdometer == double.infinity ? 0 : maxOdometer - minOdometer;
+    return minOdometer == 0 ? 0 : maxOdometer - minOdometer;
   }
 
-  String formatCurrency(double value) {
+  String formatCurrency(int value) {
     return "\$${value.toStringAsFixed(2)}";
   }
 
-  String formatDistance(double value) {
+  String formatDistance(int value) {
     return "${value.toStringAsFixed(0)} km";
   }
 

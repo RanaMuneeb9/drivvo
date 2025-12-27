@@ -161,6 +161,7 @@ class HomeController extends GetxController {
                 isIncome: false,
                 icon: Icons.local_gas_station,
                 iconBgColor: const Color(0xFFFB9601),
+                originalData: data,
               ),
             );
           }
@@ -180,6 +181,7 @@ class HomeController extends GetxController {
                 isIncome: false,
                 icon: Icons.receipt_long,
                 iconBgColor: Colors.red,
+                originalData: data,
               ),
             );
           }
@@ -199,6 +201,7 @@ class HomeController extends GetxController {
                 isIncome: false,
                 icon: Icons.build,
                 iconBgColor: Colors.brown,
+                originalData: data,
               ),
             );
           }
@@ -220,6 +223,7 @@ class HomeController extends GetxController {
                 isIncome: true,
                 icon: Icons.attach_money,
                 iconBgColor: Colors.green,
+                originalData: data,
               ),
             );
           }
@@ -244,6 +248,7 @@ class HomeController extends GetxController {
                 routeStartDate: data.startDate,
                 routeEndDate: data.endDate,
                 origin: data.origin,
+                originalData: data,
               ),
             );
           }
@@ -339,21 +344,90 @@ class HomeController extends GetxController {
     }
   }
 
-  double getFirstOdometer() {
+  int getFirstOdometer() {
     if (allEntries.isNotEmpty) {
-      final odo = double.parse(allEntries.last.odometer);
+      final odo = allEntries.last.odometer;
       return odo;
     } else {
-      return 0.0;
+      return 0;
     }
   }
 
-  double getlastOdometer() {
+  int getlastOdometer() {
     if (allEntries.isNotEmpty) {
-      final odo = double.parse(allEntries.first.odometer);
+      final odo = allEntries.first.odometer;
       return odo;
     } else {
-      return 0.0;
+      return 0;
+    }
+  }
+
+  Future<void> deleteEntry(TimelineEntry entry) async {
+    try {
+      if (entry.originalData == null) return;
+
+      // Show confirmation dialog
+      final confirmed = await Get.dialog<bool>(
+        AlertDialog(
+          title: Text('delete_entry'.tr),
+          content: Text('are_you_sure_delete_entry'.tr),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(result: false),
+              child: Text('cancel'.tr),
+            ),
+            TextButton(
+              onPressed: () => Get.back(result: true),
+              child: Text(
+                'delete'.tr,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true) return;
+
+      Utils.showProgressDialog(Get.context!);
+
+      String fieldName = "";
+      switch (entry.type) {
+        case TimelineEntryType.refueling:
+          fieldName = "refueling_list";
+          break;
+        case TimelineEntryType.expense:
+          fieldName = "expense_list";
+          break;
+        case TimelineEntryType.service:
+          fieldName = "service_list";
+          break;
+        case TimelineEntryType.income:
+          fieldName = "income_list";
+          break;
+        case TimelineEntryType.route:
+          fieldName = "route_list";
+          break;
+        default:
+          return;
+      }
+
+      await db
+          .collection(DatabaseTables.USER_PROFILE)
+          .doc(appService.appUser.value.id)
+          .update({
+            fieldName: FieldValue.arrayRemove([entry.originalData.rawMap]),
+          })
+          .then((e) async {
+            if (Get.isDialogOpen == true) Get.back();
+
+            Utils.showSnackBar(message: "entry_deleted".tr, success: true);
+            await loadTimelineData(forceFetch: true);
+          });
+    } catch (e) {
+      if (Get.isDialogOpen == true) Get.back();
+      debugPrint("Error deleting entry: $e");
+      Utils.showSnackBar(message: "failed_to_delete_entry".tr, success: false);
     }
   }
 }

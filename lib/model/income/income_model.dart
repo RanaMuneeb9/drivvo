@@ -5,36 +5,53 @@ class IncomeModel {
   late String vehicleId;
   late String time;
   late DateTime date;
-  late String odometer;
+  late int odometer;
   late String incomeType;
-  late String value;
+  late int value;
   late String driverName;
   late String filePath;
   late String notes;
+  Map<String, dynamic> rawMap = {};
 
   IncomeModel() {
     userId = "";
     vehicleId = "";
     time = "";
     date = DateTime.now();
-    odometer = "";
+    odometer = 0;
     incomeType = "";
-    value = "";
+    value = 0;
     driverName = "";
     filePath = "";
     notes = "";
   }
 
   IncomeModel.fromJson(Map<String, dynamic> json) {
+    rawMap = json;
     userId = json["user_id"] ?? "";
     vehicleId = json["vehicle_id"] ?? "";
     time = json["time"] ?? "";
     date = (json["date"] as Timestamp?)?.toDate() ?? DateTime.now();
-    odometer = json["odometer"] ?? "";
+    odometer = json["odometer"] ?? 0;
     incomeType = json["income_type"] ?? "";
-    value = json["value"] ?? "";
+    value = json["value"] ?? 0;
     driverName = json["driver_name"] ?? "";
     filePath = json["file_path"] ?? "";
     notes = json["notes"] ?? "";
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "user_id": userId,
+      "vehicle_id": vehicleId,
+      "time": time,
+      "date": date,
+      "odometer": odometer,
+      "income_type": incomeType,
+      "value": value,
+      "driver_name": driverName,
+      "file_path": filePath,
+      "notes": notes,
+    };
   }
 }

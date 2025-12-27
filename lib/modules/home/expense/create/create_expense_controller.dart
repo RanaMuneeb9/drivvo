@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivvo/model/expense/expense_model.dart';
 import 'package:drivvo/model/expense/expense_type_model.dart';
-import 'package:drivvo/model/service/service_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/modules/reports/reports_controller.dart';
 import 'package:drivvo/services/app_service.dart';
@@ -13,17 +13,17 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class CreateServiceController extends GetxController {
+class CreateExpenseController extends GetxController {
   late AppService appService;
   final formKey = GlobalKey<FormState>();
 
-  var serviceTyesList = <ExpenseTypeModel>[].obs;
+  var expenseTypesList = <ExpenseTypeModel>[].obs;
 
-  var totalAmount = 0.0.obs;
+  var totalAmount = 0.obs;
   var lastOdometer = 0.obs;
 
   var filePath = "".obs;
-  var model = ServiceModel().obs;
+  var model = ExpenseModel().obs;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
@@ -63,14 +63,7 @@ class CreateServiceController extends GetxController {
 
   Future<void> getProfile() async {
     await appService.getUserProfile();
-    lastOdometer.value =
-        int.tryParse(appService.appUser.value.lastOdometer) ?? 0;
-  }
-
-  void onSelectFuelType(String? type) {
-    if (type != null) {
-      model.value.fuelType = type;
-    }
+    lastOdometer.value = appService.appUser.value.lastOdometer;
   }
 
   void selectDate() async {
@@ -146,7 +139,7 @@ class CreateServiceController extends GetxController {
     }
   }
 
-  Future<void> saveService() async {
+  Future<void> saveExpense() async {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
@@ -158,14 +151,14 @@ class CreateServiceController extends GetxController {
         "time": timeController.text.trim(),
         "date": model.value.date,
         "odometer": model.value.odometer,
-        "total_amount": totalAmount.value.toString(),
+        "total_amount": totalAmount.value,
         "place": placeController.text.trim(),
         "driver_name": model.value.driverName,
         "payment_method": paymentMethodController.text.trim(),
         "reason": reasonController.text.trim(),
         "file_path": filePath.value,
         "notes": model.value.notes,
-        "expense_types": serviceTyesList.map((e) => e.toJson()).toList(),
+        "expense_types": expenseTypesList.map((e) => e.toJson()).toList(),
         "created_at": DateTime.now(),
       };
 
@@ -174,7 +167,7 @@ class CreateServiceController extends GetxController {
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id)
             .set({
-              'service_list': FieldValue.arrayUnion([map]),
+              'expense_list': FieldValue.arrayUnion([map]),
             }, SetOptions(merge: true))
             .then((e) async {
               //!Update last Odometer
@@ -182,21 +175,30 @@ class CreateServiceController extends GetxController {
                   .collection(DatabaseTables.USER_PROFILE)
                   .doc(appService.appUser.value.id)
                   .update({"last_odometer": model.value.odometer});
+
               if (Get.isDialogOpen == true) Get.back();
               Get.back();
 
+              Utils.showSnackBar(message: "expense_added".tr, success: true);
               if (Get.isRegistered<HomeController>()) {
                 Get.find<HomeController>().loadTimelineData(forceFetch: true);
               }
+
               if (Get.isRegistered<ReportsController>()) {
-                final report = Get.find<ReportsController>();
-                report.calculateAllReports();
+                Get.find<ReportsController>().calculateAllReports();
               }
             })
             .catchError((e) {
               if (Get.isDialogOpen == true) Get.back();
               Utils.showSnackBar(message: "something_wrong".tr, success: false);
             });
+
+        // await FirebaseFirestore.instance
+        //     .collection(DatabaseTables.USER_PROFILE)
+        //     .doc(appService.appUser.value.id)
+        //     .collection(DatabaseTables.EXPENSES)
+        //     .doc()
+        //     .set(map);
       } catch (e) {
         if (Get.isDialogOpen == true) Get.back();
 
@@ -206,15 +208,15 @@ class CreateServiceController extends GetxController {
   }
 
   void removeItem(int index) {
-    if (index < 0 || index >= serviceTyesList.length) return;
-    serviceTyesList.removeAt(index);
+    if (index < 0 || index >= expenseTypesList.length) return;
+    expenseTypesList.removeAt(index);
     calculateTotal();
-    serviceTyesList.refresh();
+    expenseTypesList.refresh();
   }
 
   void calculateTotal() {
-    totalAmount.value = serviceTyesList
+    totalAmount.value = expenseTypesList
         .where((e) => e.isChecked.value)
-        .fold(0.0, (a1, e) => a1 + (double.tryParse(e.value.value) ?? 0));
+        .fold(0, (a1, e) => a1 + e.value.value);
   }
 }

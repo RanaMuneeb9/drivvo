@@ -6,7 +6,7 @@ enum TimelineEntryType { refueling, expense, service, income, route, welcome }
 class TimelineEntry {
   final TimelineEntryType type;
   final String title;
-  final String odometer;
+  final int odometer;
   final DateTime date;
   final String amount;
   final bool isIncome;
@@ -18,6 +18,9 @@ class TimelineEntry {
   final String? routeOdometer;
   final DateTime? routeStartDate;
   final DateTime? routeEndDate;
+
+  //!For edit delete
+  final dynamic originalData;
 
   TimelineEntry({
     required this.type,
@@ -32,8 +35,9 @@ class TimelineEntry {
     this.routeOdometer,
     this.routeStartDate,
     this.routeEndDate,
+    this.originalData,
   });
-  
+
   String get routeStartFormattedDate {
     return date.day.toString().padLeft(2, '0');
   }

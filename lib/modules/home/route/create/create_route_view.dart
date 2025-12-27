@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
-import 'package:drivvo/modules/home/route/create_route_controller.dart';
+import 'package:drivvo/modules/home/route/create/create_route_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
@@ -197,23 +197,13 @@ class CreateRouteView extends GetView<CreateRouteController> {
                   readOnly: false,
                   labelText: "initial_odometer".tr,
                   hintText:
-                      "${'last_odometer'.tr}: ${controller.lastOdometer.value} km"
-                          .tr,
+                      "${'last_odometer'.tr}: ${controller.lastOdometer.value} km",
                   inputAction: TextInputAction.next,
                   type: TextInputType.number,
+                  controller: controller.initialOdometerController,
                   onTap: () {},
-                  onChange: (v) {
-                    if (v != null && v.isNotEmpty) {
-                      // controller.initalOdometer.value = int.parse(v);
-                      final parsed = int.tryParse(v);
-                      if (parsed != null) {
-                        controller.initalOdometer.value = parsed;
-                      }
-                    }
-                  },
-                  onSaved: (value) {
-                    controller.model.value.initialOdometer = value!;
-                  },
+                  onChange: (v) => controller.calculateTotal(),
+                  onSaved: (value) {},
                   onValidate: (value) {
                     if (value != null) {
                       if (value.isNotEmpty) {
@@ -264,7 +254,11 @@ class CreateRouteView extends GetView<CreateRouteController> {
                       "title": Constants.PLACES,
                       "selected_title": controller.destinationController.text,
                     },
-                  )?.then((e) => controller.destinationController.text = e);
+                  )?.then((e) {
+                    if (e != null) {
+                      controller.destinationController.text = e;
+                    }
+                  });
                 },
                 onSaved: (value) {},
                 onValidate: (value) {
@@ -286,21 +280,27 @@ class CreateRouteView extends GetView<CreateRouteController> {
                   readOnly: false,
                   labelText: "final_odometer".tr,
                   hintText:
-                      "${'last_odometer'.tr}: ${controller.lastOdometer.value} km"
-                          .tr,
+                      "${'last_odometer'.tr}: ${controller.lastOdometer.value} km",
                   inputAction: TextInputAction.next,
                   type: TextInputType.number,
+                  controller: controller.finalOdometerController,
                   onTap: () {},
-                  onSaved: (value) {
-                    controller.model.value.finalOdometer = value!;
-                  },
+                  onChange: (v) => controller.calculateTotal(),
+                  onSaved: (value) {},
                   onValidate: (value) {
                     if (value != null) {
                       if (value.isNotEmpty) {
-                        final c = int.parse(value);
+                        // final c = int.parse(value);
+                        // if (c <= controller.initalOdometer.value) {
+                        //   return "Final odometer should be greater than initial odometer"
+                        //       .tr;
+                        // }
+                        final c = int.tryParse(value);
+                        if (c == null) {
+                          return 'invalid_number'.tr;
+                        }
                         if (c <= controller.initalOdometer.value) {
-                          return "Final odometer should be greater than initial odometer"
-                              .tr;
+                          return 'final_odometer_greater_than_initial'.tr;
                         }
                       } else if (value.isEmpty) {
                         return 'final_odometer_required'.tr;
@@ -341,10 +341,10 @@ class CreateRouteView extends GetView<CreateRouteController> {
                       hintText: "100".tr,
                       inputAction: TextInputAction.next,
                       type: TextInputType.number,
+                      controller: controller.valuePerKmController,
                       onTap: () {},
-                      onSaved: (value) {
-                        controller.model.value.valuePerKm = value!;
-                      },
+                      onChange: (v) => controller.calculateTotal(),
+                      onSaved: (value) {},
                       onValidate: (value) {
                         if (value == null || value.isEmpty) {
                           return 'value_per_km_required'.tr;
@@ -360,15 +360,14 @@ class CreateRouteView extends GetView<CreateRouteController> {
                       isRequired: true,
                       isNext: true,
                       obscureText: false,
-                      readOnly: false,
+                      readOnly: true,
                       labelText: "total".tr,
                       hintText: "100".tr,
                       inputAction: TextInputAction.next,
                       type: TextInputType.number,
+                      controller: controller.totalController,
                       onTap: () {},
-                      onSaved: (value) {
-                        controller.model.value.total = value!;
-                      },
+                      onSaved: (value) {},
                       onValidate: (value) {
                         if (value == null || value.isEmpty) {
                           return 'total_required'.tr;
@@ -415,7 +414,11 @@ class CreateRouteView extends GetView<CreateRouteController> {
                       "title": Constants.REASONS,
                       "selected_title": controller.reasonController.text,
                     },
-                  )?.then((e) => controller.reasonController.text = e);
+                  )?.then((e) {
+                    if (e != null) {
+                      controller.reasonController.text = e;
+                    }
+                  });
                 },
                 onSaved: (value) {},
                 onValidate: (value) => null,

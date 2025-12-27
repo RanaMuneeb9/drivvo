@@ -1,4 +1,4 @@
-import 'package:drivvo/modules/home/refueling/create_refueling_controller.dart';
+import 'package:drivvo/modules/home/refueling/create/create_refueling_controller.dart';
 import 'package:get/get.dart';
 
 class CreateRefuelingBinding extends Bindings {

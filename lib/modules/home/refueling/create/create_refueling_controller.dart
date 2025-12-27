@@ -71,8 +71,7 @@ class CreateRefuelingController extends GetxController {
 
   Future<void> getProfile() async {
     await appService.getUserProfile();
-    lastOdometer.value =
-        int.tryParse(appService.appUser.value.lastOdometer) ?? 0;
+    lastOdometer.value = appService.appUser.value.lastOdometer;
   }
 
   void updateManualEdit(String field) {
@@ -85,13 +84,13 @@ class CreateRefuelingController extends GetxController {
   // Called when user changes price value
   void onPriceChanged(String? value) {
     if (value == null || value.isEmpty) {
-      model.value.price = "0";
+      model.value.price = 0;
       return;
     }
-    final price = double.tryParse(value.replaceAll(',', ''));
+    final price = int.tryParse(value.replaceAll(',', ''));
     if (price == null) return;
 
-    model.value.price = value;
+    model.value.price = int.parse(value);
     updateManualEdit('price');
     calculateThirdValue();
   }
@@ -99,13 +98,14 @@ class CreateRefuelingController extends GetxController {
   // Called when user changes total cost value
   void onTotalCostChanged(String? value) {
     if (value == null || value.isEmpty) {
-      model.value.totalCost = "0";
+      model.value.totalCost = 0;
       return;
     }
-    final totalCost = double.tryParse(value.replaceAll(',', ''));
+    final sanitized = value.replaceAll(',', '');
+    final totalCost = double.tryParse(sanitized);
     if (totalCost == null) return;
 
-    model.value.totalCost = value;
+    model.value.totalCost = totalCost.toInt();
     updateManualEdit('totalCost');
     calculateThirdValue();
   }
@@ -113,24 +113,22 @@ class CreateRefuelingController extends GetxController {
   // Called when user changes liters value
   void onLitersChanged(String? value) {
     if (value == null || value.isEmpty) {
-      model.value.liter = "0";
+      model.value.liter = 0;
       return;
     }
     final liter = double.tryParse(value.replaceAll(',', ''));
     if (liter == null) return;
 
-    model.value.liter = value;
+    model.value.liter = int.parse(value);
     updateManualEdit('liter');
     calculateThirdValue();
   }
 
   void calculateThirdValue() {
-    final price =
-        double.tryParse(priceController.text.replaceAll(',', '')) ?? 0.0;
-    final totalCost =
-        double.tryParse(totalCostController.text.replaceAll(',', '')) ?? 0.0;
-    final liter =
-        double.tryParse(litersController.text.replaceAll(',', '')) ?? 0.0;
+    int price = int.tryParse(priceController.text.replaceAll(',', '')) ?? 0;
+    int totalCost =
+        int.tryParse(totalCostController.text.replaceAll(',', '')) ?? 0;
+    int liter = int.tryParse(litersController.text.replaceAll(',', '')) ?? 0;
 
     // Formula: totalCost = price * liter
 
@@ -140,7 +138,7 @@ class CreateRefuelingController extends GetxController {
       if (price > 0 && liter > 0) {
         final calc = price * liter;
         totalCostController.text = calc.toStringAsFixed(2);
-        model.value.totalCost = calc.toString();
+        model.value.totalCost = calc;
       }
     } else if ((_lastManualEdit == 'price' &&
             _secondLastManualEdit == 'totalCost') ||
@@ -149,7 +147,7 @@ class CreateRefuelingController extends GetxController {
       if (price > 0 && totalCost > 0) {
         final calc = totalCost / price;
         litersController.text = calc.toStringAsFixed(2);
-        model.value.liter = calc.toString();
+        model.value.liter = calc.toInt();
       }
     } else if ((_lastManualEdit == 'liter' &&
             _secondLastManualEdit == 'totalCost') ||
@@ -158,7 +156,7 @@ class CreateRefuelingController extends GetxController {
       if (liter > 0 && totalCost > 0) {
         final calc = totalCost / liter;
         priceController.text = calc.toStringAsFixed(2);
-        model.value.price = calc.toString();
+        model.value.price = calc.toInt();
       }
     }
   }
@@ -252,15 +250,19 @@ class CreateRefuelingController extends GetxController {
 
       Utils.showProgressDialog(Get.context!);
 
+      double liter = double.parse(litersController.text);
+      double price = double.parse(priceController.text);
+      double totalCost = double.parse(totalCostController.text);
+
       final map = {
         "id": appService.appUser.value.id,
         "vehicle_id": appService.currentVehicleId.value,
         "time": timeController.text.trim(),
         "date": model.value.date,
         "odometer": model.value.odometer,
-        "price": priceController.text.trim(),
-        "liter": litersController.text.trim(),
-        "total_cost": totalCostController.text.trim(),
+        "price": price.toInt(),
+        "liter": liter.toInt(),
+        "total_cost": totalCost.toInt(),
         "fuel_type": fuelController.text.trim(),
         "fuel_station": gasStationCostController.text.trim(),
         "full_tank": isFullTank.value,

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/expense/expense_type_model.dart';
-import 'package:drivvo/modules/home/service/create_service_controller.dart';
+import 'package:drivvo/modules/home/service/create/create_service_controller.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';

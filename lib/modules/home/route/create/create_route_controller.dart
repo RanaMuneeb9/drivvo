@@ -22,6 +22,8 @@ class CreateRouteController extends GetxController {
 
   var initalOdometer = 0.obs;
 
+  int totalAmount = 0;
+
   final startDateController = TextEditingController();
   final endDateController = TextEditingController();
   final startTimeController = TextEditingController();
@@ -29,6 +31,10 @@ class CreateRouteController extends GetxController {
   final reasonController = TextEditingController();
   final originController = TextEditingController();
   final destinationController = TextEditingController();
+  final initialOdometerController = TextEditingController();
+  final finalOdometerController = TextEditingController();
+  final valuePerKmController = TextEditingController();
+  final totalController = TextEditingController();
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
@@ -59,13 +65,18 @@ class CreateRouteController extends GetxController {
     reasonController.dispose();
     originController.dispose();
     destinationController.dispose();
+    initialOdometerController.dispose();
+    finalOdometerController.dispose();
+    valuePerKmController.dispose();
+    totalController.dispose();
     super.onClose();
   }
 
   Future<void> getProfile() async {
     await appService.getUserProfile();
-    lastOdometer.value =
-        int.tryParse(appService.appUser.value.lastOdometer) ?? 0;
+    lastOdometer.value = appService.appUser.value.lastOdometer;
+    initialOdometerController.text = lastOdometer.value.toString();
+    calculateTotal();
   }
 
   void onSelectReason(String? reason) {
@@ -126,6 +137,22 @@ class CreateRouteController extends GetxController {
     }
   }
 
+  void calculateTotal() {
+    final initial = int.tryParse(initialOdometerController.text) ?? 0;
+    initalOdometer.value = initial;
+    final finalOdo = int.tryParse(finalOdometerController.text) ?? 0;
+    final valuePerKm = int.tryParse(valuePerKmController.text) ?? 0;
+
+    if (finalOdo > initial) {
+      final total = (finalOdo - initial) * valuePerKm;
+      totalController.text = total.toString();
+      model.value.total = total;
+    } else {
+      totalController.text = "0";
+      model.value.total = 0;
+    }
+  }
+
   Future<void> onPickedFile(XFile? pickedFile) async {
     if (pickedFile != null) {
       try {
@@ -162,7 +189,9 @@ class CreateRouteController extends GetxController {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
-      Utils.showProgressDialog(Get.context!);
+      final context = Get.context;
+      if (context == null) return;
+      Utils.showProgressDialog(context);
 
       final map = {
         "user_id": appService.appUser.value.id,
@@ -172,11 +201,11 @@ class CreateRouteController extends GetxController {
         "start_time": startTimeController.text.trim(),
         "end_date": model.value.endDate,
         "end_time": endTimeController.text.trim(),
-        "initial_odometer": model.value.initialOdometer,
+        "initial_odometer": int.tryParse(initialOdometerController.text) ?? 0,
         "destination": destinationController.text.trim(),
-        "final_odometer": model.value.finalOdometer,
-        "value_per_km": model.value.valuePerKm,
-        "total": model.value.total,
+        "final_odometer": int.tryParse(finalOdometerController.text) ?? 0,
+        "value_per_km": int.tryParse(valuePerKmController.text) ?? 0,
+        "total": int.tryParse(totalController.text) ?? 0,
         "driver_name": model.value.driverName,
         "reason": reasonController.text.trim(),
         "file_path": filePath.value,
@@ -195,7 +224,10 @@ class CreateRouteController extends GetxController {
               await FirebaseFirestore.instance
                   .collection(DatabaseTables.USER_PROFILE)
                   .doc(appService.appUser.value.id)
-                  .update({"last_odometer": model.value.finalOdometer});
+                  .update({
+                    "last_odometer":
+                        int.tryParse(finalOdometerController.text) ?? 0,
+                  });
               if (Get.isDialogOpen == true) Get.back();
               Get.back();
 
@@ -203,11 +235,6 @@ class CreateRouteController extends GetxController {
               if (Get.isRegistered<HomeController>()) {
                 Get.find<HomeController>().loadTimelineData(forceFetch: true);
               }
-              ;
-            })
-            .catchError((e) {
-              if (Get.isDialogOpen == true) Get.back();
-              Utils.showSnackBar(message: "something_wrong".tr, success: false);
             });
       } catch (e) {
         if (Get.isDialogOpen == true) Get.back();

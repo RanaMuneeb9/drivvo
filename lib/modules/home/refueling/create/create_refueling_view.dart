@@ -5,7 +5,7 @@ import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field_with_controller.dart';
-import 'package:drivvo/modules/home/refueling/create_refueling_controller.dart';
+import 'package:drivvo/modules/home/refueling/create/create_refueling_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
@@ -129,7 +129,11 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                   type: TextInputType.number,
                   onTap: () {},
                   onSaved: (value) {
-                    controller.model.value.odometer = value ?? '';
+                    if (value != null) {
+                      controller.model.value.odometer = num.parse(
+                        value,
+                      ).toInt();
+                    }
                   },
                   onValidate: (value) {
                     if (value == null || value.isEmpty) {
@@ -376,7 +380,7 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                 type: TextInputType.name,
                 onTap: () {},
                 onSaved: (value) {
-                  controller.model.value.driverName = value!;
+                  controller.model.value.driverName = value ?? '';
                 },
                 onValidate: (value) => null,
               ),
@@ -419,11 +423,11 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                                   "selected_title":
                                       controller.gasStationCostController.text,
                                 },
-                              )?.then(
-                                (e) =>
-                                    controller.gasStationCostController.text =
-                                        e,
-                              );
+                              )?.then((e) {
+                                if (e != null) {
+                                  controller.gasStationCostController.text = e;
+                                }
+                              });
                             },
                             onSaved: (value) {},
                             onValidate: (value) => null,
@@ -556,7 +560,7 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                             type: TextInputType.name,
                             onTap: () {},
                             onSaved: (value) {
-                              controller.model.value.notes = value!;
+                              controller.model.value.notes = value ?? '';
                             },
                             onValidate: (value) => null,
                           ),
@@ -658,7 +662,11 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                       isUrdu: controller.isUrdu,
                     ),
                   ),
-                  const Icon(Icons.camera_alt, color: Colors.black, size: 18),
+                  const Icon(
+                    Icons.photo_library,
+                    color: Colors.black,
+                    size: 18,
+                  ),
                 ],
               ),
             ),

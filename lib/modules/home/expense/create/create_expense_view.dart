@@ -4,7 +4,7 @@ import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
-import 'package:drivvo/modules/home/service/create_service_controller.dart';
+import 'package:drivvo/modules/home/expense/create/create_expense_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-class CreateServiceView extends GetView<CreateServiceController> {
-  const CreateServiceView({super.key});
+class CreateExpenseView extends GetView<CreateExpenseController> {
+  const CreateExpenseView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class CreateServiceView extends GetView<CreateServiceController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'service'.tr,
+          'expense'.tr,
           style: Utils.getTextStyle(
             baseSize: 18,
             isBold: true,
@@ -37,7 +37,7 @@ class CreateServiceView extends GetView<CreateServiceController> {
         ),
         actions: [
           IconButton(
-            onPressed: () => controller.saveService(),
+            onPressed: () => controller.saveExpense(),
             icon: Text(
               "save".tr,
               style: Utils.getTextStyle(
@@ -61,6 +61,10 @@ class CreateServiceView extends GetView<CreateServiceController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // CardHeaderText(
+              //   title: "date_and_time".tr,
+              //   isUrdu: controller.isUrdu,
+              // ),
               Row(
                 children: [
                   Expanded(
@@ -124,7 +128,9 @@ class CreateServiceView extends GetView<CreateServiceController> {
                   type: TextInputType.number,
                   onTap: () {},
                   onSaved: (value) {
-                    controller.model.value.odometer = value ?? '';
+                    if (value != null) {
+                      controller.model.value.odometer = int.parse(value);
+                    }
                   },
                   onValidate: (value) {
                     if (value != null) {
@@ -160,7 +166,7 @@ class CreateServiceView extends GetView<CreateServiceController> {
               // ),
               const SizedBox(height: 16),
               FormLabelText(
-                title: "service_details".tr,
+                title: "expense_details".tr,
                 isUrdu: controller.isUrdu,
               ),
               const SizedBox(height: 10),
@@ -168,7 +174,7 @@ class CreateServiceView extends GetView<CreateServiceController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "total_service_cost".tr,
+                    "total_cost".tr,
                     style: Utils.getTextStyle(
                       baseSize: 16,
                       isBold: false,
@@ -203,11 +209,11 @@ class CreateServiceView extends GetView<CreateServiceController> {
                       SizedBox(width: 10),
                       InkWell(
                         onTap: () {
-                          final list = controller.serviceTyesList
+                          final list = controller.expenseTypesList
                               .where((e) => e.isChecked.value == true)
                               .toList();
                           Get.toNamed(
-                            AppRoutes.SERVICE_TYPE_VIEW,
+                            AppRoutes.EXPENSE_TYPE_VIEW,
                             arguments: list,
                           );
                         },
@@ -249,7 +255,7 @@ class CreateServiceView extends GetView<CreateServiceController> {
               ),
               const SizedBox(height: 4),
               Obx(
-                () => controller.serviceTyesList.isNotEmpty
+                () => controller.expenseTypesList.isNotEmpty
                     ? Container(
                         padding: EdgeInsets.all(14),
                         decoration: BoxDecoration(
@@ -261,9 +267,10 @@ class CreateServiceView extends GetView<CreateServiceController> {
                             ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: controller.serviceTyesList.length,
+                              itemCount: controller.expenseTypesList.length,
                               itemBuilder: (context, index) {
-                                final model = controller.serviceTyesList[index];
+                                final model =
+                                    controller.expenseTypesList[index];
                                 return Column(
                                   children: [
                                     Row(
@@ -306,7 +313,7 @@ class CreateServiceView extends GetView<CreateServiceController> {
                                       ],
                                     ),
                                     index !=
-                                            controller.serviceTyesList.length -
+                                            controller.expenseTypesList.length -
                                                 1
                                         ? Divider()
                                         : SizedBox(),
@@ -351,7 +358,7 @@ class CreateServiceView extends GetView<CreateServiceController> {
                 obscureText: false,
                 readOnly: false,
                 labelText: "driver".tr,
-                hintText: "Amir".tr,
+                hintText: "enter_driver_name".tr,
                 inputAction: TextInputAction.next,
                 type: TextInputType.name,
                 onTap: () {},
@@ -432,7 +439,7 @@ class CreateServiceView extends GetView<CreateServiceController> {
                           Align(
                             alignment: Alignment.topRight,
                             child: IconButton(
-                              onPressed: () => {controller.filePath.value = ""},
+                              onPressed: () => controller.filePath.value = "",
                               icon: const Icon(Icons.cancel, color: Colors.red),
                             ),
                           ),
@@ -468,7 +475,7 @@ class CreateServiceView extends GetView<CreateServiceController> {
     );
   }
 
-  void showImagePicker() async {
+  Future<void> showImagePicker() async {
     final ImagePicker imgPicker = ImagePicker();
 
     Get.defaultDialog(
@@ -508,7 +515,11 @@ class CreateServiceView extends GetView<CreateServiceController> {
                       isUrdu: controller.isUrdu,
                     ),
                   ),
-                  const Icon(Icons.camera_alt, color: Colors.black, size: 18),
+                  const Icon(
+                    Icons.photo_library,
+                    color: Colors.black,
+                    size: 18,
+                  ),
                 ],
               ),
             ),

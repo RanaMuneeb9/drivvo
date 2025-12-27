@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MonthlyCostBarChart extends StatelessWidget {
-  final Map<String, double> monthlyData;
+  final Map<String, int> monthlyData;
   final bool isUrdu;
   final String title;
 
@@ -110,7 +110,7 @@ class MonthlyCostBarChart extends StatelessWidget {
   double _getMaxY() {
     double max = 0;
     for (var value in monthlyData.values) {
-      if (value > max) max = value;
+      if (value > max) max = value.toDouble();
     }
     return max * 1.2;
   }
@@ -159,7 +159,7 @@ class MonthlyCostBarChart extends StatelessWidget {
         x: index,
         barRods: [
           BarChartRodData(
-            toY: values[index],
+            toY: values[index].toDouble(),
             color: Utils.appColor,
             width: 16,
             borderRadius: const BorderRadius.only(

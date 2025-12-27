@@ -106,8 +106,9 @@ class OdometerHistoryLineChart extends StatelessWidget {
                             showTitles: true,
                             reservedSize: 45,
                             getTitlesWidget: (value, meta) {
-                              if (value == meta.max)
+                              if (value == meta.max) {
                                 return const SizedBox.shrink();
+                              }
 
                               String title = "";
                               if (value >= 1000) {

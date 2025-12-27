@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CategoryPieChart extends StatelessWidget {
-  final Map<String, double> data;
+  final Map<String, int> data;
   final String title;
   final bool isUrdu;
 
@@ -73,7 +73,7 @@ class CategoryPieChart extends StatelessWidget {
       index++;
       return PieChartSectionData(
         color: color,
-        value: entry.value,
+        value: entry.value.toDouble(),
         title: '${((entry.value / total) * 100).toStringAsFixed(0)}%',
         radius: 50,
         titleStyle: const TextStyle(
@@ -118,7 +118,7 @@ class CategoryPieChart extends StatelessWidget {
                 ),
               ),
               Text(
-                _formatValue(total),
+                total.toInt().toString(),
                 style: Utils.getTextStyle(
                   baseSize: 14,
                   isBold: true,
@@ -133,7 +133,7 @@ class CategoryPieChart extends StatelessWidget {
     );
   }
 
-  Widget _legendItem(String label, Color color, double value) {
+  Widget _legendItem(String label, Color color, int value) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -144,7 +144,7 @@ class CategoryPieChart extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         Text(
-          "${label.tr}: ${_formatValue(value)}",
+          "${label.tr}: $value",
           style: Utils.getTextStyle(
             baseSize: 12,
             isBold: true,
@@ -154,10 +154,6 @@ class CategoryPieChart extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _formatValue(double value) {
-    return "\$${value.toStringAsFixed(2)}";
   }
 
   List<Color> _getPalette(int count) {

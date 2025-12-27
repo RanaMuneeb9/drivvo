@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ExpenseVsIncomeBarChart extends StatelessWidget {
-  final Map<String, Map<String, double>> data;
+  final Map<String, Map<String, int>> data;
   final bool isUrdu;
 
   const ExpenseVsIncomeBarChart({
@@ -177,7 +177,7 @@ class ExpenseVsIncomeBarChart extends StatelessWidget {
   }
 
   double _getMaxY() {
-    double max = 0;
+    int max = 0;
     for (var m in data.values) {
       if ((m['expense'] ?? 0) > max) max = m['expense']!;
       if ((m['income'] ?? 0) > max) max = m['income']!;
@@ -192,7 +192,7 @@ class ExpenseVsIncomeBarChart extends StatelessWidget {
         x: index,
         barRods: [
           BarChartRodData(
-            toY: mData['expense'] ?? 0,
+            toY: mData['expense']!.toDouble(),
             color: Colors.redAccent,
             width: 10,
             borderRadius: const BorderRadius.only(
@@ -201,7 +201,7 @@ class ExpenseVsIncomeBarChart extends StatelessWidget {
             ),
           ),
           BarChartRodData(
-            toY: mData['income'] ?? 0,
+            toY: mData['income']!.toDouble(),
             color: Colors.greenAccent,
             width: 10,
             borderRadius: const BorderRadius.only(

@@ -443,5 +443,10 @@
   "price_per_liter": "قیمت فی لیٹر",
   "vehicle_updated_successfully": "آپ کی گاڑی کامیابی سے اپ ڈیٹ ہو گئی",
   "vehicle_added_successfully": "آپ کی گاڑی کامیابی سے شامل ہو گئی",
-  "update_vehicle": "گاڑی اپ ڈیٹ کریں"
+  "update_vehicle": "گاڑی اپ ڈیٹ کریں",
+  "delete_entry": "اندراج حذف کریں",
+  "are_you_sure_delete_entry": "کیا آپ واقعی اس اندراج کو حذف کرنا چاہتے ہیں؟",
+  "delete": "حذف کریں",
+  "entry_deleted": "اندراج کامیابی سے حذف کر دیا گیا",
+  "failed_to_delete_entry": "اندراج حذف کرنے میں ناکامی"
 }

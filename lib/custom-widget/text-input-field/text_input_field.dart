@@ -22,6 +22,7 @@ class TextInputField extends StatelessWidget {
   final int? maxLength;
   final int? maxLines;
   final bool isUrdu;
+  final TextEditingController? controller;
 
   const TextInputField({
     super.key,
@@ -43,6 +44,7 @@ class TextInputField extends StatelessWidget {
     this.maxLength,
     this.maxLines,
     required this.isUrdu,
+    this.controller,
   });
 
   @override
@@ -64,7 +66,8 @@ class TextInputField extends StatelessWidget {
             isUrdu: isUrdu,
           ),
           maxLength: maxLength,
-          initialValue: initialValue,
+          initialValue: controller != null ? null : initialValue,
+          controller: controller,
           obscureText: obscureText,
           keyboardType: type,
           textInputAction: inputAction,

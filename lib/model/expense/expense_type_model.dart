@@ -3,13 +3,13 @@ import 'package:get/get.dart';
 class ExpenseTypeModel {
   final String id;
   final String name;
-  final RxString value;
+  final RxInt value;
   final RxBool isChecked;
 
   ExpenseTypeModel({
     required this.id,
     required this.name,
-    String value = "",
+    int value = 0,
     bool isChecked = false,
   }) : value = value.obs,
        isChecked = isChecked.obs;
@@ -24,7 +24,7 @@ class ExpenseTypeModel {
     return ExpenseTypeModel(
       id: json["id"] ?? "",
       name: json["name"] ?? "",
-      value: json["value"] ?? "",
+      value: json["value"] ?? 0,
       isChecked: json["isChecked"] ?? false,
     );
   }

@@ -5,10 +5,10 @@ class RefuelingModel {
   late String vehicleId;
   late String time;
   late DateTime date;
-  late String odometer;
-  late String price;
-  late String liter;
-  late String totalCost;
+  late int odometer;
+  late int price;
+  late int liter;
+  late int totalCost;
   late String fuelType;
   late String fuelStation;
   late bool fullTank;
@@ -16,16 +16,17 @@ class RefuelingModel {
   late String paymentMethod;
   late String notes;
   late String driverName;
+  Map<String, dynamic> rawMap = {};
 
   RefuelingModel() {
     userId = "";
     vehicleId = "";
     time = "";
     date = DateTime.now();
-    odometer = "";
-    price = "0";
-    liter = "0";
-    totalCost = "0";
+    odometer = 0;
+    price = 0;
+    liter = 0;
+    totalCost = 0;
     fuelType = "";
     fuelStation = "";
     fullTank = true;
@@ -36,14 +37,15 @@ class RefuelingModel {
   }
 
   RefuelingModel.fromJson(Map<String, dynamic> json) {
+    rawMap = json;
     userId = json["user_id"] ?? "";
     vehicleId = json["vehicle_id"] ?? "";
     time = json["time"] ?? "";
     date = (json["date"] as Timestamp?)?.toDate() ?? DateTime.now();
-    odometer = json["odometer"] ?? "";
-    price = json["price"] ?? "";
-    liter = json["liter"] ?? "";
-    totalCost = json["total_cost"] ?? "";
+    odometer = json["odometer"] ?? 0;
+    price = json["price"] ?? 0;
+    liter = json["liter"] ?? 0;
+    totalCost = json["total_cost"] ?? 0;
     fuelType = json["fuel_type"] ?? "";
     fuelStation = json["fuel_station"] ?? "";
     fullTank = json["full_tank"] ?? true;
@@ -51,5 +53,25 @@ class RefuelingModel {
     paymentMethod = json["payment_method"] ?? "";
     notes = json["notes"] ?? "";
     driverName = json["driver_name"] ?? "";
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "user_id": userId,
+      "vehicle_id": vehicleId,
+      "time": time,
+      "date": date,
+      "odometer": odometer,
+      "price": price,
+      "liter": liter,
+      "total_cost": totalCost,
+      "fuel_type": fuelType,
+      "fuel_station": fuelStation,
+      "full_tank": fullTank,
+      "missed_previous": missedPrevious,
+      "payment_method": paymentMethod,
+      "notes": notes,
+      "driver_name": driverName,
+    };
   }
 }

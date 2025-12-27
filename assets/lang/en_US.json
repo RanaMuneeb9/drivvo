@@ -446,5 +446,10 @@
   "price_per_liter": "Price per liter",
   "vehicle_updated_successfully": "Vehicle updated successfully",
   "vehicle_added_successfully": "Vehicle added successfully",
-  "update_vehicle": "Update Vehicle"
+  "update_vehicle": "Update Vehicle",
+  "delete_entry": "Delete Entry",
+  "are_you_sure_delete_entry": "Are you sure you want to delete this entry?",
+  "delete": "Delete",
+  "entry_deleted": "Entry deleted successfully",
+  "failed_to_delete_entry": "Failed to delete entry"
 }

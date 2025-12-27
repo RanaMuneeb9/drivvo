@@ -23,7 +23,7 @@ class AppUser {
   late String productId;
   late String purchaseToken;
 
-  late String lastOdometer;
+  late int lastOdometer;
 
   late List<RefuelingModel> refuelingList;
   late List<ExpenseModel> expenseList;
@@ -50,7 +50,7 @@ class AppUser {
     productId = "";
     purchaseToken = "";
 
-    lastOdometer = "";
+    lastOdometer = 0;
 
     refuelingList = [];
     expenseList = [];
@@ -78,7 +78,7 @@ class AppUser {
     productId = json["productId"] ?? "";
     purchaseToken = json["purchaseToken"] ?? "";
 
-    lastOdometer = json["last_odometer"] ?? "";
+    lastOdometer = json["last_odometer"] ?? 0;
 
     refuelingList =
         (json["refueling_list"] as List<dynamic>?)

@@ -167,10 +167,10 @@ class ReportsView extends GetView<ReportsController> {
         children: [
           if (selected == "General") ...[
             CostPieChart(
-              refueling: controller.refuelingCost.value,
-              expense: controller.expenseCost.value,
-              service: controller.serviceCost.value,
-              income: controller.incomeCost.value,
+              refueling: controller.refuelingCost.value.toDouble(),
+              expense: controller.expenseCost.value.toDouble(),
+              service: controller.serviceCost.value.toDouble(),
+              income: controller.incomeCost.value.toDouble(),
               isUrdu: controller.isUrdu,
             ),
             const SizedBox(height: 16),
@@ -283,8 +283,12 @@ class ReportsView extends GetView<ReportsController> {
                 totalColor: controller.totalBalance.value >= 0
                     ? Utils.appColor
                     : Colors.red,
-                byDay: controller.formatCurrency(controller.balanceByDay.value),
-                byKm: controller.formatCurrency(controller.balanceByKm.value),
+                byDay: controller.formatCurrency(
+                  controller.balanceByDay.value.toInt(),
+                ),
+                byKm: controller.formatCurrency(
+                  controller.balanceByKm.value.toInt(),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -297,8 +301,12 @@ class ReportsView extends GetView<ReportsController> {
                 title: "cost".tr,
                 total: controller.formatCurrency(controller.totalCost.value),
                 totalColor: Colors.red,
-                byDay: controller.formatCurrency(controller.costByDay.value),
-                byKm: controller.formatCurrency(controller.costByKm.value),
+                byDay: controller.formatCurrency(
+                  controller.costByDay.value.toInt(),
+                ),
+                byKm: controller.formatCurrency(
+                  controller.costByKm.value.toInt(),
+                ),
               ),
             ),
           ],
@@ -315,8 +323,12 @@ class ReportsView extends GetView<ReportsController> {
                 title: "income".tr,
                 total: controller.formatCurrency(controller.totalIncome.value),
                 totalColor: Colors.black87,
-                byDay: controller.formatCurrency(controller.incomeByDay.value),
-                byKm: controller.formatCurrency(controller.incomeByKm.value),
+                byDay: controller.formatCurrency(
+                  controller.incomeByDay.value.toInt(),
+                ),
+                byKm: controller.formatCurrency(
+                  controller.incomeByKm.value.toInt(),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -331,7 +343,7 @@ class ReportsView extends GetView<ReportsController> {
                   controller.totalDistance.value,
                 ),
                 dailyAverage: controller.formatDistance(
-                  controller.dailyAverageDistance.value,
+                  controller.dailyAverageDistance.value.toInt(),
                 ),
               ),
             ),
@@ -354,9 +366,11 @@ class ReportsView extends GetView<ReportsController> {
             total: controller.formatCurrency(controller.refuelingCost.value),
             totalColor: Colors.black87,
             byDay: controller.formatCurrency(
-              controller.refuelingCostByDay.value,
+              controller.refuelingCostByDay.value.toInt(),
             ),
-            byKm: controller.formatCurrency(controller.refuelingCostByKm.value),
+            byKm: controller.formatCurrency(
+              controller.refuelingCostByKm.value.toInt(),
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -371,7 +385,7 @@ class ReportsView extends GetView<ReportsController> {
               controller.refuelingDistance.value,
             ),
             dailyAverage: controller.formatDistance(
-              controller.refuelingDailyAverage.value,
+              controller.refuelingDailyAverage.value.toInt(),
             ),
           ),
         ),
@@ -391,8 +405,8 @@ class ReportsView extends GetView<ReportsController> {
             title: "cost".tr,
             total: controller.formatCurrency(controller.expenseCost.value),
             totalColor: Colors.black87,
-            byDay: controller.formatCurrency(controller.expenseCostByDay.value),
-            byKm: controller.formatCurrency(controller.expenseCostByKm.value),
+            byDay: controller.formatCurrency(controller.expenseCostByDay.value.toInt()),
+            byKm: controller.formatCurrency(controller.expenseCostByKm.value.toInt()),
           ),
         ),
         const SizedBox(width: 12),
@@ -405,7 +419,7 @@ class ReportsView extends GetView<ReportsController> {
             title: "distance".tr,
             total: controller.formatDistance(controller.expenseDistance.value),
             dailyAverage: controller.formatDistance(
-              controller.expenseDailyAverage.value,
+              controller.expenseDailyAverage.value.toInt(),
             ),
           ),
         ),
@@ -425,8 +439,8 @@ class ReportsView extends GetView<ReportsController> {
             title: "income".tr,
             total: controller.formatCurrency(controller.incomeCost.value),
             totalColor: Colors.black87,
-            byDay: controller.formatCurrency(controller.incomeCostByDay.value),
-            byKm: controller.formatCurrency(controller.incomeCostByKm.value),
+            byDay: controller.formatCurrency(controller.incomeCostByDay.value.toInt()),
+            byKm: controller.formatCurrency(controller.incomeCostByKm.value.toInt()),
           ),
         ),
         const SizedBox(width: 12),
@@ -439,7 +453,7 @@ class ReportsView extends GetView<ReportsController> {
             title: "distance".tr,
             total: controller.formatDistance(controller.incomeDistance.value),
             dailyAverage: controller.formatDistance(
-              controller.incomeDailyAverage.value,
+              controller.incomeDailyAverage.value.toInt(),
             ),
           ),
         ),
@@ -459,8 +473,8 @@ class ReportsView extends GetView<ReportsController> {
             title: "cost".tr,
             total: controller.formatCurrency(controller.serviceCost.value),
             totalColor: Colors.black87,
-            byDay: controller.formatCurrency(controller.serviceCostByDay.value),
-            byKm: controller.formatCurrency(controller.serviceCostByKm.value),
+            byDay: controller.formatCurrency(controller.serviceCostByDay.value.toInt()),
+            byKm: controller.formatCurrency(controller.serviceCostByKm.value.toInt()),
           ),
         ),
         const SizedBox(width: 12),
@@ -473,7 +487,7 @@ class ReportsView extends GetView<ReportsController> {
             title: "distance".tr,
             total: controller.formatDistance(controller.serviceDistance.value),
             dailyAverage: controller.formatDistance(
-              controller.serviceDailyAverage.value,
+              controller.serviceDailyAverage.value.toInt(),
             ),
           ),
         ),

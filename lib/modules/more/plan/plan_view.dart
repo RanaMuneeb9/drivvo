@@ -169,7 +169,7 @@ class PlanView extends GetView<PlanController> {
           Switch(
             value: controller.isYearlyBilling.value,
             onChanged: (value) => controller.toggleBilling(value),
-            activeColor: const Color(0xFF2ECC71),
+            activeThumbColor: const Color(0xFF2ECC71),
           ),
           const SizedBox(width: 10),
           Text(

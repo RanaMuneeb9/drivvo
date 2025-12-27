@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
-import 'package:drivvo/modules/home/income/create_income_controller.dart';
+import 'package:drivvo/modules/home/income/create/create_income_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
@@ -123,7 +123,9 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                   type: TextInputType.number,
                   onTap: () {},
                   onSaved: (value) {
-                    controller.model.value.odometer = value ?? '';
+                    if (value != null) {
+                      controller.model.value.odometer = int.parse(value);
+                    }
                   },
                   onValidate: (value) {
                     if (value == null || value.isEmpty) {
@@ -201,7 +203,9 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                 type: TextInputType.number,
                 onTap: () {},
                 onSaved: (value) {
-                  controller.model.value.value = value ?? '';
+                  if (value != null) {
+                    controller.model.value.value = int.parse(value);
+                  }
                 },
                 onValidate: (value) {
                   if (value == null || value.isEmpty) {
@@ -224,7 +228,7 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                 type: TextInputType.name,
                 onTap: () {},
                 onSaved: (value) {
-                  controller.model.value.driverName = value!;
+                  controller.model.value.driverName = value ?? '';
                 },
                 onValidate: (value) => null,
               ),
@@ -255,7 +259,7 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                             alignment: Alignment.topRight,
                             child: IconButton(
                               onPressed: () => {controller.filePath.value = ""},
-                              icon: const Icon(Icons.cancel, color: Colors.red),
+                              icon: Icon(Icons.cancel, color: Colors.red),
                             ),
                           ),
                       ],

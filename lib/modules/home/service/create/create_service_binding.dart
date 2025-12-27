@@ -1,4 +1,4 @@
-import 'package:drivvo/modules/home/service/create_service_controller.dart';
+import 'package:drivvo/modules/home/service/create/create_service_controller.dart';
 import 'package:get/get.dart';
 
 class CreateServiceBinding extends Bindings {

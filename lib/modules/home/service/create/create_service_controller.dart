@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:drivvo/model/income/income_model.dart';
+import 'package:drivvo/model/expense/expense_type_model.dart';
+import 'package:drivvo/model/service/service_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/modules/reports/reports_controller.dart';
 import 'package:drivvo/services/app_service.dart';
@@ -12,18 +13,24 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class CreateIncomeController extends GetxController {
+class CreateServiceController extends GetxController {
+  late AppService appService;
   final formKey = GlobalKey<FormState>();
 
-  late AppService appService;
+  var serviceTyesList = <ExpenseTypeModel>[].obs;
+
+  var totalAmount = 0.obs;
+  var lastOdometer = 0.obs;
 
   var filePath = "".obs;
-  var lastOdometer = 0.obs;
-  var model = IncomeModel().obs;
+  var model = ServiceModel().obs;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
-  final incomeTypeController = TextEditingController();
+  final expenseTypeController = TextEditingController();
+  final placeController = TextEditingController();
+  final paymentMethodController = TextEditingController();
+  final reasonController = TextEditingController();
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
@@ -37,26 +44,31 @@ class CreateIncomeController extends GetxController {
     dateController.text = Utils.formatDate(date: now);
     timeController.text = DateFormat('hh:mm a').format(now);
 
-    incomeTypeController.text = "select_income_type".tr;
+    expenseTypeController.text = "select_expense_type".tr;
+    placeController.text = "select_your_place".tr;
+    paymentMethodController.text = "select_payment_method".tr;
+    reasonController.text = "select_reason".tr;
   }
 
   @override
   void onClose() {
     dateController.dispose();
     timeController.dispose();
-    incomeTypeController.dispose();
+    expenseTypeController.dispose();
+    placeController.dispose();
+    paymentMethodController.dispose();
+    reasonController.dispose();
     super.onClose();
   }
 
   Future<void> getProfile() async {
     await appService.getUserProfile();
-    lastOdometer.value =
-        int.tryParse(appService.appUser.value.lastOdometer) ?? 0;
+    lastOdometer.value = appService.appUser.value.lastOdometer;
   }
 
-  void onSelectIncomeType(String? type) {
+  void onSelectFuelType(String? type) {
     if (type != null) {
-      model.value.incomeType = type;
+      model.value.fuelType = type;
     }
   }
 
@@ -133,24 +145,28 @@ class CreateIncomeController extends GetxController {
     }
   }
 
-  Future<void> saveIncome() async {
+  Future<void> saveService() async {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
       final context = Get.context;
       if (context == null) return;
       Utils.showProgressDialog(context);
+
       final map = {
         "user_id": appService.appUser.value.id,
         "vehicle_id": appService.currentVehicleId.value,
         "time": timeController.text.trim(),
         "date": model.value.date,
         "odometer": model.value.odometer,
-        "income_type": incomeTypeController.text.trim(),
-        "value": model.value.value,
+        "total_amount": totalAmount.value,
+        "place": placeController.text.trim(),
         "driver_name": model.value.driverName,
+        "payment_method": paymentMethodController.text.trim(),
+        "reason": reasonController.text.trim(),
         "file_path": filePath.value,
         "notes": model.value.notes,
+        "expense_types": serviceTyesList.map((e) => e.toJson()).toList(),
         "created_at": DateTime.now(),
       };
 
@@ -159,7 +175,7 @@ class CreateIncomeController extends GetxController {
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id)
             .set({
-              'income_list': FieldValue.arrayUnion([map]),
+              'service_list': FieldValue.arrayUnion([map]),
             }, SetOptions(merge: true))
             .then((e) async {
               //!Update last Odometer
@@ -170,11 +186,9 @@ class CreateIncomeController extends GetxController {
               if (Get.isDialogOpen == true) Get.back();
               Get.back();
 
-              Utils.showSnackBar(message: "income_added".tr, success: true);
               if (Get.isRegistered<HomeController>()) {
-          Get.find<HomeController>().loadTimelineData(forceFetch: true);
-        }
-
+                Get.find<HomeController>().loadTimelineData(forceFetch: true);
+              }
               if (Get.isRegistered<ReportsController>()) {
                 final report = Get.find<ReportsController>();
                 report.calculateAllReports();
@@ -186,8 +200,22 @@ class CreateIncomeController extends GetxController {
             });
       } catch (e) {
         if (Get.isDialogOpen == true) Get.back();
+
         Utils.showSnackBar(message: "something_wrong".tr, success: false);
       }
     }
+  }
+
+  void removeItem(int index) {
+    if (index < 0 || index >= serviceTyesList.length) return;
+    serviceTyesList.removeAt(index);
+    calculateTotal();
+    serviceTyesList.refresh();
+  }
+
+  void calculateTotal() {
+    totalAmount.value = serviceTyesList
+        .where((e) => e.isChecked.value)
+        .fold(0, (a1, e) => a1 + e.value.value);
   }
 }

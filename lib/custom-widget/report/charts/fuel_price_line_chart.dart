@@ -106,8 +106,9 @@ class FuelPriceLineChart extends StatelessWidget {
                             showTitles: true,
                             reservedSize: 45,
                             getTitlesWidget: (value, meta) {
-                              if (value == meta.max)
+                              if (value == meta.max) {
                                 return const SizedBox.shrink();
+                              }
                               return SideTitleWidget(
                                 meta: meta,
                                 child: Text(

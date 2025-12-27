@@ -6,8 +6,10 @@ import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomeView extends GetView<HomeController> {
-  const HomeView({super.key});
+class HomeViewCopy extends GetView<HomeController> {
+  const HomeViewCopy({super.key});
+
+  //!Double crad View
 
   @override
   Widget build(BuildContext context) {
@@ -626,7 +628,7 @@ class HomeView extends GetView<HomeController> {
                 padding: const EdgeInsets.all(10),
                 margin: const EdgeInsets.only(right: 10, left: 10, bottom: 0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isExpanded ? Colors.grey.shade50 : Colors.white,
                   border: Border.all(
                     color: isExpanded
                         ? entry.iconBgColor
@@ -782,7 +784,12 @@ class HomeView extends GetView<HomeController> {
   Widget _buildExpandedContent(TimelineEntry entry) {
     return Container(
       margin: const EdgeInsets.only(top: 12),
-      padding: const EdgeInsets.only(right: 12, left: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -799,7 +806,7 @@ class HomeView extends GetView<HomeController> {
           //   icon: Icons.calendar_today,
           //   iconColor: Colors.blue,
           //   label: 'date'.tr.isNotEmpty ? 'date'.tr : 'Date',
-          //   value: Utils.formatDate(date: entry.date),
+          //   value: '${entry.date.day}/${entry.date.month}/${entry.date.year}',
           // ),
           // const SizedBox(height: 8),
           // Odometer
@@ -821,36 +828,6 @@ class HomeView extends GetView<HomeController> {
                 : ('amount'.tr.isNotEmpty ? 'amount'.tr : 'Amount'),
             value: entry.amount,
             valueColor: entry.isIncome ? Colors.green : Colors.red,
-          ),
-          const SizedBox(height: 8),
-          Divider(height: 1, color: Colors.grey.shade300),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Material(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                child: InkWell(
-                  onTap: () => controller.deleteEntry(entry),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
-                    child: Icon(Icons.delete, color: Colors.red, size: 18),
-                  ),
-                ),
-              ),
-              Material(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                child: InkWell(
-                  onTap: () {},
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
-                    child: Icon(
-                      Icons.edit_note_outlined,
-                      color: Utils.appColor,
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),
@@ -892,8 +869,8 @@ class HomeView extends GetView<HomeController> {
           value,
           style: Utils.getTextStyle(
             baseSize: 13,
-            isBold: false,
-            color: valueColor ?? Colors.black,
+            isBold: true,
+            color: valueColor ?? Colors.black87,
             isUrdu: controller.isUrdu,
           ),
         ),

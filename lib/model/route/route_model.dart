@@ -8,15 +8,16 @@ class RouteModel {
   late String startTime;
   late DateTime endDate;
   late String endTime;
-  late String initialOdometer;
+  late int initialOdometer;
   late String destination;
-  late String finalOdometer;
-  late String valuePerKm;
-  late String total;
+  late int finalOdometer;
+  late int valuePerKm;
+  late int total;
   late String driverName;
   late String reason;
   late String filePath;
   late String notes;
+  Map<String, dynamic> rawMap = {};
 
   RouteModel() {
     userId = "";
@@ -26,11 +27,11 @@ class RouteModel {
     startTime = "";
     endDate = DateTime.now();
     endTime = "";
-    initialOdometer = "";
+    initialOdometer = 0;
     destination = "";
-    finalOdometer = "";
-    valuePerKm = "";
-    total = "";
+    finalOdometer = 0;
+    valuePerKm = 0;
+    total = 0;
     driverName = "";
     reason = "";
     filePath = "";
@@ -38,6 +39,7 @@ class RouteModel {
   }
 
   RouteModel.fromJson(Map<String, dynamic> json) {
+    rawMap = json;
     userId = json["user_id"] ?? "";
     vehicleId = json["vehicle_id"] ?? "";
     origin = json["origin"] ?? "";
@@ -45,14 +47,35 @@ class RouteModel {
     startTime = json["start_time"] ?? "";
     endDate = (json["end_date"] as Timestamp?)?.toDate() ?? DateTime.now();
     endTime = json["end_time"] ?? "";
-    initialOdometer = json["initial_odometer"] ?? "";
+    initialOdometer = json["initial_odometer"] ?? 0;
     destination = json["destination"] ?? "";
-    finalOdometer = json["final_odometer"] ?? "";
-    valuePerKm = json["value_per_km"] ?? "";
-    total = json["total"] ?? "";
+    finalOdometer = json["final_odometer"] ?? 0;
+    valuePerKm = json["value_per_km"] ?? 0;
+    total = json["total"] ?? 0;
     driverName = json["driver_name"] ?? "";
     reason = json["reason"] ?? "";
     filePath = json["file_path"] ?? "";
     notes = json["notes"] ?? "";
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "user_id": userId,
+      "vehicle_id": vehicleId,
+      "origin": origin,
+      "start_date": startDate,
+      "start_time": startTime,
+      "end_date": endDate,
+      "end_time": endTime,
+      "initial_odometer": initialOdometer,
+      "destination": destination,
+      "final_odometer": finalOdometer,
+      "value_per_km": valuePerKm,
+      "total": total,
+      "driver_name": driverName,
+      "reason": reason,
+      "file_path": filePath,
+      "notes": notes,
+    };
   }
 }
