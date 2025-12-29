@@ -29,8 +29,8 @@ class CreateGeneralController extends GetxController {
     if (formStateKey.currentState?.validate() == true) {
       formStateKey.currentState?.save();
 
-      String? collectionPath;
-      String? successMessage;
+      late String collectionPath;
+      late String successMessage;
 
       switch (title) {
         case Constants.EXPENSE_TYPES:
@@ -72,7 +72,7 @@ class CreateGeneralController extends GetxController {
 
       // 2. Call the generic save function
       if (collectionPath.isNotEmpty && successMessage.isNotEmpty) {
-        Utils.showProgressDialog(Get.context!);
+        Utils.showProgressDialog();
 
         try {
           final ref = FirebaseFirestore.instance

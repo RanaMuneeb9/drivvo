@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/date_range_model.dart';
 import 'package:drivvo/model/general_model.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class Utils {
@@ -69,6 +72,18 @@ class Utils {
     );
   }
 
+  static void getFirebaseException(FirebaseException e) {
+    if (Get.isDialogOpen == true) Get.back();
+
+    if (e.code == 'permission-denied') {
+      Utils.showSnackBar(message: "permission_denied".tr, success: false);
+    } else if (e.code == 'unavailable') {
+      Utils.showSnackBar(message: "network_error".tr, success: false);
+    } else {
+      Utils.showSnackBar(message: "something_wrong".tr, success: false);
+    }
+  }
+
   // Format date as "dd MMM" (e.g., "17 dec")
   static String formatAccountDate(DateTime date) {
     const months = [
@@ -93,7 +108,7 @@ class Utils {
   //   return DateFormat("dd MMM").format(date).toLowerCase();
   // }
 
-  static void showProgressDialog(BuildContext context) {
+  static void showProgressDialog() {
     Get.dialog(
       Center(
         child: Container(
@@ -133,6 +148,41 @@ class Utils {
       ),
       barrierDismissible: false,
     );
+  }
+
+  static Future<void> onPickedFile({
+    required XFile? pickedFile,
+    required Function(String path) onTap,
+  }) async {
+    if (pickedFile != null) {
+      try {
+        CroppedFile? croppedFile = await ImageCropper().cropImage(
+          sourcePath: pickedFile.path,
+          aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+          uiSettings: [
+            AndroidUiSettings(
+              toolbarTitle: 'Cropper',
+              toolbarColor: Utils.appColor,
+              toolbarWidgetColor: Colors.white,
+              lockAspectRatio: true,
+              aspectRatioPresets: [CropAspectRatioPreset.square],
+            ),
+            IOSUiSettings(
+              title: 'Cropper',
+              aspectRatioPresets: [
+                CropAspectRatioPreset
+                    .square, // IMPORTANT: iOS supports only one custom aspect ratio in preset list
+              ],
+            ),
+          ],
+        );
+        if (croppedFile != null) {
+          onTap(croppedFile.path);
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
   }
 
   static void showAlertDialog({

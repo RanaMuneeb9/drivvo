@@ -27,7 +27,7 @@ class IncomeModel {
   }
 
   IncomeModel.fromJson(Map<String, dynamic> json) {
-    rawMap = json;
+    rawMap = Map<String, dynamic>.from(json);
     userId = json["user_id"] ?? "";
     vehicleId = json["vehicle_id"] ?? "";
     time = json["time"] ?? "";

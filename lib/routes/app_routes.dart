@@ -51,4 +51,14 @@ abstract class AppRoutes {
   static const PLAN_VIEW = '/more/plan_view';
   // ignore: constant_identifier_names
   static const UPDATE_VEHICLE_VIEW = '/more/vehicle/update_vehicle';
+  // ignore: constant_identifier_names
+  static const UPDATE_INCOME_VIEW = '/home/income/update_income_view';
+  // ignore: constant_identifier_names
+  static const UPDATE_REFUELING_VIEW = '/home/refueling/update_refueling_view';
+  // ignore: constant_identifier_names
+  static const UPDATE_EXPENSE_VIEW = '/home/expense/update_expense_view';
+  // ignore: constant_identifier_names
+  static const UPDATE_SERVICE_VIEW = '/home/service/update_service_view';
+  // ignore: constant_identifier_names
+  static const UPDATE_ROUTE_VIEW = '/home/route/update_route_view';
 }

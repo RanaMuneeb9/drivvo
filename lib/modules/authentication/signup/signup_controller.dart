@@ -36,7 +36,8 @@ class SignupController extends GetxController {
   Future<void> onTapSignUp() async {
     if (formStateKey.currentState?.validate() == true) {
       formStateKey.currentState?.save();
-      Utils.showProgressDialog(Get.context!);
+      Utils.showProgressDialog();
+
       try {
         UserCredential userCredential = await auth
             .createUserWithEmailAndPassword(
@@ -54,41 +55,68 @@ class SignupController extends GetxController {
           map["first_name"] = firstNameController.text.trim();
           map["last_name"] = lastNameController.text.trim();
           map["sign_in_method"] = "email";
-          map["last_odometer"] = "0";
+          map["last_odometer"] = 0;
 
-          await db
-              .collection(DatabaseTables.USER_PROFILE)
-              .doc(id)
-              .set(map)
-              .then((_) {
-                Get.back();
-                firstNameController.text = "";
-                lastNameController.text = "";
-                emailController.text = "";
-                passwordController.text = "";
-                formStateKey.currentState?.reset();
+          // Try to write the user profile to Firestore with a limited retry.
+          const int maxRetries = 2;
+          int attempt = 0;
+          bool writeSucceeded = false;
 
-                Utils.showSnackBar(
-                  message: "user_registered_success",
-                  success: true,
+          while (!writeSucceeded && attempt < maxRetries) {
+            try {
+              attempt++;
+              await db.collection(DatabaseTables.USER_PROFILE).doc(id).set(map);
+              writeSucceeded = true;
+            } catch (writeError) {
+              debugPrint(
+                'Firestore write attempt $attempt failed: $writeError',
+              );
+              if (attempt < maxRetries) {
+                await Future.delayed(const Duration(milliseconds: 300));
+                continue;
+              }
+
+              // All retries exhausted — roll back the newly created Auth user.
+              Get.back(); // close progress dialog
+
+              try {
+                await user.delete();
+                debugPrint(
+                  'Rolled back auth user after Firestore failure (id=$id)',
                 );
+              } catch (deleteError) {
+                debugPrint(
+                  'Failed to delete auth user during rollback: $deleteError',
+                );
+              }
 
-                final appUser = AppUser();
-                appUser.id = id;
-                appUser.email = emailController.text;
-                appUser.firstName = firstNameController.text;
-                appUser.lastName = lastNameController.text;
+              Utils.showSnackBar(message: 'save_data_failed', success: false);
+              return;
+            }
+          }
 
-                appService.setProfile(appUser);
+          // If we reach here, Firestore write succeeded.
+          Get.back();
 
-                Future.delayed(const Duration(milliseconds: 500), () {
-                  Get.offAllNamed(AppRoutes.LOGIN_VIEW);
-                });
-              })
-              .catchError((error) {
-                Get.back();
-                Utils.showSnackBar(message: "save_data_failed", success: false);
-              });
+          final appUser = AppUser();
+          appUser.id = id;
+          appUser.email = emailController.text;
+          appUser.firstName = firstNameController.text;
+          appUser.lastName = lastNameController.text;
+
+          appService.setProfile(appUser);
+
+          firstNameController.text = "";
+          lastNameController.text = "";
+          emailController.text = "";
+          passwordController.text = "";
+          formStateKey.currentState?.reset();
+
+          Utils.showSnackBar(message: "user_registered_success", success: true);
+
+          Future.delayed(const Duration(milliseconds: 500), () {
+            Get.offAllNamed(AppRoutes.LOGIN_VIEW);
+          });
         }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'email-already-in-use') {

@@ -7,8 +7,6 @@ import 'package:drivvo/utils/database_tables.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class CreateRouteController extends GetxController {
@@ -42,7 +40,6 @@ class CreateRouteController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
-    getProfile();
     final now = DateTime.now();
     model.value.startDate = now;
     model.value.endDate = now.add(Duration(days: 1));
@@ -54,6 +51,9 @@ class CreateRouteController extends GetxController {
     reasonController.text = "select_reason".tr;
     originController.text = "select_origin".tr;
     destinationController.text = "select_destination".tr;
+
+    lastOdometer.value = appService.appUser.value.lastOdometer;
+    calculateTotal();
   }
 
   @override
@@ -70,13 +70,6 @@ class CreateRouteController extends GetxController {
     valuePerKmController.dispose();
     totalController.dispose();
     super.onClose();
-  }
-
-  Future<void> getProfile() async {
-    await appService.getUserProfile();
-    lastOdometer.value = appService.appUser.value.lastOdometer;
-    initialOdometerController.text = lastOdometer.value.toString();
-    calculateTotal();
   }
 
   void onSelectReason(String? reason) {
@@ -153,45 +146,11 @@ class CreateRouteController extends GetxController {
     }
   }
 
-  Future<void> onPickedFile(XFile? pickedFile) async {
-    if (pickedFile != null) {
-      try {
-        CroppedFile? croppedFile = await ImageCropper().cropImage(
-          sourcePath: pickedFile.path,
-          aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-          uiSettings: [
-            AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              toolbarColor: Utils.appColor,
-              toolbarWidgetColor: Colors.white,
-              lockAspectRatio: true,
-              aspectRatioPresets: [CropAspectRatioPreset.square],
-            ),
-            IOSUiSettings(
-              title: 'Cropper',
-              aspectRatioPresets: [
-                CropAspectRatioPreset
-                    .square, // IMPORTANT: iOS supports only one custom aspect ratio in preset list
-              ],
-            ),
-          ],
-        );
-        if (croppedFile != null) {
-          filePath.value = croppedFile.path;
-        }
-      } catch (e) {
-        debugPrint(e.toString());
-      }
-    }
-  }
-
   Future<void> saveRoute() async {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
-      final context = Get.context;
-      if (context == null) return;
-      Utils.showProgressDialog(context);
+      Utils.showProgressDialog();
 
       final map = {
         "user_id": appService.appUser.value.id,
@@ -213,29 +172,27 @@ class CreateRouteController extends GetxController {
       };
 
       try {
-        await FirebaseFirestore.instance
+        final batch = FirebaseFirestore.instance.batch();
+        final docRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
-            .doc(appService.appUser.value.id)
-            .set({
-              'route_list': FieldValue.arrayUnion([map]),
-            }, SetOptions(merge: true))
-            .then((e) async {
-              //!Update last Odometer
-              await FirebaseFirestore.instance
-                  .collection(DatabaseTables.USER_PROFILE)
-                  .doc(appService.appUser.value.id)
-                  .update({
-                    "last_odometer":
-                        int.tryParse(finalOdometerController.text) ?? 0,
-                  });
-              if (Get.isDialogOpen == true) Get.back();
-              Get.back();
+            .doc(appService.appUser.value.id);
 
-              Utils.showSnackBar(message: "route_added".tr, success: true);
-              if (Get.isRegistered<HomeController>()) {
-                Get.find<HomeController>().loadTimelineData(forceFetch: true);
-              }
-            });
+        // Single atomic operation
+        batch.set(docRef, {
+          'route_list': FieldValue.arrayUnion([map]),
+        }, SetOptions(merge: true));
+
+        batch.update(docRef, {
+          "last_odometer": int.tryParse(finalOdometerController.text) ?? 0,
+        });
+
+        await batch.commit();
+
+        if (Get.isRegistered<HomeController>()) {
+          Get.find<HomeController>().loadTimelineData(forceFetch: true);
+        }
+      } on FirebaseException catch (e) {
+        Utils.getFirebaseException(e);
       } catch (e) {
         if (Get.isDialogOpen == true) Get.back();
         Utils.showSnackBar(message: "something_wrong".tr, success: false);

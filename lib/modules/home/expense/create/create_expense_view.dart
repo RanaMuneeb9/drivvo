@@ -122,8 +122,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                   readOnly: false,
                   labelText: "odometer".tr,
                   hintText:
-                      "${'last_odometer'.tr}: ${controller.lastOdometer.value} km"
-                          .tr,
+                      "${'last_odometer'.tr}: ${controller.lastOdometer.value} km",
                   inputAction: TextInputAction.next,
                   type: TextInputType.number,
                   onTap: () {},
@@ -214,7 +213,7 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                               .toList();
                           Get.toNamed(
                             AppRoutes.EXPENSE_TYPE_VIEW,
-                            arguments: list,
+                            arguments: {"list": list, "isFromCreate": true},
                           );
                         },
                         child: Container(
@@ -500,7 +499,10 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                   imageQuality: 100,
                 );
                 if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
+                  Utils.onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => controller.filePath.value = path,
+                  );
                 }
               },
               child: Row(
@@ -535,7 +537,10 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
                   imageQuality: 100,
                 );
                 if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
+                  Utils.onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => controller.filePath.value = path,
+                  );
                 }
               },
               child: Row(

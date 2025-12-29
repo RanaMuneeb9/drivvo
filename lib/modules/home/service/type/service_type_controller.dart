@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/expense/expense_type_model.dart';
 import 'package:drivvo/modules/home/service/create/create_service_controller.dart';
+import 'package:drivvo/modules/home/service/update/update_service_controller.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
@@ -14,7 +15,7 @@ class ServiceTypeController extends GetxController {
   var isChecked = false.obs;
 
   late List<ExpenseTypeModel> selectedList;
-
+  bool isFromCreate = false;
   var filterList = <ExpenseTypeModel>[].obs;
   List<ExpenseTypeModel> generalList = [];
   final searchInputController = TextEditingController();
@@ -26,9 +27,9 @@ class ServiceTypeController extends GetxController {
   @override
   void onInit() {
     appService = Get.find<AppService>();
-
-    final args = Get.arguments;
-    selectedList = args is List<ExpenseTypeModel> ? args : [];
+    final result = Get.arguments;
+    isFromCreate = result["isFromCreate"];
+    selectedList = result["list"] as List<ExpenseTypeModel>;
     super.onInit();
 
     searchInputController.addListener(() {
@@ -84,13 +85,18 @@ class ServiceTypeController extends GetxController {
   }
 
   void onTapBack() {
-    final con = Get.find<CreateServiceController>();
-    con.serviceTyesList.clear();
+    final selectedList = filterList.where((e) => e.isChecked.value).toList();
 
-    final list = filterList.where((e) => e.isChecked.value == true).toList();
-    con.serviceTyesList.value = list;
-    con.calculateTotal();
-    con.serviceTyesList.refresh();
+    if (isFromCreate) {
+      final controller = Get.find<CreateServiceController>();
+      controller.serviceTyesList.value = selectedList;
+      controller.calculateTotal();
+    } else {
+      final controller = Get.find<UpdateServiceController>();
+      controller.serviceTyesList.value = selectedList;
+      controller.calculateTotal();
+    }
+
     Get.back();
   }
 

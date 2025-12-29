@@ -1,0 +1,20 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "USER_PROFILE",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vehicle_id", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "refueling_list",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vehicle_id", "order": "ASCENDING" },
+        { "fieldPath": "odometer", "order": "ASCENDING" }
+      ]
+    }
+  ]
+}

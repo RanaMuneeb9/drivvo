@@ -18,18 +18,28 @@ import 'package:drivvo/modules/home/expense/create/create_expense_binding.dart';
 import 'package:drivvo/modules/home/expense/create/create_expense_view.dart';
 import 'package:drivvo/modules/home/expense/type/expense_type_binding.dart';
 import 'package:drivvo/modules/home/expense/type/expense_type_view.dart';
+import 'package:drivvo/modules/home/expense/update/update_expense_binding.dart';
+import 'package:drivvo/modules/home/expense/update/update_expense_view.dart';
 import 'package:drivvo/modules/home/filter/home_filter_binding.dart';
 import 'package:drivvo/modules/home/filter/home_filter_view.dart';
 import 'package:drivvo/modules/home/income/create/create_income_binding.dart';
 import 'package:drivvo/modules/home/income/create/create_income_view.dart';
+import 'package:drivvo/modules/home/income/update/update_income_binding.dart';
+import 'package:drivvo/modules/home/income/update/update_income_view.dart';
 import 'package:drivvo/modules/home/refueling/create/create_refueling_binding.dart';
 import 'package:drivvo/modules/home/refueling/create/create_refueling_view.dart';
+import 'package:drivvo/modules/home/refueling/update/update_refueling_binding.dart';
+import 'package:drivvo/modules/home/refueling/update/update_refueling_view.dart';
 import 'package:drivvo/modules/home/route/create/create_route_binding.dart';
 import 'package:drivvo/modules/home/route/create/create_route_view.dart';
+import 'package:drivvo/modules/home/route/update/update_route_binding.dart';
+import 'package:drivvo/modules/home/route/update/update_route_view.dart';
 import 'package:drivvo/modules/home/service/create/create_service_binding.dart';
 import 'package:drivvo/modules/home/service/create/create_service_view.dart';
 import 'package:drivvo/modules/home/service/type/service_type_binding.dart';
 import 'package:drivvo/modules/home/service/type/service_type_view.dart';
+import 'package:drivvo/modules/home/service/update/update_service_binding.dart';
+import 'package:drivvo/modules/home/service/update/update_service_view.dart';
 import 'package:drivvo/modules/more/general/create/create_general_bindings.dart';
 import 'package:drivvo/modules/more/general/create/create_general_view.dart';
 import 'package:drivvo/modules/more/general/general_bindings.dart';
@@ -151,11 +161,21 @@ class AppPages {
       page: () => CreateRefuelingView(),
       binding: CreateRefuelingBinding(),
     ),
+    GetPage(
+      name: AppRoutes.UPDATE_REFUELING_VIEW,
+      page: () => const UpdateRefuelingView(),
+      binding: UpdateRefuelingBinding(),
+    ),
 
     GetPage(
       name: AppRoutes.CREATE_EXPENSE_VIEW,
-      page: () => CreateExpenseView(),
+      page: () => const CreateExpenseView(),
       binding: CreateExpenseBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.UPDATE_EXPENSE_VIEW,
+      page: () => const UpdateExpenseView(),
+      binding: UpdateExpenseBinding(),
     ),
 
     GetPage(
@@ -169,11 +189,21 @@ class AppPages {
       page: () => CreateIncomeView(),
       binding: CreateIncomeBinding(),
     ),
+    GetPage(
+      name: AppRoutes.UPDATE_INCOME_VIEW,
+      page: () => const UpdateIncomeView(),
+      binding: UpdateIncomeBinding(),
+    ),
 
     GetPage(
       name: AppRoutes.CRAETE_SERVICE_VIEW,
       page: () => CreateServiceView(),
       binding: CreateServiceBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.UPDATE_SERVICE_VIEW,
+      page: () => const UpdateServiceView(),
+      binding: UpdateServiceBinding(),
     ),
 
     GetPage(
@@ -186,6 +216,11 @@ class AppPages {
       name: AppRoutes.CRAETE_ROUTE_VIEW,
       page: () => CreateRouteView(),
       binding: CreateRouteBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.UPDATE_ROUTE_VIEW,
+      page: () => const UpdateRouteView(),
+      binding: UpdateRouteBinding(),
     ),
 
     GetPage(

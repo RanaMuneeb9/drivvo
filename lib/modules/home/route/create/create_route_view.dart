@@ -387,7 +387,7 @@ class CreateRouteView extends GetView<CreateRouteController> {
                 obscureText: false,
                 readOnly: false,
                 labelText: "driver".tr,
-                hintText: "Amir".tr,
+                hintText: "enter_driver_name".tr,
                 inputAction: TextInputAction.next,
                 type: TextInputType.name,
                 onTap: () {},
@@ -510,7 +510,10 @@ class CreateRouteView extends GetView<CreateRouteController> {
                   imageQuality: 100,
                 );
                 if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
+                  Utils.onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => controller.filePath.value = path,
+                  );
                 }
               },
               child: Row(
@@ -541,7 +544,10 @@ class CreateRouteView extends GetView<CreateRouteController> {
                   imageQuality: 100,
                 );
                 if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
+                  Utils.onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => controller.filePath.value = path,
+                  );
                 }
               },
               child: Row(

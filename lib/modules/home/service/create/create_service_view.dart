@@ -218,9 +218,10 @@ class CreateServiceView extends GetView<CreateServiceController> {
                           final list = controller.serviceTyesList
                               .where((e) => e.isChecked.value == true)
                               .toList();
+
                           Get.toNamed(
                             AppRoutes.SERVICE_TYPE_VIEW,
-                            arguments: list,
+                            arguments: {"list": list, "isFromCreate": true},
                           );
                         },
                         child: Container(
@@ -505,7 +506,10 @@ class CreateServiceView extends GetView<CreateServiceController> {
                   imageQuality: 100,
                 );
                 if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
+                  Utils.onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => controller.filePath.value = path,
+                  );
                 }
               },
               child: Row(
@@ -536,7 +540,10 @@ class CreateServiceView extends GetView<CreateServiceController> {
                   imageQuality: 100,
                 );
                 if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
+                  Utils.onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => controller.filePath.value = path,
+                  );
                 }
               },
               child: Row(

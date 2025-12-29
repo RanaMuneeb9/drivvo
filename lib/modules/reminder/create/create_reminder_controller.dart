@@ -71,7 +71,7 @@ class CreateReminderController extends GetxController {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
-      Utils.showProgressDialog(Get.context!);
+      Utils.showProgressDialog();
 
       final map = {
         "vehicle_id": "",

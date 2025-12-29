@@ -840,7 +840,7 @@ class HomeView extends GetView<HomeController> {
               Material(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () => controller.editEntry(entry),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
                     child: Icon(

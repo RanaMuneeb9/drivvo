@@ -69,7 +69,7 @@ class UpdateProfileController extends GetxController {
     if (formStateKey.currentState?.validate() == true) {
       formStateKey.currentState?.save();
 
-      Utils.showProgressDialog(Get.context!);
+      Utils.showProgressDialog();
       if (filePath.value.isNotEmpty) {
         saveUser();
       } else {

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/app_user.dart';
 import 'package:drivvo/model/expense/expense_model.dart';
 import 'package:drivvo/model/income/income_model.dart';
@@ -7,7 +6,6 @@ import 'package:drivvo/model/service/service_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
-import 'package:drivvo/utils/database_tables.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -144,17 +142,17 @@ class ReportsController extends GetxController
   // }
 
   Future<void> calculateAllReports() async {
-    var user = AppUser();
-    var docSnapshot = await FirebaseFirestore.instance
-        .collection(DatabaseTables.USER_PROFILE)
-        .doc(appService.appUser.value.id)
-        .get();
-    if (docSnapshot.exists) {
-      Map<String, dynamic>? data = docSnapshot.data();
-      if (data != null) {
-        user = AppUser.fromJson(data);
-      }
-    }
+    var user = appService.appUser.value;
+    // var docSnapshot = await FirebaseFirestore.instance
+    //     .collection(DatabaseTables.USER_PROFILE)
+    //     .doc(appService.appUser.value.id)
+    //     .get();
+    // if (docSnapshot.exists) {
+    //   Map<String, dynamic>? data = docSnapshot.data();
+    //   if (data != null) {
+    //     user = AppUser.fromJson(data);
+    //   }
+    // }
 
     // Filter data by date range
     final filteredRefueling = _filterRefuelingByDate(user.refuelingList);

@@ -96,7 +96,7 @@ class GeneralController extends GetxController {
   Future<void> deleteItem(GeneralModel item) async {
     final collectionName = getCollectionName();
 
-    Utils.showProgressDialog(Get.context!);
+    Utils.showProgressDialog();
 
     try {
       await db

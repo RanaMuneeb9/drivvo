@@ -448,5 +448,20 @@
   "are_you_sure_delete_entry": "کیا آپ واقعی اس اندراج کو حذف کرنا چاہتے ہیں؟",
   "delete": "حذف کریں",
   "entry_deleted": "اندراج کامیابی سے حذف کر دیا گیا",
-  "failed_to_delete_entry": "اندراج حذف کرنے میں ناکامی"
+  "failed_to_delete_entry": "اندراج حذف کرنے میں ناکامی",
+  "update_income": "آمدنی اپ ڈیٹ کریں",
+  "income_updated": "آمدنی کامیابی سے اپ ڈیٹ ہو گئی",
+  "update_refueling": "ریفولنگ اپ ڈیٹ کریں",
+  "refueling_updated": "ریفولنگ کامیابی سے اپ ڈیٹ ہو گئی",
+  "update_expense": "اخراجات اپ ڈیٹ کریں",
+  "expense_updated": "اخراجات کامیابی سے اپ ڈیٹ ہو گئے",
+  "update_service": "سروس اپ ڈیٹ کریں",
+  "service_updated": "سروس کامیابی سے اپ ڈیٹ ہو گئی",
+  "update_route": "راستہ اپ ڈیٹ کریں",
+  "route_updated": "راستہ کامیابی سے اپ ڈیٹ ہو گیا",
+  "enter_driver_name": "ڈرائیور کا نام درج کریں",
+  "invalid_odometer_value": "اوڈومیٹر کی قدر غلط ہے",
+  "final_odometer_greater_than_initial": "فائنل اوڈومیٹر ابتدائی اوڈومیٹر سے زیادہ ہونا چاہیے",
+  "invalid_number": "غلط نمبر","select_origin": "روانگی کا مقام منتخب کریں",
+  "select_destination": "منزل منتخب کریں"
 }

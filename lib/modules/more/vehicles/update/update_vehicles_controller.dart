@@ -60,7 +60,7 @@ class UpdateVehiclesController extends GetxController {
     if (formStateKey.currentState?.validate() == true) {
       formStateKey.currentState?.save();
 
-      Utils.showProgressDialog(Get.context!);
+      Utils.showProgressDialog();
       if (selectedTankIndex.value == 0) {
         model.secFuelCapacity = "";
         model.secFuelType = "";

@@ -28,7 +28,7 @@ class ForgotPasswordController extends GetxController {
     if (formStateKey.currentState?.validate() == true) {
       formStateKey.currentState?.save();
       if (email.isNotEmpty) {
-        Utils.showProgressDialog(Get.context!);
+        Utils.showProgressDialog();
         try {
           await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
           Get.back(closeOverlays: true);

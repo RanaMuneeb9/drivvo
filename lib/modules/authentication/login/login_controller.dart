@@ -34,7 +34,7 @@ class LoginController extends GetxController {
   Future<void> onTapLogin() async {
     if (formStateKey.currentState?.validate() == true) {
       formStateKey.currentState?.save();
-      Utils.showProgressDialog(Get.context!);
+      Utils.showProgressDialog();
       try {
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: email, password: password)
@@ -104,7 +104,7 @@ class LoginController extends GetxController {
         idToken: googleAuth.idToken,
       );
 
-      Utils.showProgressDialog(Get.context!);
+      Utils.showProgressDialog();
 
       final userCredential = await auth.signInWithCredential(credential);
       final user = userCredential.user;
@@ -119,38 +119,33 @@ class LoginController extends GetxController {
         map["name"] = user.displayName;
         map["photoUrl"] = user.photoURL;
         map["sign_in_method"] = Constants.GOOGLE;
-        map["last_odometer"] = "0";
+        map["last_odometer"] = 0;
 
         await db
             .collection(DatabaseTables.USER_PROFILE)
             .doc(id)
-            .set(map, SetOptions(merge: true))
-            .then((_) async {
-              final appUser = AppUser();
-              appUser.id = id;
-              appUser.email = user.email ?? "";
-              appUser.firstName = user.displayName ?? "";
-              appService.setProfile(appUser);
-              Get.back();
-              Get.back();
-              if (appService.importData) {
-                Get.offAllNamed(AppRoutes.ROOT_VIEW);
-              } else {
-                Get.offAllNamed(AppRoutes.IMPORT_DATA_VIEW);
-              }
-              appService.getUserProfile();
+            .set(map, SetOptions(merge: true));
 
-              // await IAPService.to.checkSubscriptionStatus();
-              // appService.setIsUserLogin(true);
+        final appUser = AppUser();
+        appUser.id = id;
+        appUser.email = user.email ?? "";
+        appUser.firstName = user.displayName ?? "";
+        appService.setProfile(appUser);
+        Get.back();
+        Get.back();
+        if (appService.importData) {
+          Get.offAllNamed(AppRoutes.ROOT_VIEW);
+        } else {
+          Get.offAllNamed(AppRoutes.IMPORT_DATA_VIEW);
+        }
+        appService.getUserProfile();
 
-              if (userCredential.additionalUserInfo!.isNewUser) {
-                await saveData();
-              }
-            })
-            .catchError((error) {
-              Get.back();
-              Utils.showSnackBar(message: "save_data_failed", success: false);
-            });
+        // await IAPService.to.checkSubscriptionStatus();
+        // appService.setIsUserLogin(true);
+
+        if (userCredential.additionalUserInfo?.isNewUser == true) {
+          await saveData();
+        }
       }
     } catch (e) {
       Get.back();

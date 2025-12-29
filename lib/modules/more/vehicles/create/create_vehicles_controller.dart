@@ -60,7 +60,7 @@ class CreateVehiclesController extends GetxController {
 
       final id = ref.doc().id;
 
-      Utils.showProgressDialog(Get.context!);
+      Utils.showProgressDialog();
       final map = model.toJson(id);
 
       await ref

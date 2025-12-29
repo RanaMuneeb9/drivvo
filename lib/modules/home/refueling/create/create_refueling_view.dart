@@ -123,8 +123,7 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                   readOnly: false,
                   labelText: "odometer".tr,
                   hintText:
-                      "${'last_odometer'.tr}: ${controller.lastOdometer.value} km"
-                          .tr,
+                      "${'last_odometer'.tr}: ${controller.lastOdometer.value} km",
                   inputAction: TextInputAction.next,
                   type: TextInputType.number,
                   onTap: () {},

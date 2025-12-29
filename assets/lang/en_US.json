@@ -451,5 +451,20 @@
   "are_you_sure_delete_entry": "Are you sure you want to delete this entry?",
   "delete": "Delete",
   "entry_deleted": "Entry deleted successfully",
-  "failed_to_delete_entry": "Failed to delete entry"
+  "failed_to_delete_entry": "Failed to delete entry",
+  "update_income": "Update Income",
+  "income_updated": "Income updated successfully",
+  "update_refueling": "Update Refueling",
+  "refueling_updated": "Refueling updated successfully",
+  "update_expense": "Update Expense",
+  "expense_updated": "Expense updated successfully",
+  "update_service": "Update Service",
+  "service_updated": "Service updated successfully",
+  "update_route": "Update Route",
+  "route_updated": "Route updated successfully",
+  "enter_driver_name": "Enter driver name",
+  "invalid_odometer_value": "Invalid odometer value",
+  "final_odometer_greater_than_initial": "Final odometer must be greater than initial odometer",
+  "invalid_number": "Invalid number", "select_origin": "Select origin",
+  "select_destination": "Select destination"
 }

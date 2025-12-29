@@ -31,6 +31,7 @@ class AppService extends GetxService {
   var routeFilter = true.obs;
   var selectedDateRange = Rxn<DateRangeModel>();
   final FirebaseFirestore db = FirebaseFirestore.instance;
+  StreamSubscription? _userSubscription;
 
   String _languageCode = "";
   String _countryCode = "";
@@ -81,7 +82,7 @@ class AppService extends GetxService {
       return;
     }
     appUser.value = AppUser.fromJson(user);
-    getUserProfile();
+    await getUserProfile();
   }
 
   Future<void> getUserProfile() async {
@@ -90,21 +91,42 @@ class AppService extends GetxService {
       if (user == null) {
         return;
       }
-      var docSnapshot = await db
+
+      _userSubscription?.cancel();
+
+      final completer = Completer<void>();
+      bool isFirst = true;
+
+      _userSubscription = db
           .collection(DatabaseTables.USER_PROFILE)
           .doc(user.uid)
-          .get();
-      if (docSnapshot.exists) {
-        Map<String, dynamic>? data = docSnapshot.data();
-        if (data != null) {
-          final userData = AppUser.fromJson(data);
-          setProfile(userData);
-        }
-      }
+          .snapshots()
+          .listen(
+            (docSnapshot) {
+              if (docSnapshot.exists) {
+                Map<String, dynamic>? data = docSnapshot.data();
+                if (data != null) {
+                  final userData = AppUser.fromJson(data);
+                  setProfile(userData);
+                }
+              }
+              if (isFirst) {
+                isFirst = false;
+                completer.complete();
+              }
+            },
+            onError: (e) {
+              debugPrint("getUserProfile error: $e");
+              if (isFirst) {
+                isFirst = false;
+                completer.completeError(e);
+              }
+            },
+          );
+
+      return completer.future;
     } catch (e) {
-      
-      debugPrint("getUserProfile error: ${e.runtimeType}");
-      Utils.showSnackBar(message: "Failed to load profile", success: false);
+      debugPrint("getUserProfile error: $e");
     }
   }
 
@@ -133,37 +155,13 @@ class AppService extends GetxService {
     await _box.write(Constants.IMPORT_DATA, value);
   }
 
-  Future<void> setRefuelingFilter({required bool value}) async {
-    refuelingFilter.value = value;
-    await _box.write(Constants.REFUELING_FILTER, value);
-  }
-
-  Future<void> setExpenseFilter({required bool value}) async {
-    expenseFilter.value = value;
-    await _box.write(Constants.EXPENSE_FILTER, value);
-  }
-
-  Future<void> setIncomeFilter({required bool value}) async {
-    incomeFilter.value = value;
-    await _box.write(Constants.INCOME_FILTER, value);
-  }
-
-  Future<void> setServiceFilter({required bool value}) async {
-    serviceFilter.value = value;
-    await _box.write(Constants.SERVICE_FILTER, value);
-  }
-
-  Future<void> setRouteFilter({required bool value}) async {
-    routeFilter.value = value;
-    await _box.write(Constants.ROUTE_FILTER, value);
-  }
-
   Future<void> logOut() async {
     try {
       if (appUser.value.signInMethod == Constants.GOOGLE) {
         await GoogleSignIn().signOut();
       }
       await FirebaseAuth.instance.signOut();
+      _userSubscription?.cancel();
       setProfile(AppUser());
       Get.offAllNamed(AppRoutes.LOGIN_VIEW);
       Utils.showSnackBar(message: "You have been logged out.", success: true);
@@ -183,7 +181,7 @@ class AppService extends GetxService {
       return;
     }
 
-    Utils.showProgressDialog(Get.context!);
+    Utils.showProgressDialog();
 
     try {
       await user.delete();
@@ -214,5 +212,11 @@ class AppService extends GetxService {
     _box.write(Constants.LANGUAGE_CODE, langCode);
     _box.write(Constants.COUNTRY_CODE, country);
     Get.updateLocale(Locale(langCode, country));
+  }
+
+  @override
+  void onClose() {
+    _userSubscription?.cancel();
+    super.onClose();
   }
 }

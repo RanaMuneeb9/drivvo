@@ -117,8 +117,7 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                   readOnly: false,
                   labelText: "odometer".tr,
                   hintText:
-                      "${'last_odometer'.tr}: ${controller.lastOdometer.value} km"
-                          .tr,
+                      "${'last_odometer'.tr}: ${controller.lastOdometer.value} km",
                   inputAction: TextInputAction.next,
                   type: TextInputType.number,
                   onTap: () {},
@@ -223,7 +222,7 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                 obscureText: false,
                 readOnly: false,
                 labelText: "driver".tr,
-                hintText: "Amir".tr,
+                hintText: "enter_driver_name".tr,
                 inputAction: TextInputAction.next,
                 type: TextInputType.name,
                 onTap: () {},
@@ -319,7 +318,10 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                   imageQuality: 100,
                 );
                 if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
+                  Utils.onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => controller.filePath.value = path,
+                  );
                 }
               },
               child: Row(
@@ -350,7 +352,10 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                   imageQuality: 100,
                 );
                 if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
+                  Utils.onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => controller.filePath.value = path,
+                  );
                 }
               },
               child: Row(

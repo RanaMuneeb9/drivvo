@@ -8,8 +8,6 @@ import 'package:drivvo/utils/database_tables.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class CreateIncomeController extends GetxController {
@@ -31,13 +29,14 @@ class CreateIncomeController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
-    getProfile();
     final now = DateTime.now();
     model.value.date = now;
     dateController.text = Utils.formatDate(date: now);
     timeController.text = DateFormat('hh:mm a').format(now);
 
     incomeTypeController.text = "select_income_type".tr;
+
+    lastOdometer.value = appService.appUser.value.lastOdometer;
   }
 
   @override
@@ -46,11 +45,6 @@ class CreateIncomeController extends GetxController {
     timeController.dispose();
     incomeTypeController.dispose();
     super.onClose();
-  }
-
-  Future<void> getProfile() async {
-    await appService.getUserProfile();
-    lastOdometer.value = appService.appUser.value.lastOdometer;
   }
 
   void onSelectIncomeType(String? type) {
@@ -100,45 +94,12 @@ class CreateIncomeController extends GetxController {
     }
   }
 
-  Future<void> onPickedFile(XFile? pickedFile) async {
-    if (pickedFile != null) {
-      try {
-        CroppedFile? croppedFile = await ImageCropper().cropImage(
-          sourcePath: pickedFile.path,
-          aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-          uiSettings: [
-            AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              toolbarColor: Utils.appColor,
-              toolbarWidgetColor: Colors.white,
-              lockAspectRatio: true,
-              aspectRatioPresets: [CropAspectRatioPreset.square],
-            ),
-            IOSUiSettings(
-              title: 'Cropper',
-              aspectRatioPresets: [
-                CropAspectRatioPreset
-                    .square, // IMPORTANT: iOS supports only one custom aspect ratio in preset list
-              ],
-            ),
-          ],
-        );
-        if (croppedFile != null) {
-          filePath.value = croppedFile.path;
-        }
-      } catch (e) {
-        debugPrint(e.toString());
-      }
-    }
-  }
-
   Future<void> saveIncome() async {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
-      final context = Get.context;
-      if (context == null) return;
-      Utils.showProgressDialog(context);
+      Utils.showProgressDialog();
+
       final map = {
         "user_id": appService.appUser.value.id,
         "vehicle_id": appService.currentVehicleId.value,
@@ -154,31 +115,36 @@ class CreateIncomeController extends GetxController {
       };
 
       try {
-        await FirebaseFirestore.instance
+        final batch = FirebaseFirestore.instance.batch();
+        final docRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
-            .doc(appService.appUser.value.id)
-            .set({
-              'income_list': FieldValue.arrayUnion([map]),
-            }, SetOptions(merge: true));
+            .doc(appService.appUser.value.id);
 
-        // Update last Odometer
-        await FirebaseFirestore.instance
-            .collection(DatabaseTables.USER_PROFILE)
-            .doc(appService.appUser.value.id)
-            .update({"last_odometer": model.value.odometer});
+        // Single atomic operation
+        batch.set(docRef, {
+          'income_list': FieldValue.arrayUnion([map]),
+        }, SetOptions(merge: true));
+
+        batch.update(docRef, {"last_odometer": model.value.odometer});
+
+        await batch.commit();
 
         if (Get.isDialogOpen == true) Get.back();
         Get.back();
 
         Utils.showSnackBar(message: "income_added".tr, success: true);
+
+        // await appService.getUserProfile();
+
         if (Get.isRegistered<HomeController>()) {
           Get.find<HomeController>().loadTimelineData(forceFetch: true);
         }
 
         if (Get.isRegistered<ReportsController>()) {
-          final report = Get.find<ReportsController>();
-          report.calculateAllReports();
+          Get.find<ReportsController>().calculateAllReports();
         }
+      } on FirebaseException catch (e) {
+        Utils.getFirebaseException(e);
       } catch (e) {
         if (Get.isDialogOpen == true) Get.back();
         Utils.showSnackBar(message: "something_wrong".tr, success: false);

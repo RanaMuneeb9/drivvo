@@ -18,6 +18,9 @@ class ServiceModel {
   late String notes;
   late String driverName;
   late List<ExpenseTypeModel> serviceTypes;
+  late String filePath;
+  late String place;
+  late String reason;
   Map<String, dynamic> rawMap = {};
 
   ServiceModel() {
@@ -37,10 +40,13 @@ class ServiceModel {
     notes = "";
     driverName = "";
     serviceTypes = [];
+    filePath = "";
+    place = "";
+    reason = "";
   }
 
   ServiceModel.fromJson(Map<String, dynamic> json) {
-    rawMap = json;
+    rawMap = Map<String, dynamic>.from(json);
     userId = json["user_id"] ?? "";
     vehicleId = json["vehicle_id"] ?? "";
     time = json["time"] ?? "";
@@ -56,6 +62,9 @@ class ServiceModel {
     paymentMethod = json["payment_method"] ?? "";
     notes = json["notes"] ?? "";
     driverName = json["driver_name"] ?? "";
+    filePath = json["file_path"] ?? "";
+    place = json["place"] ?? "";
+    reason = json["reason"] ?? "";
     serviceTypes =
         (json["expense_types"] as List<dynamic>?)
             ?.map((e) => ExpenseTypeModel.fromJson(e as Map<String, dynamic>))
@@ -80,6 +89,9 @@ class ServiceModel {
       "payment_method": paymentMethod,
       "notes": notes,
       "driver_name": driverName,
+      "file_path": filePath,
+      "place": place,
+      "reason": reason,
       "expense_types": serviceTypes.map((e) => e.toJson()).toList(),
     };
   }

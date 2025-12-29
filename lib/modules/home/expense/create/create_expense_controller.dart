@@ -9,8 +9,6 @@ import 'package:drivvo/utils/database_tables.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class CreateExpenseController extends GetxController {
@@ -38,7 +36,6 @@ class CreateExpenseController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
-    getProfile();
     final now = DateTime.now();
     model.value.date = now;
     dateController.text = Utils.formatDate(date: now);
@@ -48,6 +45,8 @@ class CreateExpenseController extends GetxController {
     placeController.text = "select_your_place".tr;
     paymentMethodController.text = "select_payment_method".tr;
     reasonController.text = "select_reason".tr;
+
+    lastOdometer.value = appService.appUser.value.lastOdometer;
   }
 
   @override
@@ -59,11 +58,6 @@ class CreateExpenseController extends GetxController {
     paymentMethodController.dispose();
     reasonController.dispose();
     super.onClose();
-  }
-
-  Future<void> getProfile() async {
-    await appService.getUserProfile();
-    lastOdometer.value = appService.appUser.value.lastOdometer;
   }
 
   void selectDate() async {
@@ -107,43 +101,11 @@ class CreateExpenseController extends GetxController {
     }
   }
 
-  Future<void> onPickedFile(XFile? pickedFile) async {
-    if (pickedFile != null) {
-      try {
-        CroppedFile? croppedFile = await ImageCropper().cropImage(
-          sourcePath: pickedFile.path,
-          aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-          uiSettings: [
-            AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              toolbarColor: Utils.appColor,
-              toolbarWidgetColor: Colors.white,
-              lockAspectRatio: true,
-              aspectRatioPresets: [CropAspectRatioPreset.square],
-            ),
-            IOSUiSettings(
-              title: 'Cropper',
-              aspectRatioPresets: [
-                CropAspectRatioPreset
-                    .square, // IMPORTANT: iOS supports only one custom aspect ratio in preset list
-              ],
-            ),
-          ],
-        );
-        if (croppedFile != null) {
-          filePath.value = croppedFile.path;
-        }
-      } catch (e) {
-        debugPrint(e.toString());
-      }
-    }
-  }
-
   Future<void> saveExpense() async {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
-      Utils.showProgressDialog(Get.context!);
+      Utils.showProgressDialog();
 
       final map = {
         "user_id": appService.appUser.value.id,
@@ -163,45 +125,35 @@ class CreateExpenseController extends GetxController {
       };
 
       try {
-        await FirebaseFirestore.instance
+        final batch = FirebaseFirestore.instance.batch();
+        final docRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
-            .doc(appService.appUser.value.id)
-            .set({
-              'expense_list': FieldValue.arrayUnion([map]),
-            }, SetOptions(merge: true))
-            .then((e) async {
-              //!Update last Odometer
-              await FirebaseFirestore.instance
-                  .collection(DatabaseTables.USER_PROFILE)
-                  .doc(appService.appUser.value.id)
-                  .update({"last_odometer": model.value.odometer});
+            .doc(appService.appUser.value.id);
 
-              if (Get.isDialogOpen == true) Get.back();
-              Get.back();
+        // Single atomic operation
+        batch.set(docRef, {
+          'expense_list': FieldValue.arrayUnion([map]),
+        }, SetOptions(merge: true));
 
-              Utils.showSnackBar(message: "expense_added".tr, success: true);
-              if (Get.isRegistered<HomeController>()) {
-                Get.find<HomeController>().loadTimelineData(forceFetch: true);
-              }
+        batch.update(docRef, {"last_odometer": model.value.odometer});
 
-              if (Get.isRegistered<ReportsController>()) {
-                Get.find<ReportsController>().calculateAllReports();
-              }
-            })
-            .catchError((e) {
-              if (Get.isDialogOpen == true) Get.back();
-              Utils.showSnackBar(message: "something_wrong".tr, success: false);
-            });
+        await batch.commit();
 
-        // await FirebaseFirestore.instance
-        //     .collection(DatabaseTables.USER_PROFILE)
-        //     .doc(appService.appUser.value.id)
-        //     .collection(DatabaseTables.EXPENSES)
-        //     .doc()
-        //     .set(map);
+        if (Get.isRegistered<HomeController>()) {
+          Get.find<HomeController>().loadTimelineData(forceFetch: true);
+        }
+
+        if (Get.isRegistered<ReportsController>()) {
+          Get.find<ReportsController>().calculateAllReports();
+        }
+
+        if (Get.isDialogOpen == true) Get.back();
+        Get.back();
+        Utils.showSnackBar(message: "expense_added".tr, success: true);
+      } on FirebaseException catch (e) {
+        Utils.getFirebaseException(e);
       } catch (e) {
         if (Get.isDialogOpen == true) Get.back();
-
         Utils.showSnackBar(message: "something_wrong".tr, success: false);
       }
     }

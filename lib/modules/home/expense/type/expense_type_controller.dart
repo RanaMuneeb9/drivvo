@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/expense/expense_type_model.dart';
 import 'package:drivvo/modules/home/expense/create/create_expense_controller.dart';
+import 'package:drivvo/modules/home/expense/update/update_expense_controller.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
@@ -23,11 +24,18 @@ class ExpenseTypeController extends GetxController {
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
+  bool isFromCreate = false;
+
   @override
   void onInit() {
     appService = Get.find<AppService>();
-
-    selectedList = (Get.arguments ?? []) as List<ExpenseTypeModel>;
+    final result = Get.arguments as Map<String, dynamic>?;
+    if (result == null) {
+      Get.back();
+      return;
+    }
+    isFromCreate = result["isFromCreate"] as bool? ?? false;
+    selectedList = (result["list"] as List<ExpenseTypeModel>?) ?? [];
     super.onInit();
 
     searchInputController.addListener(() {
@@ -83,13 +91,18 @@ class ExpenseTypeController extends GetxController {
   }
 
   void onTapBack() {
-    final con = Get.find<CreateExpenseController>();
-    con.expenseTypesList.clear();
+    final aa = filterList.where((e) => e.isChecked.value).toList();
 
-    final list = filterList.where((e) => e.isChecked.value == true).toList();
-    con.expenseTypesList.value = list;
-    con.calculateTotal();
-    con.expenseTypesList.refresh();
+    if (isFromCreate) {
+      final controller = Get.find<CreateExpenseController>();
+      controller.expenseTypesList.value = aa;
+      controller.calculateTotal();
+    } else {
+      final controller = Get.find<UpdateExpenseController>();
+      controller.expenseTypesList.value = aa;
+      controller.calculateTotal();
+    }
+
     Get.back();
   }
 

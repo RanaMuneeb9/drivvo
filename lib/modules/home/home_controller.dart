@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/app_user.dart';
 import 'package:drivvo/model/timeline_entry.dart';
 import 'package:drivvo/model/vehicle/vehicle_model.dart';
+import 'package:drivvo/modules/reports/reports_controller.dart';
+import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
@@ -124,28 +126,29 @@ class HomeController extends GetxController {
   Future<void> loadTimelineData({bool forceFetch = false}) async {
     try {
       isLoading.value = true;
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        isLoading.value = false;
-        return;
-      }
+      // final user = FirebaseAuth.instance.currentUser;
+      // if (user == null) {
+      //   isLoading.value = false;
+      //   return;
+      // }
 
-      if (forceFetch || appService.appUser.value.id.isEmpty) {
-        var docSnapshot = await db
-            .collection(DatabaseTables.USER_PROFILE)
-            .doc(user.uid)
-            .get();
-        if (docSnapshot.exists) {
-          Map<String, dynamic>? data = docSnapshot.data();
-          if (data != null) {
-            appUser = AppUser.fromJson(data);
-            appService.setProfile(appUser);
-          }
-        }
-      } else {
-        appUser = appService.appUser.value;
-      }
+      // if (forceFetch || appService.appUser.value.id.isEmpty) {
+      //   var docSnapshot = await db
+      //       .collection(DatabaseTables.USER_PROFILE)
+      //       .doc(user.uid)
+      //       .get();
+      //   if (docSnapshot.exists) {
+      //     Map<String, dynamic>? data = docSnapshot.data();
+      //     if (data != null) {
+      //       appUser = AppUser.fromJson(data);
+      //       appService.setProfile(appUser);
+      //     }
+      //   }
+      // } else {
+      //   appUser = appService.appUser.value;
+      // }
 
+      appUser = appService.appUser.value;
       final List<TimelineEntry> entries = [];
 
       if (appService.refuelingFilter.value) {
@@ -389,7 +392,7 @@ class HomeController extends GetxController {
 
       if (confirmed != true) return;
 
-      Utils.showProgressDialog(Get.context!);
+      Utils.showProgressDialog();
 
       String fieldName = "";
       switch (entry.type) {
@@ -417,17 +420,64 @@ class HomeController extends GetxController {
           .doc(appService.appUser.value.id)
           .update({
             fieldName: FieldValue.arrayRemove([entry.originalData.rawMap]),
-          })
-          .then((e) async {
-            if (Get.isDialogOpen == true) Get.back();
-
-            Utils.showSnackBar(message: "entry_deleted".tr, success: true);
-            await loadTimelineData(forceFetch: true);
           });
+
+      await loadTimelineData(forceFetch: true);
+
+      if (Get.isRegistered<ReportsController>()) {
+        await Get.find<ReportsController>().calculateAllReports();
+      }
+
+      if (Get.isDialogOpen == true) Get.back();
+      Utils.showSnackBar(message: "entry_deleted".tr, success: true);
     } catch (e) {
       if (Get.isDialogOpen == true) Get.back();
       debugPrint("Error deleting entry: $e");
       Utils.showSnackBar(message: "failed_to_delete_entry".tr, success: false);
+    }
+  }
+
+  void editEntry(TimelineEntry entry) {
+    if (entry.originalData == null) return;
+
+    switch (entry.type) {
+      case TimelineEntryType.income:
+        Get.toNamed(
+          AppRoutes.UPDATE_INCOME_VIEW,
+          arguments: {'income': entry.originalData},
+        );
+        break;
+      case TimelineEntryType.refueling:
+        Get.toNamed(
+          AppRoutes.UPDATE_REFUELING_VIEW,
+          arguments: {'refueling': entry.originalData},
+        );
+        break;
+      case TimelineEntryType.expense:
+        Get.toNamed(
+          AppRoutes.UPDATE_EXPENSE_VIEW,
+          arguments: {'expense': entry.originalData},
+        );
+        break;
+      case TimelineEntryType.service:
+        Get.toNamed(
+          AppRoutes.UPDATE_SERVICE_VIEW,
+          arguments: {'service': entry.originalData},
+        );
+        break;
+      case TimelineEntryType.route:
+        Get.toNamed(
+          AppRoutes.UPDATE_ROUTE_VIEW,
+          arguments: {'route': entry.originalData},
+        );
+        break;
+      // Add other cases as they are implemented
+      default:
+        Utils.showSnackBar(
+          message: "Edit functionality for ${entry.type.name} is coming soon",
+          success: true,
+        );
+        break;
     }
   }
 }
