@@ -2,7 +2,6 @@ import 'package:drivvo/custom-widget/report/charts/category_pie_chart.dart';
 import 'package:drivvo/custom-widget/report/charts/cost_pie_chart.dart';
 import 'package:drivvo/custom-widget/report/charts/distance_per_refueling_line_chart.dart';
 import 'package:drivvo/custom-widget/report/charts/expense_vs_income_bar_chart.dart';
-import 'package:drivvo/custom-widget/report/charts/fuel_efficiency_line_chart.dart';
 import 'package:drivvo/custom-widget/report/charts/fuel_price_line_chart.dart';
 import 'package:drivvo/custom-widget/report/charts/monthly_cost_bar_chart.dart';
 import 'package:drivvo/custom-widget/report/charts/odometer_history_line_chart.dart';
@@ -196,11 +195,11 @@ class ReportsView extends GetView<ReportsController> {
               title: "fuel_chart".tr,
               isUrdu: controller.isUrdu,
             ),
-            const SizedBox(height: 16),
-            FuelEfficiencyLineChart(
-              spots: controller.fuelEfficiencyData,
-              isUrdu: controller.isUrdu,
-            ),
+            // const SizedBox(height: 16),
+            // FuelEfficiencyLineChart(
+            //   spots: controller.fuelEfficiencyData,
+            //   isUrdu: controller.isUrdu,
+            // ),
             const SizedBox(height: 16),
             DistancePerRefuelingLineChart(
               spots: controller.distancePerRefuelingData,
@@ -405,8 +404,12 @@ class ReportsView extends GetView<ReportsController> {
             title: "cost".tr,
             total: controller.formatCurrency(controller.expenseCost.value),
             totalColor: Colors.black87,
-            byDay: controller.formatCurrency(controller.expenseCostByDay.value.toInt()),
-            byKm: controller.formatCurrency(controller.expenseCostByKm.value.toInt()),
+            byDay: controller.formatCurrency(
+              controller.expenseCostByDay.value.toInt(),
+            ),
+            byKm: controller.formatCurrency(
+              controller.expenseCostByKm.value.toInt(),
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -439,8 +442,12 @@ class ReportsView extends GetView<ReportsController> {
             title: "income".tr,
             total: controller.formatCurrency(controller.incomeCost.value),
             totalColor: Colors.black87,
-            byDay: controller.formatCurrency(controller.incomeCostByDay.value.toInt()),
-            byKm: controller.formatCurrency(controller.incomeCostByKm.value.toInt()),
+            byDay: controller.formatCurrency(
+              controller.incomeCostByDay.value.toInt(),
+            ),
+            byKm: controller.formatCurrency(
+              controller.incomeCostByKm.value.toInt(),
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -473,8 +480,12 @@ class ReportsView extends GetView<ReportsController> {
             title: "cost".tr,
             total: controller.formatCurrency(controller.serviceCost.value),
             totalColor: Colors.black87,
-            byDay: controller.formatCurrency(controller.serviceCostByDay.value.toInt()),
-            byKm: controller.formatCurrency(controller.serviceCostByKm.value.toInt()),
+            byDay: controller.formatCurrency(
+              controller.serviceCostByDay.value.toInt(),
+            ),
+            byKm: controller.formatCurrency(
+              controller.serviceCostByKm.value.toInt(),
+            ),
           ),
         ),
         const SizedBox(width: 12),

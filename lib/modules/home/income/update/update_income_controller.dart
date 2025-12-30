@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/income/income_model.dart';
+import 'package:drivvo/model/last_record_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/modules/reports/reports_controller.dart';
 import 'package:drivvo/services/app_service.dart';
@@ -19,6 +20,9 @@ class UpdateIncomeController extends GetxController {
   var lastOdometer = 0.obs;
   var model = IncomeModel().obs;
 
+  var showConflictingCard = false.obs;
+  late LastRecordModel lastRecord;
+
   // We need to store the original income map to remove it from the array
   late Map<String, dynamic> oldIncomeMap;
 
@@ -32,6 +36,8 @@ class UpdateIncomeController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+
+    lastRecord = appService.appUser.value.lastRecordModel;
 
     // Get parameters passed from the previous screen
     if (Get.arguments != null && Get.arguments is Map) {
@@ -108,6 +114,23 @@ class UpdateIncomeController extends GetxController {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
+      DateTime modelDate = DateTime(
+        model.value.date.year,
+        model.value.date.month,
+        model.value.date.day,
+      );
+      DateTime lastDate = DateTime(
+        lastRecord.date.year,
+        lastRecord.date.month,
+        lastRecord.date.day,
+      );
+
+      if (modelDate.isBefore(lastDate)) {
+        debugPrint("Last Date is bigger");
+        showConflictingCard.value = true;
+        return;
+      }
+
       Utils.showProgressDialog();
 
       final newIncomeMap = {
@@ -125,26 +148,34 @@ class UpdateIncomeController extends GetxController {
         "updated_at": DateTime.now(),
       };
 
+      final newMap = {
+        "type": "income",
+        "date": model.value.date,
+        "odometer": model.value.odometer,
+      };
+
       try {
+        final batch = FirebaseFirestore.instance.batch();
         final docRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id);
 
-        // We need to use arrayRemove and then arrayUnion to update an element in an array
-        await FirebaseFirestore.instance.runTransaction((transaction) async {
-          transaction.update(docRef, {
-            'income_list': FieldValue.arrayRemove([oldIncomeMap]),
-          });
-          transaction.update(docRef, {
-            'income_list': FieldValue.arrayUnion([newIncomeMap]),
-          });
+        // Single atomic operation
+        batch.set(docRef, {
+          'income_list': FieldValue.arrayRemove([oldIncomeMap]),
+        }, SetOptions(merge: true));
 
-          // Optionally update last odometer if this is the newest record
-          // For simplicity, we'll just update it if the new odometer is higher
-          if (model.value.odometer > lastOdometer.value) {
-            transaction.update(docRef, {"last_odometer": model.value.odometer});
-          }
-        });
+        batch.set(docRef, {
+          'income_list': FieldValue.arrayUnion([newIncomeMap]),
+        }, SetOptions(merge: true));
+
+        batch.update(docRef, {"last_record": newMap});
+
+        if (model.value.odometer >= lastOdometer.value) {
+          batch.update(docRef, {"last_odometer": model.value.odometer});
+        }
+
+        await batch.commit();
 
         if (Get.isRegistered<HomeController>()) {
           Get.find<HomeController>().loadTimelineData(forceFetch: true);

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drivvo/custom-widget/common/confilcting_crad.dart';
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
@@ -61,6 +62,16 @@ class UpdateExpenseView extends GetView<UpdateExpenseController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Obx(
+                () => controller.showConfilctingCard.value
+                    ? ConflictingCard(
+                        isUrdu: controller.isUrdu,
+                        lastRecordModel: controller.lastRecord,
+                        onTap: () => controller.showConfilctingCard.value =
+                            !controller.showConfilctingCard.value,
+                      )
+                    : SizedBox(),
+              ),
               Row(
                 children: [
                   Expanded(
@@ -131,13 +142,6 @@ class UpdateExpenseView extends GetView<UpdateExpenseController> {
                   onValidate: (value) {
                     if (value == null || value.isEmpty) {
                       return 'odometer_required'.tr;
-                    }
-                    final c = num.tryParse(value);
-                    if (c == null) {
-                      return 'invalid_odometer_value'.tr;
-                    }
-                    if (c < controller.lastOdometer.value) {
-                      return "odometer_greater_than_last".tr;
                     }
                     return null;
                   },

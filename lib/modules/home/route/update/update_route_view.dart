@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drivvo/custom-widget/common/confilcting_crad.dart';
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
@@ -60,6 +61,16 @@ class UpdateRouteView extends GetView<UpdateRouteController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Obx(
+                () => controller.showConfilctingCard.value
+                    ? ConflictingCard(
+                        isUrdu: controller.isUrdu,
+                        lastRecordModel: controller.lastRecord,
+                        onTap: () => controller.showConfilctingCard.value =
+                            !controller.showConfilctingCard.value,
+                      )
+                    : SizedBox(),
+              ),
               CardTextInputField(
                 isUrdu: controller.isUrdu,
                 isRequired: true,

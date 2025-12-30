@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:drivvo/custom-widget/button/more_option_button.dart';
+import 'package:drivvo/custom-widget/common/confilcting_crad.dart';
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
@@ -62,10 +63,16 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // CardHeaderText(
-              //   title: "date_and_time".tr,
-              //   isUrdu: controller.isUrdu,
-              // ),
+              Obx(
+                () => controller.showConflictingCard.value
+                    ? ConflictingCard(
+                        isUrdu: controller.isUrdu,
+                        lastRecordModel: controller.lastRecord,
+                        onTap: () => controller.showConflictingCard.value =
+                            !controller.showConflictingCard.value,
+                      )
+                    : SizedBox(),
+              ),
               Row(
                 children: [
                   Expanded(
@@ -646,7 +653,10 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                   imageQuality: 100,
                 );
                 if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
+                  Utils.onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => controller.filePath.value = path,
+                  );
                 }
               },
               child: Row(
@@ -681,7 +691,10 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                   imageQuality: 100,
                 );
                 if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
+                  Utils.onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => controller.filePath.value = path,
+                  );
                 }
               },
               child: Row(

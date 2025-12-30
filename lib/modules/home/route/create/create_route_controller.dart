@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivvo/model/last_record_model.dart';
 import 'package:drivvo/model/route/route_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/services/app_service.dart';
@@ -19,8 +20,10 @@ class CreateRouteController extends GetxController {
   var model = RouteModel().obs;
 
   var initalOdometer = 0.obs;
-
   int totalAmount = 0;
+
+  var showConflictingCard = false.obs;
+  late LastRecordModel lastRecord;
 
   final startDateController = TextEditingController();
   final endDateController = TextEditingController();
@@ -40,6 +43,9 @@ class CreateRouteController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+
+    lastRecord = appService.appUser.value.lastRecordModel;
+
     final now = DateTime.now();
     model.value.startDate = now;
     model.value.endDate = now.add(Duration(days: 1));
@@ -150,6 +156,23 @@ class CreateRouteController extends GetxController {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
+      DateTime modelDate = DateTime(
+        model.value.startDate.year,
+        model.value.startDate.month,
+        model.value.startDate.day,
+      );
+      DateTime lastDate = DateTime(
+        lastRecord.date.year,
+        lastRecord.date.month,
+        lastRecord.date.day,
+      );
+
+      if (modelDate.isBefore(lastDate)) {
+        debugPrint("Last record date is after route start date");
+        showConflictingCard.value = true;
+        return;
+      }
+
       Utils.showProgressDialog();
 
       final map = {
@@ -171,6 +194,12 @@ class CreateRouteController extends GetxController {
         "notes": model.value.notes,
       };
 
+      final newMap = {
+        "type": "route",
+        "date": model.value.startDate,
+        "odometer": model.value.initialOdometer,
+      };
+
       try {
         final batch = FirebaseFirestore.instance.batch();
         final docRef = FirebaseFirestore.instance
@@ -184,9 +213,15 @@ class CreateRouteController extends GetxController {
 
         batch.update(docRef, {
           "last_odometer": int.tryParse(finalOdometerController.text) ?? 0,
+          "last_record": newMap,
         });
 
         await batch.commit();
+
+        if (Get.isDialogOpen == true) Get.back();
+        Get.back();
+
+        Utils.showSnackBar(message: "route_added".tr, success: true);
 
         if (Get.isRegistered<HomeController>()) {
           Get.find<HomeController>().loadTimelineData(forceFetch: true);

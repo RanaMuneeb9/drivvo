@@ -124,20 +124,17 @@ class Utils {
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(50)),
-                  child: Text("D"),
-                  // Image.asset(
-                  //   "assets/images/main_logo.png",
-                  //   width: 40,
-                  //   height: 40,
-                  // ),
+                  child: Image.asset(
+                    "assets/images/main_logo.png",
+                    width: 40,
+                    height: 40,
+                  ),
                 ),
                 const SizedBox(
                   height: 52,
                   width: 52,
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0XffFB5C7C),
-                    ),
+                    valueColor: AlwaysStoppedAnimation<Color>(Utils.appColor),
                     strokeWidth: 2,
                   ),
                 ),
@@ -210,7 +207,7 @@ class Utils {
                 style: getTextStyle(
                   baseSize: 14,
                   isBold: false,
-                  color: Colors.black,
+                  color: Get.isDarkMode ? Colors.white : Colors.black,
                   isUrdu: isUrdu,
                 ),
               ),
@@ -226,7 +223,7 @@ class Utils {
                     style: getTextStyle(
                       baseSize: 14,
                       isBold: true,
-                      color: Colors.black,
+                      color: Get.isDarkMode ? Colors.white : Colors.black,
                       isUrdu: isUrdu,
                     ),
                   ),
@@ -238,7 +235,7 @@ class Utils {
                     style: getTextStyle(
                       baseSize: 14,
                       isBold: true,
-                      color: Colors.black,
+                      color: Get.isDarkMode ? Colors.white : Colors.black,
                       isUrdu: isUrdu,
                     ),
                   ),

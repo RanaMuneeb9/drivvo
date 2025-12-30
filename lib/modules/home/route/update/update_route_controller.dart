@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivvo/model/last_record_model.dart';
 import 'package:drivvo/model/route/route_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/services/app_service.dart';
@@ -17,6 +18,9 @@ class UpdateRouteController extends GetxController {
   var filePath = "".obs;
   var lastOdometer = 0.obs;
   var model = RouteModel().obs;
+
+  var showConfilctingCard = false.obs;
+  late LastRecordModel lastRecord;
 
   late Map<String, dynamic> oldRouteMap;
 
@@ -40,6 +44,9 @@ class UpdateRouteController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+
+    lastRecord = appService.appUser.value.lastRecordModel;
+
     if (Get.arguments != null && Get.arguments is Map) {
       final RouteModel route = Get.arguments['route'];
       model.value = route;
@@ -161,6 +168,22 @@ class UpdateRouteController extends GetxController {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
+      DateTime modelDate = DateTime(
+        model.value.startDate.year,
+        model.value.startDate.month,
+        model.value.startDate.day,
+      );
+      DateTime lastDate = DateTime(
+        lastRecord.date.year,
+        lastRecord.date.month,
+        lastRecord.date.day,
+      );
+
+      if (modelDate.isBefore(lastDate)) {
+        debugPrint("Last Date is bigger");
+        showConfilctingCard.value = true;
+        return;
+      }
       Utils.showProgressDialog();
 
       final newRouteMap = {
@@ -184,24 +207,34 @@ class UpdateRouteController extends GetxController {
         "updated_at": DateTime.now(),
       };
 
+      final newMap = {
+        "type": "route",
+        "date": model.value.startDate,
+        "odometer": model.value.initialOdometer,
+      };
+
       try {
+        final batch = FirebaseFirestore.instance.batch();
         final docRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id);
 
-        await FirebaseFirestore.instance.runTransaction((transaction) async {
-          transaction.update(docRef, {
-            'route_list': FieldValue.arrayRemove([oldRouteMap]),
-          });
-          transaction.update(docRef, {
-            'route_list': FieldValue.arrayUnion([newRouteMap]),
-          });
+        // Single atomic operation
+        batch.set(docRef, {
+          'route_list': FieldValue.arrayRemove([oldRouteMap]),
+        }, SetOptions(merge: true));
 
-          final finalOdo = int.tryParse(finalOdometerController.text) ?? 0;
-          if (finalOdo > lastOdometer.value) {
-            transaction.update(docRef, {"last_odometer": finalOdo});
-          }
-        });
+        batch.set(docRef, {
+          'route_list': FieldValue.arrayUnion([newRouteMap]),
+        }, SetOptions(merge: true));
+
+        batch.update(docRef, {"last_record": newMap});
+
+        if (model.value.finalOdometer >= lastOdometer.value) {
+          batch.update(docRef, {"last_odometer": model.value.finalOdometer});
+        }
+        
+        await batch.commit();
 
         if (Get.isDialogOpen == true) Get.back();
         Get.back();

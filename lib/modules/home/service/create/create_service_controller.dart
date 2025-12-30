@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/expense/expense_type_model.dart';
+import 'package:drivvo/model/last_record_model.dart';
 import 'package:drivvo/model/service/service_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/modules/reports/reports_controller.dart';
@@ -23,6 +24,9 @@ class CreateServiceController extends GetxController {
   var filePath = "".obs;
   var model = ServiceModel().obs;
 
+  var showConflictingCard = false.obs;
+  late LastRecordModel lastRecord;
+
   final dateController = TextEditingController();
   final timeController = TextEditingController();
   final expenseTypeController = TextEditingController();
@@ -36,6 +40,9 @@ class CreateServiceController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+
+    lastRecord = appService.appUser.value.lastRecordModel;
+
     final now = DateTime.now();
     model.value.date = now;
     dateController.text = Utils.formatDate(date: now);
@@ -111,6 +118,23 @@ class CreateServiceController extends GetxController {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
+      DateTime modelDate = DateTime(
+        model.value.date.year,
+        model.value.date.month,
+        model.value.date.day,
+      );
+      DateTime lastDate = DateTime(
+        lastRecord.date.year,
+        lastRecord.date.month,
+        lastRecord.date.day,
+      );
+
+      if (modelDate.isBefore(lastDate)) {
+        debugPrint("Last Date is bigger");
+        showConflictingCard.value = true;
+        return;
+      }
+
       Utils.showProgressDialog();
 
       final map = {
@@ -130,6 +154,12 @@ class CreateServiceController extends GetxController {
         "created_at": DateTime.now(),
       };
 
+      final newMap = {
+        "type": "service",
+        "date": model.value.date,
+        "odometer": model.value.odometer,
+      };
+
       try {
         final batch = FirebaseFirestore.instance.batch();
         final docRef = FirebaseFirestore.instance
@@ -141,7 +171,10 @@ class CreateServiceController extends GetxController {
           'service_list': FieldValue.arrayUnion([map]),
         }, SetOptions(merge: true));
 
-        batch.update(docRef, {"last_odometer": model.value.odometer});
+        batch.update(docRef, {
+          "last_odometer": model.value.odometer,
+          "last_record": newMap,
+        });
 
         await batch.commit();
 

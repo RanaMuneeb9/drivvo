@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drivvo/custom-widget/common/confilcting_crad.dart';
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
@@ -61,10 +62,16 @@ class CreateExpenseView extends GetView<CreateExpenseController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // CardHeaderText(
-              //   title: "date_and_time".tr,
-              //   isUrdu: controller.isUrdu,
-              // ),
+              Obx(
+                () => controller.showConfilctingCard.value
+                    ? ConflictingCard(
+                        isUrdu: controller.isUrdu,
+                        lastRecordModel: controller.lastRecord,
+                        onTap: () => controller.showConfilctingCard.value =
+                            !controller.showConfilctingCard.value,
+                      )
+                    : SizedBox(),
+              ),
               Row(
                 children: [
                   Expanded(

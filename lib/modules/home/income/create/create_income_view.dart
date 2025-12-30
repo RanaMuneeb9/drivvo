@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drivvo/custom-widget/common/confilcting_crad.dart';
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
@@ -60,6 +61,16 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Obx(
+                () => controller.showConflictingCard.value
+                    ? ConflictingCard(
+                        isUrdu: controller.isUrdu,
+                        lastRecordModel: controller.lastRecord,
+                        onTap: () => controller.showConflictingCard.value =
+                            !controller.showConflictingCard.value,
+                      )
+                    : SizedBox(),
+              ),
               Row(
                 children: [
                   Expanded(

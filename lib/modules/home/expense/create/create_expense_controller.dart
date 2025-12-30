@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/expense/expense_model.dart';
 import 'package:drivvo/model/expense/expense_type_model.dart';
+import 'package:drivvo/model/last_record_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/modules/reports/reports_controller.dart';
 import 'package:drivvo/services/app_service.dart';
@@ -30,12 +31,19 @@ class CreateExpenseController extends GetxController {
   final paymentMethodController = TextEditingController();
   final reasonController = TextEditingController();
 
+  var showConfilctingCard = false.obs;
+
+  late LastRecordModel lastRecord;
+
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+
+    lastRecord = appService.appUser.value.lastRecordModel;
+
     final now = DateTime.now();
     model.value.date = now;
     dateController.text = Utils.formatDate(date: now);
@@ -105,6 +113,22 @@ class CreateExpenseController extends GetxController {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
+      DateTime modelDate = DateTime(
+        model.value.date.year,
+        model.value.date.month,
+        model.value.date.day,
+      );
+      DateTime lastDate = DateTime(
+        lastRecord.date.year,
+        lastRecord.date.month,
+        lastRecord.date.day,
+      );
+
+      if (modelDate.isBefore(lastDate)) {
+        debugPrint("Last Date is bigger");
+        showConfilctingCard.value = true;
+        return;
+      }
       Utils.showProgressDialog();
 
       final map = {
@@ -124,6 +148,12 @@ class CreateExpenseController extends GetxController {
         "created_at": DateTime.now(),
       };
 
+      final newMap = {
+        "type": "expense",
+        "date": model.value.date,
+        "odometer": model.value.odometer,
+      };
+
       try {
         final batch = FirebaseFirestore.instance.batch();
         final docRef = FirebaseFirestore.instance
@@ -135,7 +165,10 @@ class CreateExpenseController extends GetxController {
           'expense_list': FieldValue.arrayUnion([map]),
         }, SetOptions(merge: true));
 
-        batch.update(docRef, {"last_odometer": model.value.odometer});
+        batch.update(docRef, {
+          "last_odometer": model.value.odometer,
+          "last_record": newMap,
+        });
 
         await batch.commit();
 

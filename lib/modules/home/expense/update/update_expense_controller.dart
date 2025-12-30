@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/expense/expense_model.dart';
 import 'package:drivvo/model/expense/expense_type_model.dart';
+import 'package:drivvo/model/last_record_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/modules/reports/reports_controller.dart';
 import 'package:drivvo/services/app_service.dart';
@@ -32,12 +33,17 @@ class UpdateExpenseController extends GetxController {
   final paymentMethodController = TextEditingController();
   final reasonController = TextEditingController();
 
+  var showConfilctingCard = false.obs;
+  late LastRecordModel lastRecord;
+
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+
+    lastRecord = appService.appUser.value.lastRecordModel;
 
     if (Get.arguments != null && Get.arguments is Map) {
       final ExpenseModel expense = Get.arguments['expense'];
@@ -127,6 +133,23 @@ class UpdateExpenseController extends GetxController {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
+      DateTime modelDate = DateTime(
+        model.value.date.year,
+        model.value.date.month,
+        model.value.date.day,
+      );
+      DateTime lastDate = DateTime(
+        lastRecord.date.year,
+        lastRecord.date.month,
+        lastRecord.date.day,
+      );
+
+      if (modelDate.isBefore(lastDate)) {
+        debugPrint("Last Date is bigger");
+        showConfilctingCard.value = true;
+        return;
+      }
+
       Utils.showProgressDialog();
 
       final newExpenseMap = {
@@ -147,23 +170,53 @@ class UpdateExpenseController extends GetxController {
         "updated_at": DateTime.now(),
       };
 
+      final newMap = {
+        "type": "expense",
+        "date": model.value.date,
+        "odometer": model.value.odometer,
+      };
+
       try {
+        // final docRef = FirebaseFirestore.instance
+        //     .collection(DatabaseTables.USER_PROFILE)
+        //     .doc(appService.appUser.value.id);
+
+        // await FirebaseFirestore.instance.runTransaction((transaction) async {
+        //   transaction.update(docRef, {
+        //     'expense_list': FieldValue.arrayRemove([oldExpenseMap]),
+        //   });
+        //   transaction.update(docRef, {
+        //     'expense_list': FieldValue.arrayUnion([newExpenseMap]),
+        //   });
+
+        //   if (model.value.odometer >= lastOdometer.value) {
+        //     transaction.update(docRef, {
+        //       "last_odometer": model.value.odometer,
+        //       "last_record": newMap,
+        //     });
+        //   }
+        // });
+
+        final batch = FirebaseFirestore.instance.batch();
         final docRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id);
 
-        await FirebaseFirestore.instance.runTransaction((transaction) async {
-          transaction.update(docRef, {
-            'expense_list': FieldValue.arrayRemove([oldExpenseMap]),
-          });
-          transaction.update(docRef, {
-            'expense_list': FieldValue.arrayUnion([newExpenseMap]),
-          });
+        // Single atomic operation
+        batch.set(docRef, {
+          'expense_list': FieldValue.arrayRemove([oldExpenseMap]),
+        }, SetOptions(merge: true));
 
-          if (model.value.odometer > lastOdometer.value) {
-            transaction.update(docRef, {"last_odometer": model.value.odometer});
-          }
-        });
+        batch.set(docRef, {
+          'expense_list': FieldValue.arrayUnion([newExpenseMap]),
+        }, SetOptions(merge: true));
+
+        batch.update(docRef, {"last_record": newMap});
+
+        if (model.value.odometer >= lastOdometer.value) {
+          batch.update(docRef, {"last_odometer": model.value.odometer});
+        }
+        await batch.commit();
 
         if (Get.isRegistered<HomeController>()) {
           Get.find<HomeController>().loadTimelineData(forceFetch: true);

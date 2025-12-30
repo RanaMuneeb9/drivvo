@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/expense/expense_type_model.dart';
+import 'package:drivvo/model/last_record_model.dart';
 import 'package:drivvo/model/service/service_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/modules/reports/reports_controller.dart';
@@ -23,6 +24,8 @@ class UpdateServiceController extends GetxController {
   var filePath = "".obs;
   var model = ServiceModel().obs;
 
+  var showConflictingCard = false.obs;
+  late LastRecordModel lastRecord;
   late Map<String, dynamic> oldServiceMap;
 
   final dateController = TextEditingController();
@@ -38,6 +41,9 @@ class UpdateServiceController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+
+    lastRecord = appService.appUser.value.lastRecordModel;
+
     if (Get.arguments != null && Get.arguments is Map) {
       final ServiceModel service = Get.arguments['service'];
       model.value = service;
@@ -125,6 +131,23 @@ class UpdateServiceController extends GetxController {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
+      DateTime modelDate = DateTime(
+        model.value.date.year,
+        model.value.date.month,
+        model.value.date.day,
+      );
+      DateTime lastDate = DateTime(
+        lastRecord.date.year,
+        lastRecord.date.month,
+        lastRecord.date.day,
+      );
+
+      if (modelDate.isBefore(lastDate)) {
+        debugPrint("Last Date is bigger");
+        showConflictingCard.value = true;
+        return;
+      }
+
       Utils.showProgressDialog();
 
       final newServiceMap = {
@@ -145,23 +168,34 @@ class UpdateServiceController extends GetxController {
         "updated_at": DateTime.now(),
       };
 
+      final newMap = {
+        "type": "service",
+        "date": model.value.date,
+        "odometer": model.value.odometer,
+      };
+
       try {
+        final batch = FirebaseFirestore.instance.batch();
         final docRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id);
 
-        await FirebaseFirestore.instance.runTransaction((transaction) async {
-          transaction.update(docRef, {
-            'service_list': FieldValue.arrayRemove([oldServiceMap]),
-          });
-          transaction.update(docRef, {
-            'service_list': FieldValue.arrayUnion([newServiceMap]),
-          });
+        // Single atomic operation
+        batch.set(docRef, {
+          'service_list': FieldValue.arrayRemove([oldServiceMap]),
+        }, SetOptions(merge: true));
 
-          if (model.value.odometer > lastOdometer.value) {
-            transaction.update(docRef, {"last_odometer": model.value.odometer});
-          }
-        });
+        batch.set(docRef, {
+          'service_list': FieldValue.arrayUnion([newServiceMap]),
+        }, SetOptions(merge: true));
+
+        batch.update(docRef, {"last_record": newMap});
+
+        if (model.value.odometer >= lastOdometer.value) {
+          batch.update(docRef, {"last_odometer": model.value.odometer});
+        }
+
+        await batch.commit();
 
         if (Get.isDialogOpen == true) Get.back();
         Get.back();

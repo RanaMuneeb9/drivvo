@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/income/income_model.dart';
+import 'package:drivvo/model/last_record_model.dart';
 import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/modules/reports/reports_controller.dart';
 import 'package:drivvo/services/app_service.dart';
@@ -19,6 +20,9 @@ class CreateIncomeController extends GetxController {
   var lastOdometer = 0.obs;
   var model = IncomeModel().obs;
 
+  var showConflictingCard = false.obs;
+  late LastRecordModel lastRecord;
+
   final dateController = TextEditingController();
   final timeController = TextEditingController();
   final incomeTypeController = TextEditingController();
@@ -29,6 +33,9 @@ class CreateIncomeController extends GetxController {
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
+
+    lastRecord = appService.appUser.value.lastRecordModel;
+
     final now = DateTime.now();
     model.value.date = now;
     dateController.text = Utils.formatDate(date: now);
@@ -98,6 +105,23 @@ class CreateIncomeController extends GetxController {
     if (formKey.currentState?.validate() ?? false) {
       formKey.currentState?.save();
 
+      DateTime modelDate = DateTime(
+        model.value.date.year,
+        model.value.date.month,
+        model.value.date.day,
+      );
+      DateTime lastDate = DateTime(
+        lastRecord.date.year,
+        lastRecord.date.month,
+        lastRecord.date.day,
+      );
+
+      if (modelDate.isBefore(lastDate)) {
+        debugPrint("Last Date is bigger");
+        showConflictingCard.value = true;
+        return;
+      }
+
       Utils.showProgressDialog();
 
       final map = {
@@ -114,6 +138,12 @@ class CreateIncomeController extends GetxController {
         "created_at": DateTime.now(),
       };
 
+      final newMap = {
+        "type": "income",
+        "date": model.value.date,
+        "odometer": model.value.odometer,
+      };
+
       try {
         final batch = FirebaseFirestore.instance.batch();
         final docRef = FirebaseFirestore.instance
@@ -125,7 +155,10 @@ class CreateIncomeController extends GetxController {
           'income_list': FieldValue.arrayUnion([map]),
         }, SetOptions(merge: true));
 
-        batch.update(docRef, {"last_odometer": model.value.odometer});
+        batch.update(docRef, {
+          "last_odometer": model.value.odometer,
+          "last_record": newMap,
+        });
 
         await batch.commit();
 
