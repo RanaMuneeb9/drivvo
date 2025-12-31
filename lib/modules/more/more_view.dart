@@ -237,43 +237,43 @@ class MoreView extends GetView<MoreController> {
                 },
               ),
             ]),
-            CardHeaderText(
-              title: 'section_tools'.tr,
-              isUrdu: controller.isUrdu,
-              color: Utils.appColor,
-            ),
-            _buildSectionCard([
-              _buildTile(
-                imagePath: "assets/images/more/form.png",
-                title: 'forms'.tr,
-                subtitle: 'forms_sub'.tr,
-                onTap: () {},
-              ),
-              _buildDivider(),
-              _buildTile(
-                imagePath: "assets/images/more/my_places.png",
-                title: 'my_places'.tr,
-                subtitle: 'my_places_sub'.tr,
-                onTap: () {},
-              ),
-              _buildDivider(),
-              _buildTile(
-                imagePath: "assets/images/more/calculater.png",
-                title: 'flex_calculator'.tr,
-                subtitle: 'flex_calculator_sub'.tr,
-                onTap: () {},
-              ),
-              _buildDivider(),
-              _buildTile(
-                imagePath: "assets/images/more/achievements.png",
-                title: 'achievements'.tr,
-                subtitle: 'achievements_sub'.tr,
-                trailingInfo: 'achievements_new'.tr,
-                trailingColor: Color(0xFF00796B),
-                onTap: () {},
-                isBadge: true,
-              ),
-            ]),
+            // CardHeaderText(
+            //   title: 'section_tools'.tr,
+            //   isUrdu: controller.isUrdu,
+            //   color: Utils.appColor,
+            // ),
+            // _buildSectionCard([
+            // _buildTile(
+            //   imagePath: "assets/images/more/form.png",
+            //   title: 'forms'.tr,
+            //   subtitle: 'forms_sub'.tr,
+            //   onTap: () {},
+            // ),
+            // _buildDivider(),
+            // _buildTile(
+            //   imagePath: "assets/images/more/my_places.png",
+            //   title: 'my_places'.tr,
+            //   subtitle: 'my_places_sub'.tr,
+            //   onTap: () {},
+            // ),
+            // _buildDivider(),
+            // _buildTile(
+            //   imagePath: "assets/images/more/calculater.png",
+            //   title: 'flex_calculator'.tr,
+            //   subtitle: 'flex_calculator_sub'.tr,
+            //   onTap: () {},
+            // ),
+            // _buildDivider(),
+            // _buildTile(
+            //   imagePath: "assets/images/more/achievements.png",
+            //   title: 'achievements'.tr,
+            //   subtitle: 'achievements_sub'.tr,
+            //   trailingInfo: 'achievements_new'.tr,
+            //   trailingColor: Color(0xFF00796B),
+            //   onTap: () {},
+            //   isBadge: true,
+            // ),
+            // ]),
             CardHeaderText(
               title: 'section_preferences'.tr,
               isUrdu: controller.isUrdu,
@@ -313,7 +313,9 @@ class MoreView extends GetView<MoreController> {
                 imagePath: "assets/images/more/about.png",
                 title: 'about'.tr,
                 subtitle: 'about_sub'.tr,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.ABOUT_US_VIEW);
+                },
               ),
             ]),
             const SizedBox(height: 20),
@@ -421,7 +423,7 @@ class MoreView extends GetView<MoreController> {
     required Function onTap,
     String? trailingInfo,
     Color? trailingColor,
-    bool isBadge = false,
+    // bool isBadge = false,
   }) {
     return InkWell(
       onTap: () => onTap(),

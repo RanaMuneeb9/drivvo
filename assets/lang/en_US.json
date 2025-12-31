@@ -479,5 +479,11 @@
   "fuel_chart": "Fuel Type Distribution",
   "day": "Day",
   "month": "Month",
-  "period_required": "Period is required"
-}
+  "period_required": "Period is required",
+  "rate_our_app": "Rate Our App",
+  "rate_app_description": "If you're using Drivvo, please consider rating us 5 stars!",
+  "follow_us": "Follow Us",
+  "last_update": "Last Update",
+  "legal": "Legal",
+  "terms_of_use": "Terms of Use",
+  "visit_our": "Visit our:"}

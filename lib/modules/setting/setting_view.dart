@@ -66,11 +66,13 @@ class SettingView extends GetView<SettingController> {
               // ),
               SizedBox(height: 10),
               _buildCard(
-                _buildSettingTile(
-                  icon: Icons.calendar_today_outlined,
-                  title: 'date_format'.tr,
-                  subtitle: controller.selectedDateFormat.value,
-                  onTap: () => _showDateFormatDialog(),
+                Obx(
+                  () => _buildSettingTile(
+                    icon: Icons.calendar_today_outlined,
+                    title: 'date_format'.tr,
+                    subtitle: controller.selectedDateFormat.value,
+                    onTap: () => _showDateFormatDialog(),
+                  ),
                 ),
               ),
               SizedBox(height: 10),
@@ -79,29 +81,29 @@ class SettingView extends GetView<SettingController> {
                   icon: Icons.attach_money_outlined,
                   title: 'currency_format'.tr,
                   subtitle: controller.selectedCurrencyFormat.value,
-                  onTap: () => _showCurrencyFormatDialog(),
+                  onTap: () => _showCurrencySearchDialog(Utils.currencies),
                 ),
               ),
-              SizedBox(height: 10),
-              _buildCard(
-                _buildSettingTileWithCheckbox(
-                  icon: Icons.more_horiz,
-                  title: 'show_three_decimal'.tr,
-                  isChecked: controller.showThreeDecimalDigits.value,
-                  onChanged: (value) =>
-                      controller.showThreeDecimalDigits.value = value ?? false,
-                ),
-              ),
-              SizedBox(height: 10),
-              _buildCard(
-                _buildSettingTileWithCheckbox(
-                  icon: Icons.more_horiz,
-                  title: 'display_decimal_digits'.tr,
-                  isChecked: controller.displayDecimalDigits.value,
-                  onChanged: (value) =>
-                      controller.displayDecimalDigits.value = value ?? false,
-                ),
-              ),
+              // SizedBox(height: 10),
+              // _buildCard(
+              //   _buildSettingTileWithCheckbox(
+              //     icon: Icons.more_horiz,
+              //     title: 'show_three_decimal'.tr,
+              //     isChecked: controller.showThreeDecimalDigits.value,
+              //     onChanged: (value) =>
+              //         controller.showThreeDecimalDigits.value = value ?? false,
+              //   ),
+              // ),
+              // SizedBox(height: 10),
+              // _buildCard(
+              //   _buildSettingTileWithCheckbox(
+              //     icon: Icons.more_horiz,
+              //     title: 'display_decimal_digits'.tr,
+              //     isChecked: controller.displayDecimalDigits.value,
+              //     onChanged: (value) =>
+              //         controller.displayDecimalDigits.value = value ?? false,
+              //   ),
+              // ),
               SizedBox(height: 30),
 
               // Units Section
@@ -115,7 +117,61 @@ class SettingView extends GetView<SettingController> {
                   icon: Icons.straighten_outlined,
                   title: 'km_miles'.tr,
                   subtitle: controller.selectedDistanceUnit.value,
-                  onTap: () => _showDistanceUnitDialog(),
+                  onTap: () => Get.dialog(
+                    Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Tip",
+                              style: Utils.getTextStyle(
+                                baseSize: 18,
+                                isBold: true,
+                                color: Utils.appColor,
+                                isUrdu: controller.isUrdu,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              "You must edit your vehicle to change this setting",
+                              style: Utils.getTextStyle(
+                                baseSize: 14,
+                                isBold: false,
+                                color: Colors.black,
+                                isUrdu: controller.isUrdu,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () => Get.back(),
+                                child: Text(
+                                  'ok'.tr,
+                                  style: Utils.getTextStyle(
+                                    baseSize: 14,
+                                    isBold: true,
+                                    color: Utils.appColor,
+                                    isUrdu: controller.isUrdu,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 10),
@@ -127,34 +183,45 @@ class SettingView extends GetView<SettingController> {
                   onTap: () => _showFuelUnitDialog(),
                 ),
               ),
-              SizedBox(height: 10),
-              _buildCard(
-                _buildSettingTile(
-                  icon: Icons.speed_outlined,
-                  title: 'fuel_efficiency'.tr,
-                  subtitle: controller.selectedFuelEfficiency.value,
-                  onTap: () => _showFuelEfficiencyDialog(),
-                ),
-              ),
+              // SizedBox(height: 10),
+              // _buildCard(
+              //   _buildSettingTile(
+              //     icon: Icons.speed_outlined,
+              //     title: 'fuel_efficiency'.tr,
+              //     subtitle: controller.selectedFuelEfficiency.value,
+              //     onTap: () => _showFuelEfficiencyDialog(),
+              //   ),
+              // ),
+
+              //! Fuel Efficiency Dialog
+              // void _showFuelEfficiencyDialog() {
+              //   final efficiencies = ['Mile/Gallon US', 'km/L', 'L/100km'];
+              //   _showSelectionDialog(
+              //     title: 'fuel_efficiency'.tr,
+              //     options: efficiencies,
+              //     selectedValue: controller.selectedFuelEfficiency.value,
+              //     onSelected: (value) => controller.selectedFuelEfficiency.value = value,
+              //   );
+              // }
               SizedBox(height: 10),
               _buildCard(
                 _buildSettingTile(
                   icon: Icons.local_gas_station_outlined,
                   title: 'unit'.tr,
-                  subtitle: controller.selectedVolumeUnit.value,
+                  subtitle: controller.selectedGasUnit.value,
                   onTap: () => _showVolumeUnitDialog(),
                 ),
               ),
               SizedBox(height: 10),
-              _buildCard(
-                _buildSettingTileWithCheckbox(
-                  icon: Icons.show_chart_outlined,
-                  title: 'show_average_last_records'.tr,
-                  isChecked: controller.showAverageLastRecords.value,
-                  onChanged: (value) =>
-                      controller.showAverageLastRecords.value = value ?? false,
-                ),
-              ),
+              // _buildCard(
+              //   _buildSettingTileWithCheckbox(
+              //     icon: Icons.show_chart_outlined,
+              //     title: 'show_average_last_records'.tr,
+              //     isChecked: controller.showAverageLastRecords.value,
+              //     onChanged: (value) =>
+              //         controller.showAverageLastRecords.value = value ?? false,
+              //   ),
+              // ),
               SizedBox(height: 30),
 
               // Reminders Section
@@ -361,72 +428,233 @@ class SettingView extends GetView<SettingController> {
 
   // Date Format Dialog
   void _showDateFormatDialog() {
-    final formats = ['DD/MM/YY', 'MM/DD/YY', 'YY/MM/DD', 'DD-MM-YY'];
+    final formats = [
+      'dd MMM yyyy',
+      'MM/dd/yyyy',
+      'yyyy-MM-dd',
+      'dd-MM-yyyy',
+      'MMM d, yyyy',
+    ];
     _showSelectionDialog(
       title: 'date_format'.tr,
       options: formats,
       selectedValue: controller.selectedDateFormat.value,
-      onSelected: (value) => controller.selectedDateFormat.value = value,
+      onSelected: (value) {
+        controller.selectedDateFormat.value = value;
+        controller.appService.setDateFormat(value);
+      },
     );
   }
 
-  // Currency Format Dialog
-  void _showCurrencyFormatDialog() {
-    final formats = [
-      '\$1,000,200.00',
-      '1.000.200,00 \$',
-      '1 000 200,00 \$',
-      '1,000,200.00',
-    ];
-    _showSelectionDialog(
-      title: 'currency_format'.tr,
-      options: formats,
-      selectedValue: controller.selectedCurrencyFormat.value,
-      onSelected: (value) => controller.selectedCurrencyFormat.value = value,
-    );
-  }
+  // Searchable Currency Dialog
+  void _showCurrencySearchDialog(List<Map<String, String>> currencies) {
+    final searchController = TextEditingController();
+    final filteredCurrencies = currencies.obs;
 
-  // Distance Unit Dialog
-  void _showDistanceUnitDialog() {
-    final units = ['km', 'Miles'];
-    _showSelectionDialog(
-      title: 'km_miles'.tr,
-      options: units,
-      selectedValue: controller.selectedDistanceUnit.value,
-      onSelected: (value) => controller.selectedDistanceUnit.value = value,
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Container(
+          width: double.maxFinite,
+          height: Get.height * 0.7,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'currency_format'.tr,
+                style: Utils.getTextStyle(
+                  baseSize: 18,
+                  isBold: true,
+                  color: Colors.black,
+                  isUrdu: controller.isUrdu,
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Search Field
+              TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'search'.tr,
+                  prefixIcon: Icon(Icons.search, color: Colors.grey.shade500),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Utils.appColor),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+                onChanged: (value) {
+                  if (value.isEmpty) {
+                    filteredCurrencies.value = currencies;
+                  } else {
+                    filteredCurrencies.value = currencies.where((currency) {
+                      final name = currency['name']!.toLowerCase();
+                      final code = currency['code']!.toLowerCase();
+                      final symbol = currency['symbol']!.toLowerCase();
+                      final query = value.toLowerCase();
+                      return name.contains(query) ||
+                          code.contains(query) ||
+                          symbol.contains(query);
+                    }).toList();
+                  }
+                },
+              ),
+              const SizedBox(height: 12),
+              // Currency List
+              Expanded(
+                child: Obx(
+                  () => ListView.builder(
+                    itemCount: filteredCurrencies.length,
+                    itemBuilder: (context, index) {
+                      final currency = filteredCurrencies[index];
+                      final displayText =
+                          '${currency['name']} (${currency['code']}) - ${currency['format']}';
+                      final isSelected =
+                          controller.selectedCurrencyFormat.value ==
+                          displayText;
+
+                      return InkWell(
+                        onTap: () {
+                          controller.selectedCurrencyFormat.value = displayText;
+                          controller.saveCurrencyFormat(currency);
+                          Get.back();
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Utils.appColor.withValues(alpha: 0.1)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: Utils.appColor.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    currency['symbol']!,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Utils.appColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${currency['name']} (${currency['code']})',
+                                      style: Utils.getTextStyle(
+                                        baseSize: 14,
+                                        isBold: false,
+                                        color: Colors.black,
+                                        isUrdu: controller.isUrdu,
+                                      ),
+                                    ),
+                                    Text(
+                                      currency['format']!,
+                                      style: Utils.getTextStyle(
+                                        baseSize: 12,
+                                        isBold: false,
+                                        color: Colors.grey.shade600,
+                                        isUrdu: controller.isUrdu,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(
+                                  Icons.check_circle,
+                                  color: Utils.appColor,
+                                  size: 22,
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Get.back(),
+                  child: Text(
+                    'cancel'.tr,
+                    style: Utils.getTextStyle(
+                      baseSize: 14,
+                      isBold: true,
+                      color: Utils.appColor,
+                      isUrdu: controller.isUrdu,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
   // Fuel Unit Dialog
   void _showFuelUnitDialog() {
-    final units = ['Gallon US (Gal)', 'Gallon UK (Gal)', 'Liter (L)'];
+    final units = ['Liter (L)', 'Gallon US (Gal)', 'Gallon UK (Gal)'];
     _showSelectionDialog(
       title: 'unit'.tr,
       options: units,
       selectedValue: controller.selectedFuelUnit.value,
-      onSelected: (value) => controller.selectedFuelUnit.value = value,
+      onSelected: (value) {
+        controller.selectedFuelUnit.value = value;
+        controller.appService.setFuelUnit(value);
+      },
     );
   }
 
   // Volume Unit Dialog
   void _showVolumeUnitDialog() {
-    final units = ['Liter (L)', 'Gallon US (Gal)', 'Gallon UK (Gal)'];
+    final units = ['m³', 'kg', 'GGE'];
     _showSelectionDialog(
       title: 'unit'.tr,
       options: units,
-      selectedValue: controller.selectedVolumeUnit.value,
-      onSelected: (value) => controller.selectedVolumeUnit.value = value,
-    );
-  }
-
-  // Fuel Efficiency Dialog
-  void _showFuelEfficiencyDialog() {
-    final efficiencies = ['Mile/Gallon US', 'km/L', 'L/100km'];
-    _showSelectionDialog(
-      title: 'fuel_efficiency'.tr,
-      options: efficiencies,
-      selectedValue: controller.selectedFuelEfficiency.value,
-      onSelected: (value) => controller.selectedFuelEfficiency.value = value,
+      selectedValue: controller.selectedGasUnit.value,
+      onSelected: (value) {
+        controller.selectedGasUnit.value = value;
+        controller.appService.setGasUnit(value);
+      },
     );
   }
 

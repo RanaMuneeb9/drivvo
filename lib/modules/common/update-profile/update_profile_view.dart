@@ -59,61 +59,113 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Center(
-                          child: Stack(
-                            alignment: Alignment.bottomRight,
+                        Container(
+                          padding: EdgeInsets.all(30),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(16)),
+                            border: Border.all(width: 1, color: Utils.appColor),
+                          ),
+                          child: Column(
                             children: [
-                              Obx(
-                                () => SizedBox(
-                                  width: 130,
-                                  height: 130,
-                                  child: controller.filePath.isNotEmpty
-                                      ? CircleAvatar(
-                                          foregroundColor: Utils.appColor,
-                                          backgroundImage: FileImage(
-                                            File(controller.filePath.value),
-                                          ),
-                                          radius: 48.0,
-                                        )
-                                      : ProfileImage(
-                                          photoUrl: controller
-                                              .appService
-                                              .appUser
-                                              .value
-                                              .photoUrl,
-                                          width: 120,
-                                          height: 120,
-                                          radius: 100,
-                                          placeholder:
-                                              "assets/images/placeholder.png",
+                              Center(
+                                child: Stack(
+                                  alignment: Alignment.bottomRight,
+                                  children: [
+                                    Obx(
+                                      () => SizedBox(
+                                        width: 110,
+                                        height: 110,
+                                        child: controller.filePath.isNotEmpty
+                                            ? CircleAvatar(
+                                                foregroundColor: Utils.appColor,
+                                                backgroundImage: FileImage(
+                                                  File(
+                                                    controller.filePath.value,
+                                                  ),
+                                                ),
+                                                radius: 48.0,
+                                              )
+                                            : ProfileImage(
+                                                photoUrl: controller
+                                                    .appService
+                                                    .appUser
+                                                    .value
+                                                    .photoUrl,
+                                                width: 100,
+                                                height: 100,
+                                                radius: 100,
+                                                placeholder:
+                                                    "assets/images/placeholder.png",
+                                              ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => {showResponseDialog()},
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                            0.1,
+                                        height:
+                                            MediaQuery.of(context).size.width *
+                                            0.1,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Utils.appColor,
                                         ),
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.edit,
+                                            size:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.width *
+                                                0.047,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () => {showResponseDialog()},
-                                child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.1,
-                                  height:
-                                      MediaQuery.of(context).size.width * 0.1,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(0xFF00796B),
+
+                              const SizedBox(height: 20),
+                              if (controller
+                                  .appService
+                                  .appUser
+                                  .value
+                                  .firstName
+                                  .isNotEmpty)
+                                Text(
+                                  controller.appService.appUser.value.firstName,
+                                  style: Utils.getTextStyle(
+                                    baseSize: 14,
+                                    isBold: true,
+                                    color: Colors.black,
+                                    isUrdu: controller.isUrdu,
                                   ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.edit,
-                                      size:
-                                          MediaQuery.of(context).size.width *
-                                          0.047,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                                ),
+                              controller
+                                      .appService
+                                      .appUser
+                                      .value
+                                      .firstName
+                                      .isNotEmpty
+                                  ? const SizedBox(height: 0)
+                                  : const SizedBox(height: 20),
+                              Text(
+                                controller.appService.appUser.value.email,
+                                style: Utils.getTextStyle(
+                                  baseSize: 14,
+                                  isBold: false,
+                                  color: Colors.grey.shade500,
+                                  isUrdu: controller.isUrdu,
                                 ),
                               ),
                             ],
                           ),
                         ),
+
                         const SizedBox(height: 40),
                         IconWithText(
                           isUrdu: controller.isUrdu,
@@ -378,7 +430,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                       fontSize: 14,
                     ),
                   ),
-                  const Icon(Icons.camera_alt, color: Colors.black, size: 18),
+                  const Icon(Icons.image, color: Colors.black, size: 18),
                 ],
               ),
             ),

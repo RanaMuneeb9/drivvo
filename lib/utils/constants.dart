@@ -21,6 +21,12 @@ class Constants {
   // ignore: constant_identifier_names
   static const String CURRENT_VEHICLE = "currentVehicle";
   // ignore: constant_identifier_names
+  static const String DATE_FORMAT = "SelectedDateFormat";
+  // ignore: constant_identifier_names
+  static const String FUEL_UNIT = "FuelUnit";
+  // ignore: constant_identifier_names
+  static const String GAS_UNIT = "FuelUnit";
+  // ignore: constant_identifier_names
   static const String ONBOARDING = "Onboarding";
   // ignore: constant_identifier_names
   static const String IMPORT_DATA = "ImportData";
@@ -50,6 +56,16 @@ class Constants {
   static const String SERVICE_FILTER = "ServiceFilter";
   // ignore: constant_identifier_names
   static const String ROUTE_FILTER = "RouteFilter";
+
+  // Currency Format Settings
+  // ignore: constant_identifier_names
+  static const String CURRENCY_SYMBOL = "CurrencySymbol";
+  // ignore: constant_identifier_names
+  static const String CURRENCY_CODE = "CurrencyCode";
+  // ignore: constant_identifier_names
+  static const String CURRENCY_FORMAT = "CurrencyFormat";
+  // ignore: constant_identifier_names
+  static const String CURRENCY_NAME = "CurrencyName";
 
   /// Google Maps API Key - Used for Places API requests
   // ignore: constant_identifier_names

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/date_range_model.dart';
 import 'package:drivvo/model/general_model.dart';
+import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -254,7 +255,11 @@ class Utils {
     if (date == null) {
       return "--";
     }
-    return DateFormat("dd MMM yyyy").format(date);
+    const defaultFormat = "dd MMM yyyy";
+    final format = Get.isRegistered<AppService>()
+        ? Get.find<AppService>().selectedDateFormat.value
+        : defaultFormat;
+    return DateFormat(format).format(date);
   }
 
   static String formatMonthday({dynamic date}) {
@@ -397,6 +402,579 @@ class Utils {
     GeneralModel(id: "100", name: "Iveco"),
     GeneralModel(id: "101", name: "Kamaz"),
     GeneralModel(id: "102", name: "Ural"),
+  ];
+
+  static final List<Map<String, String>> currencies = [
+    // Americas
+    {
+      'name': 'Pakistani Rupee',
+      'code': 'PKR',
+      'symbol': 'Rs',
+      'format': 'Rs 1,000.00',
+    },
+    {
+      'name': 'US Dollar',
+      'code': 'USD',
+      'symbol': '\$',
+      'format': '\$1,000.00',
+    },
+    {
+      'name': 'Canadian Dollar',
+      'code': 'CAD',
+      'symbol': 'CA\$',
+      'format': 'CA\$1,000.00',
+    },
+    {
+      'name': 'Mexican Peso',
+      'code': 'MXN',
+      'symbol': 'MX\$',
+      'format': 'MX\$1,000.00',
+    },
+    {
+      'name': 'Brazilian Real',
+      'code': 'BRL',
+      'symbol': 'R\$',
+      'format': 'R\$1.000,00',
+    },
+    {
+      'name': 'Argentine Peso',
+      'code': 'ARS',
+      'symbol': 'AR\$',
+      'format': 'AR\$1.000,00',
+    },
+    {
+      'name': 'Chilean Peso',
+      'code': 'CLP',
+      'symbol': 'CL\$',
+      'format': 'CL\$1.000',
+    },
+    {
+      'name': 'Colombian Peso',
+      'code': 'COP',
+      'symbol': 'CO\$',
+      'format': 'CO\$1.000,00',
+    },
+    {
+      'name': 'Peruvian Sol',
+      'code': 'PEN',
+      'symbol': 'S/',
+      'format': 'S/1,000.00',
+    },
+    {
+      'name': 'Uruguayan Peso',
+      'code': 'UYU',
+      'symbol': '\$U',
+      'format': '\$U1.000,00',
+    },
+    {
+      'name': 'Paraguayan Guarani',
+      'code': 'PYG',
+      'symbol': '₲',
+      'format': '₲1.000',
+    },
+    {
+      'name': 'Venezuelan Bolivar',
+      'code': 'VES',
+      'symbol': 'Bs.',
+      'format': 'Bs.1.000,00',
+    },
+    {
+      'name': 'Jamaican Dollar',
+      'code': 'JMD',
+      'symbol': 'J\$',
+      'format': 'J\$1,000.00',
+    },
+    {
+      'name': 'Trinidad Dollar',
+      'code': 'TTD',
+      'symbol': 'TT\$',
+      'format': 'TT\$1,000.00',
+    },
+
+    // Europe
+    {'name': 'Euro', 'code': 'EUR', 'symbol': '€', 'format': '€1.000,00'},
+    {
+      'name': 'British Pound',
+      'code': 'GBP',
+      'symbol': '£',
+      'format': '£1,000.00',
+    },
+    {
+      'name': 'Swiss Franc',
+      'code': 'CHF',
+      'symbol': 'CHF',
+      'format': 'CHF 1\'000.00',
+    },
+    {
+      'name': 'Swedish Krona',
+      'code': 'SEK',
+      'symbol': 'kr',
+      'format': '1 000,00 kr',
+    },
+    {
+      'name': 'Norwegian Krone',
+      'code': 'NOK',
+      'symbol': 'kr',
+      'format': '1 000,00 kr',
+    },
+    {
+      'name': 'Danish Krone',
+      'code': 'DKK',
+      'symbol': 'kr',
+      'format': '1.000,00 kr',
+    },
+    {
+      'name': 'Polish Zloty',
+      'code': 'PLN',
+      'symbol': 'zł',
+      'format': '1 000,00 zł',
+    },
+    {
+      'name': 'Czech Koruna',
+      'code': 'CZK',
+      'symbol': 'Kč',
+      'format': '1 000,00 Kč',
+    },
+    {
+      'name': 'Hungarian Forint',
+      'code': 'HUF',
+      'symbol': 'Ft',
+      'format': '1 000 Ft',
+    },
+    {
+      'name': 'Romanian Leu',
+      'code': 'RON',
+      'symbol': 'lei',
+      'format': '1.000,00 lei',
+    },
+    {
+      'name': 'Bulgarian Lev',
+      'code': 'BGN',
+      'symbol': 'лв',
+      'format': '1 000,00 лв',
+    },
+    {
+      'name': 'Croatian Kuna',
+      'code': 'HRK',
+      'symbol': 'kn',
+      'format': '1.000,00 kn',
+    },
+    {
+      'name': 'Serbian Dinar',
+      'code': 'RSD',
+      'symbol': 'дин.',
+      'format': '1.000,00 дин.',
+    },
+    {
+      'name': 'Ukrainian Hryvnia',
+      'code': 'UAH',
+      'symbol': '₴',
+      'format': '1 000,00 ₴',
+    },
+    {
+      'name': 'Russian Ruble',
+      'code': 'RUB',
+      'symbol': '₽',
+      'format': '1 000,00 ₽',
+    },
+    {
+      'name': 'Turkish Lira',
+      'code': 'TRY',
+      'symbol': '₺',
+      'format': '₺1.000,00',
+    },
+    {
+      'name': 'Icelandic Krona',
+      'code': 'ISK',
+      'symbol': 'kr',
+      'format': '1.000 kr',
+    },
+
+    // Asia
+    {'name': 'Japanese Yen', 'code': 'JPY', 'symbol': '¥', 'format': '¥1,000'},
+    {
+      'name': 'Chinese Yuan',
+      'code': 'CNY',
+      'symbol': '¥',
+      'format': '¥1,000.00',
+    },
+    {
+      'name': 'Hong Kong Dollar',
+      'code': 'HKD',
+      'symbol': 'HK\$',
+      'format': 'HK\$1,000.00',
+    },
+    {
+      'name': 'Taiwan Dollar',
+      'code': 'TWD',
+      'symbol': 'NT\$',
+      'format': 'NT\$1,000',
+    },
+    {
+      'name': 'South Korean Won',
+      'code': 'KRW',
+      'symbol': '₩',
+      'format': '₩1,000',
+    },
+    {
+      'name': 'Indian Rupee',
+      'code': 'INR',
+      'symbol': '₹',
+      'format': '₹1,00,000.00',
+    },
+
+    {
+      'name': 'Bangladeshi Taka',
+      'code': 'BDT',
+      'symbol': '৳',
+      'format': '৳1,000.00',
+    },
+    {
+      'name': 'Sri Lankan Rupee',
+      'code': 'LKR',
+      'symbol': 'Rs',
+      'format': 'Rs 1,000.00',
+    },
+    {
+      'name': 'Nepalese Rupee',
+      'code': 'NPR',
+      'symbol': 'रू',
+      'format': 'रू 1,000.00',
+    },
+    {'name': 'Thai Baht', 'code': 'THB', 'symbol': '฿', 'format': '฿1,000.00'},
+    {
+      'name': 'Vietnamese Dong',
+      'code': 'VND',
+      'symbol': '₫',
+      'format': '1.000 ₫',
+    },
+    {
+      'name': 'Malaysian Ringgit',
+      'code': 'MYR',
+      'symbol': 'RM',
+      'format': 'RM1,000.00',
+    },
+    {
+      'name': 'Singapore Dollar',
+      'code': 'SGD',
+      'symbol': 'S\$',
+      'format': 'S\$1,000.00',
+    },
+    {
+      'name': 'Indonesian Rupiah',
+      'code': 'IDR',
+      'symbol': 'Rp',
+      'format': 'Rp1.000',
+    },
+    {
+      'name': 'Philippine Peso',
+      'code': 'PHP',
+      'symbol': '₱',
+      'format': '₱1,000.00',
+    },
+    {'name': 'Myanmar Kyat', 'code': 'MMK', 'symbol': 'K', 'format': 'K1,000'},
+    {
+      'name': 'Cambodian Riel',
+      'code': 'KHR',
+      'symbol': '៛',
+      'format': '៛1,000',
+    },
+    {'name': 'Lao Kip', 'code': 'LAK', 'symbol': '₭', 'format': '₭1,000'},
+    {
+      'name': 'Brunei Dollar',
+      'code': 'BND',
+      'symbol': 'B\$',
+      'format': 'B\$1,000.00',
+    },
+
+    // Middle East
+    {
+      'name': 'UAE Dirham',
+      'code': 'AED',
+      'symbol': 'د.إ',
+      'format': 'د.إ 1,000.00',
+    },
+    {
+      'name': 'Saudi Riyal',
+      'code': 'SAR',
+      'symbol': 'ر.س',
+      'format': 'ر.س 1,000.00',
+    },
+    {
+      'name': 'Qatari Riyal',
+      'code': 'QAR',
+      'symbol': 'ر.ق',
+      'format': 'ر.ق 1,000.00',
+    },
+    {
+      'name': 'Kuwaiti Dinar',
+      'code': 'KWD',
+      'symbol': 'د.ك',
+      'format': 'د.ك 1,000.000',
+    },
+    {
+      'name': 'Bahraini Dinar',
+      'code': 'BHD',
+      'symbol': 'د.ب',
+      'format': 'د.ب 1,000.000',
+    },
+    {
+      'name': 'Omani Rial',
+      'code': 'OMR',
+      'symbol': 'ر.ع.',
+      'format': 'ر.ع. 1,000.000',
+    },
+    {
+      'name': 'Jordanian Dinar',
+      'code': 'JOD',
+      'symbol': 'د.أ',
+      'format': 'د.أ 1,000.000',
+    },
+    {
+      'name': 'Lebanese Pound',
+      'code': 'LBP',
+      'symbol': 'ل.ل',
+      'format': 'ل.ل 1,000',
+    },
+    {
+      'name': 'Israeli Shekel',
+      'code': 'ILS',
+      'symbol': '₪',
+      'format': '₪1,000.00',
+    },
+    {
+      'name': 'Iraqi Dinar',
+      'code': 'IQD',
+      'symbol': 'ع.د',
+      'format': 'ع.د 1,000',
+    },
+    {'name': 'Iranian Rial', 'code': 'IRR', 'symbol': '﷼', 'format': '﷼1,000'},
+    {
+      'name': 'Yemeni Rial',
+      'code': 'YER',
+      'symbol': '﷼',
+      'format': '﷼1,000.00',
+    },
+    {
+      'name': 'Syrian Pound',
+      'code': 'SYP',
+      'symbol': '£S',
+      'format': '£S1,000',
+    },
+    {
+      'name': 'Egyptian Pound',
+      'code': 'EGP',
+      'symbol': 'E£',
+      'format': 'E£1,000.00',
+    },
+
+    // Africa
+    {
+      'name': 'South African Rand',
+      'code': 'ZAR',
+      'symbol': 'R',
+      'format': 'R1 000,00',
+    },
+    {
+      'name': 'Nigerian Naira',
+      'code': 'NGN',
+      'symbol': '₦',
+      'format': '₦1,000.00',
+    },
+    {
+      'name': 'Kenyan Shilling',
+      'code': 'KES',
+      'symbol': 'KSh',
+      'format': 'KSh1,000.00',
+    },
+    {
+      'name': 'Ghanaian Cedi',
+      'code': 'GHS',
+      'symbol': 'GH₵',
+      'format': 'GH₵1,000.00',
+    },
+    {
+      'name': 'Tanzanian Shilling',
+      'code': 'TZS',
+      'symbol': 'TSh',
+      'format': 'TSh1,000',
+    },
+    {
+      'name': 'Ugandan Shilling',
+      'code': 'UGX',
+      'symbol': 'USh',
+      'format': 'USh1,000',
+    },
+    {
+      'name': 'Ethiopian Birr',
+      'code': 'ETB',
+      'symbol': 'Br',
+      'format': 'Br1,000.00',
+    },
+    {
+      'name': 'Moroccan Dirham',
+      'code': 'MAD',
+      'symbol': 'د.م.',
+      'format': 'د.م. 1,000.00',
+    },
+    {
+      'name': 'Algerian Dinar',
+      'code': 'DZD',
+      'symbol': 'د.ج',
+      'format': 'د.ج 1,000.00',
+    },
+    {
+      'name': 'Tunisian Dinar',
+      'code': 'TND',
+      'symbol': 'د.ت',
+      'format': 'د.ت 1,000.000',
+    },
+    {
+      'name': 'Libyan Dinar',
+      'code': 'LYD',
+      'symbol': 'ل.د',
+      'format': 'ل.د 1,000.000',
+    },
+    {
+      'name': 'CFA Franc BCEAO',
+      'code': 'XOF',
+      'symbol': 'CFA',
+      'format': 'CFA 1 000',
+    },
+    {
+      'name': 'CFA Franc BEAC',
+      'code': 'XAF',
+      'symbol': 'FCFA',
+      'format': 'FCFA 1 000',
+    },
+    {
+      'name': 'Botswana Pula',
+      'code': 'BWP',
+      'symbol': 'P',
+      'format': 'P1,000.00',
+    },
+    {
+      'name': 'Zambian Kwacha',
+      'code': 'ZMW',
+      'symbol': 'ZK',
+      'format': 'ZK1,000.00',
+    },
+    {
+      'name': 'Rwandan Franc',
+      'code': 'RWF',
+      'symbol': 'FRw',
+      'format': 'FRw 1,000',
+    },
+    {
+      'name': 'Mauritian Rupee',
+      'code': 'MUR',
+      'symbol': '₨',
+      'format': '₨1,000',
+    },
+
+    // Oceania
+    {
+      'name': 'Australian Dollar',
+      'code': 'AUD',
+      'symbol': 'A\$',
+      'format': 'A\$1,000.00',
+    },
+    {
+      'name': 'New Zealand Dollar',
+      'code': 'NZD',
+      'symbol': 'NZ\$',
+      'format': 'NZ\$1,000.00',
+    },
+    {
+      'name': 'Fiji Dollar',
+      'code': 'FJD',
+      'symbol': 'FJ\$',
+      'format': 'FJ\$1,000.00',
+    },
+    {
+      'name': 'Papua New Guinea Kina',
+      'code': 'PGK',
+      'symbol': 'K',
+      'format': 'K1,000.00',
+    },
+    {
+      'name': 'Samoan Tala',
+      'code': 'WST',
+      'symbol': 'WS\$',
+      'format': 'WS\$1,000.00',
+    },
+    {
+      'name': 'Tongan Paanga',
+      'code': 'TOP',
+      'symbol': 'T\$',
+      'format': 'T\$1,000.00',
+    },
+    {
+      'name': 'Vanuatu Vatu',
+      'code': 'VUV',
+      'symbol': 'VT',
+      'format': 'VT1,000',
+    },
+    {
+      'name': 'Solomon Islands Dollar',
+      'code': 'SBD',
+      'symbol': 'SI\$',
+      'format': 'SI\$1,000.00',
+    },
+
+    // Central Asia & Caucasus
+    {
+      'name': 'Kazakhstani Tenge',
+      'code': 'KZT',
+      'symbol': '₸',
+      'format': '₸1 000,00',
+    },
+    {
+      'name': 'Uzbekistani Som',
+      'code': 'UZS',
+      'symbol': 'сўм',
+      'format': 'сўм 1 000',
+    },
+    {
+      'name': 'Georgian Lari',
+      'code': 'GEL',
+      'symbol': '₾',
+      'format': '₾1,000.00',
+    },
+    {'name': 'Armenian Dram', 'code': 'AMD', 'symbol': '֏', 'format': '֏1,000'},
+    {
+      'name': 'Azerbaijani Manat',
+      'code': 'AZN',
+      'symbol': '₼',
+      'format': '₼1,000.00',
+    },
+    {
+      'name': 'Turkmenistan Manat',
+      'code': 'TMT',
+      'symbol': 'm',
+      'format': 'm1,000.00',
+    },
+    {
+      'name': 'Kyrgyzstani Som',
+      'code': 'KGS',
+      'symbol': 'сом',
+      'format': 'сом 1,000.00',
+    },
+    {
+      'name': 'Tajikistani Somoni',
+      'code': 'TJS',
+      'symbol': 'ЅМ',
+      'format': 'ЅМ1,000.00',
+    },
+
+    // Other
+    {
+      'name': 'Afghan Afghani',
+      'code': 'AFN',
+      'symbol': '؋',
+      'format': '؋1,000.00',
+    },
+    {'name': 'Bitcoin', 'code': 'BTC', 'symbol': '₿', 'format': '₿0.00000000'},
   ];
 
   static final List<String> vehicleTypesList = ['car', 'bike', 'truck', 'bus'];

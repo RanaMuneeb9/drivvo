@@ -40,6 +40,8 @@ import 'package:drivvo/modules/home/service/type/service_type_binding.dart';
 import 'package:drivvo/modules/home/service/type/service_type_view.dart';
 import 'package:drivvo/modules/home/service/update/update_service_binding.dart';
 import 'package:drivvo/modules/home/service/update/update_service_view.dart';
+import 'package:drivvo/modules/more/about_us/about_us_bindings.dart';
+import 'package:drivvo/modules/more/about_us/about_us_view.dart';
 import 'package:drivvo/modules/more/general/create/create_general_bindings.dart';
 import 'package:drivvo/modules/more/general/create/create_general_view.dart';
 import 'package:drivvo/modules/more/general/general_bindings.dart';
@@ -253,6 +255,12 @@ class AppPages {
       name: AppRoutes.UPDATE_REMINDER_VIEW,
       page: () => UpdateReminderView(),
       binding: UpdateReminderBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.ABOUT_US_VIEW,
+      page: () => AboutUsView(),
+      binding: AboutUsBindings(),
     ),
   ];
 }

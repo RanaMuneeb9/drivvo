@@ -735,7 +735,7 @@ class HomeView extends GetView<HomeController> {
                             entry.origin != null
                                 ? SizedBox(height: 14)
                                 : Text(
-                                    entry.amount,
+                                    "${controller.appService.selectedCurrencySymbol.value} ${entry.amount}",
                                     style: Utils.getTextStyle(
                                       baseSize: 14,
                                       isBold: true,
@@ -821,7 +821,8 @@ class HomeView extends GetView<HomeController> {
             label: entry.isIncome
                 ? ('income'.tr.isNotEmpty ? 'income'.tr : 'Income')
                 : ('amount'.tr.isNotEmpty ? 'amount'.tr : 'Amount'),
-            value: entry.amount,
+            value:
+                "${controller.appService.selectedCurrencySymbol.value} ${entry.amount}",
             valueColor: entry.isIncome ? Colors.green : Colors.red,
           ),
           const SizedBox(height: 8),

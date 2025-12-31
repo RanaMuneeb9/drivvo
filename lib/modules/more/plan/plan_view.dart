@@ -1,4 +1,3 @@
-import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/modules/more/plan/plan_controller.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -11,12 +10,27 @@ class PlanView extends GetView<PlanController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF3F7FA),
-      appBar: CustomAppBar(
-        name: "premium_plans".tr,
-        isUrdu: controller.isUrdu,
-        bgColor: Utils.appColor,
-        textColor: Colors.white,
-        centerTitle: true,
+      appBar: AppBar(
+        backgroundColor: Utils.appColor,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        surfaceTintColor: Colors.transparent,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+        ),
+        title: Text(
+          'premium_plans'.tr,
+          style: Utils.getTextStyle(
+            baseSize: 18,
+            isBold: true,
+            color: Colors.white,
+            isUrdu: controller.isUrdu,
+          ),
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -43,12 +57,11 @@ class PlanView extends GetView<PlanController> {
                   isUrdu: controller.isUrdu,
                 ),
               ),
-              const SizedBox(height: 30),
-              _buildBillingToggle(),
+
               const SizedBox(height: 30),
               _buildPlanCard(
                 title: "Free",
-                price: "₹0",
+                price: "Rs 0",
                 description:
                     "Perfect for individuals or small fleets getting started with fleet management.",
                 buttonText: "Get Started Free",
@@ -70,8 +83,8 @@ class PlanView extends GetView<PlanController> {
                     price: "₹12,500",
                     description:
                         "Ideal for small businesses or fleet owners with up to 10 vehicles.",
-                    buttonText: "Start 14-Day Trial",
-                    buttonColor: const Color(0xFF3498DB),
+                    buttonText: "Subscribe",
+                    buttonColor: Utils.appColor,
                     isHighlighted: true,
                     features: [
                       "Everything from Free plan",
@@ -145,62 +158,6 @@ class PlanView extends GetView<PlanController> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildBillingToggle() {
-    return Obx(
-      () => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Monthly Billing",
-            style: Utils.getTextStyle(
-              baseSize: 14,
-              isBold: !controller.isYearlyBilling.value,
-              color: controller.isYearlyBilling.value
-                  ? Colors.grey
-                  : const Color(0xFF1E2E4B),
-              isUrdu: controller.isUrdu,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Switch(
-            value: controller.isYearlyBilling.value,
-            onChanged: (value) => controller.toggleBilling(value),
-            activeThumbColor: const Color(0xFF2ECC71),
-          ),
-          const SizedBox(width: 10),
-          Text(
-            "Yearly Billing",
-            style: Utils.getTextStyle(
-              baseSize: 14,
-              isBold: controller.isYearlyBilling.value,
-              color: controller.isYearlyBilling.value
-                  ? const Color(0xFF3498DB)
-                  : Colors.grey,
-              isUrdu: controller.isUrdu,
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2ECC71).withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              "Save 20%",
-              style: Utils.getTextStyle(
-                baseSize: 10,
-                isBold: true,
-                color: const Color(0xFF2ECC71),
-                isUrdu: controller.isUrdu,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

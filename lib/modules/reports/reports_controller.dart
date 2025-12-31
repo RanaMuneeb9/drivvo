@@ -630,7 +630,7 @@ class ReportsController extends GetxController
   }
 
   String formatCurrency(int value) {
-    return "\$${value.toStringAsFixed(2)}";
+    return "${appService.selectedCurrencySymbol.value} $value";
   }
 
   String formatDistance(int value) {

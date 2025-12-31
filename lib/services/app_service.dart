@@ -37,6 +37,17 @@ class AppService extends GetxService {
   String _countryCode = "";
   var savedLanguage = "";
 
+  var selectedDateFormat = "dd MMM yyyy".obs;
+
+  var fuelUnit = "Liter (L)".obs;
+  var gasUnit = "m³".obs;
+
+  // Currency format observables
+  var selectedCurrencySymbol = "Rs".obs;
+  var selectedCurrencyCode = "PKR".obs;
+  var selectedCurrencyFormat = "Rs 1,000.00".obs;
+  var selectedCurrencyName = "Pakistani Rupee".obs;
+
   Future<AppService> init() async {
     await GetStorage.init();
     _box = GetStorage();
@@ -51,6 +62,10 @@ class AppService extends GetxService {
 
     currentVehicleId.value =
         _box.read<String>(Constants.CURRENT_VEHICLE_ID) ?? "";
+    selectedDateFormat.value =
+        _box.read<String>(Constants.DATE_FORMAT) ?? "dd MMM yyyy";
+    fuelUnit.value = _box.read<String>(Constants.FUEL_UNIT) ?? "Liter (L)";
+    gasUnit.value = _box.read<String>(Constants.GAS_UNIT) ?? "m³";
     currentVehicle.value = _box.read<String>(Constants.CURRENT_VEHICLE) ?? "";
     onBoarding = _box.read<bool>(Constants.ONBOARDING) ?? false;
     importData = _box.read<bool>(Constants.IMPORT_DATA) ?? false;
@@ -60,6 +75,16 @@ class AppService extends GetxService {
     incomeFilter.value = _box.read<bool>(Constants.INCOME_FILTER) ?? true;
     serviceFilter.value = _box.read<bool>(Constants.SERVICE_FILTER) ?? true;
     routeFilter.value = _box.read<bool>(Constants.ROUTE_FILTER) ?? true;
+
+    // Load saved currency format
+    selectedCurrencySymbol.value =
+        _box.read<String>(Constants.CURRENCY_SYMBOL) ?? "Rs";
+    selectedCurrencyCode.value =
+        _box.read<String>(Constants.CURRENCY_CODE) ?? "PKR";
+    selectedCurrencyFormat.value =
+        _box.read<String>(Constants.CURRENCY_FORMAT) ?? "Rs 1,000.00";
+    selectedCurrencyName.value =
+        _box.read<String>(Constants.CURRENCY_NAME) ?? "Pakistani Rupee";
 
     //for the needs in setting
     savedLanguage = _box.read<String>(Constants.LANGUAGE_CODE) ?? 'en';
@@ -133,6 +158,37 @@ class AppService extends GetxService {
   Future<void> setProfile(AppUser user) async {
     appUser.value = user;
     await _box.write(Constants.USER_PROFILE, user.toJson());
+  }
+
+  Future<void> setDateFormat(String value) async {
+    selectedDateFormat.value = value;
+    await _box.write(Constants.DATE_FORMAT, value);
+  }
+
+  Future<void> setCurrencyFormat({
+    required String symbol,
+    required String code,
+    required String format,
+    required String name,
+  }) async {
+    selectedCurrencySymbol.value = symbol;
+    selectedCurrencyCode.value = code;
+    selectedCurrencyFormat.value = format;
+    selectedCurrencyName.value = name;
+    await _box.write(Constants.CURRENCY_SYMBOL, symbol);
+    await _box.write(Constants.CURRENCY_CODE, code);
+    await _box.write(Constants.CURRENCY_FORMAT, format);
+    await _box.write(Constants.CURRENCY_NAME, name);
+  }
+
+  Future<void> setFuelUnit(String unit) async {
+    fuelUnit.value = unit;
+    await _box.write(Constants.FUEL_UNIT, unit);
+  }
+
+  Future<void> setGasUnit(String unit) async {
+    gasUnit.value = unit;
+    await _box.write(Constants.GAS_UNIT, unit);
   }
 
   Future<void> setCurrentVehicleId(String id) async {
