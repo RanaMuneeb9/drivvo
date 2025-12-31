@@ -293,7 +293,7 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                           },
                           onValidate: (value) {},
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 40),
                         CustomButton(
                           title: "update".tr,
                           onTap: () => controller.saveData(),

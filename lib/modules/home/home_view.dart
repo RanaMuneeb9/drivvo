@@ -336,13 +336,15 @@ class HomeView extends GetView<HomeController> {
                   isUrdu: controller.isUrdu,
                 ),
               ),
-              Text(
-                "${controller.appService.appUser.value.lastOdometer} km",
-                style: Utils.getTextStyle(
-                  baseSize: 12,
-                  isBold: true,
-                  color: Utils.appColor,
-                  isUrdu: controller.isUrdu,
+              Obx(
+                () => Text(
+                  "${controller.appService.appUser.value.lastOdometer} km",
+                  style: Utils.getTextStyle(
+                    baseSize: 12,
+                    isBold: true,
+                    color: Utils.appColor,
+                    isUrdu: controller.isUrdu,
+                  ),
                 ),
               ),
             ],

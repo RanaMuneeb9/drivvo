@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:drivvo/model/reminders/reminder_model.dart';
+import 'package:drivvo/model/reminder/reminder_model.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
@@ -14,10 +14,12 @@ class CreateReminderController extends GetxController {
   final List<String> reminderTyeList = ['expense', 'service'];
 
   var model = ReminderModel().obs;
+  var lastOdometer = 0.obs;
 
   var selectedIndex = 0.obs;
   var selectedType = "expense".obs;
-  final dateController = TextEditingController();
+  final startDateController = TextEditingController();
+  final endDateController = TextEditingController();
   final expenseController = TextEditingController();
   final serviceController = TextEditingController();
 
@@ -28,14 +30,18 @@ class CreateReminderController extends GetxController {
 
     expenseController.text = "select_expense_type".tr;
     serviceController.text = "select_service_type".tr;
+    model.value.period = "day";
 
     final now = DateTime.now();
-    dateController.text = Utils.formatDate(date: now);
+    startDateController.text = Utils.formatDate(date: now);
+
+    lastOdometer.value = appService.appUser.value.lastOdometer;
   }
 
   @override
   void onClose() {
-    dateController.dispose();
+    startDateController.dispose();
+    endDateController.dispose();
     serviceController.dispose();
     expenseController.dispose();
     super.onClose();
@@ -43,14 +49,14 @@ class CreateReminderController extends GetxController {
 
   void onSelectType(String type) {
     selectedType.value = type;
-    model.value.reminderType = type;
+    model.value.type = type;
   }
 
   void toggleBtn(int index) {
     selectedIndex.value = index;
   }
 
-  void selectDate() async {
+  void selectDate({required bool isStart}) async {
     final context = Get.context;
     if (context == null) return;
 
@@ -63,7 +69,19 @@ class CreateReminderController extends GetxController {
     if (picked != null) {
       final date = Utils.formatDate(date: picked);
 
-      dateController.text = date;
+      if (isStart) {
+        model.value.startDate = picked;
+        startDateController.text = date;
+      } else {
+        model.value.endDate = picked;
+        endDateController.text = date;
+      }
+    }
+  }
+
+  void onSelectPeriod(String? value) {
+    if (value != null) {
+      model.value.period = value;
     }
   }
 
@@ -72,40 +90,35 @@ class CreateReminderController extends GetxController {
       formKey.currentState?.save();
 
       Utils.showProgressDialog();
+      final ref = FirebaseFirestore.instance
+          .collection(DatabaseTables.USER_PROFILE)
+          .doc(appService.appUser.value.id)
+          .collection(DatabaseTables.REMINDER);
+
+      final id = ref.doc().id;
 
       final map = {
-        "vehicle_id": "",
-        "date": dateController.text.trim(),
-        "odometer": model.value.odometer,
-        "reminder_type": selectedType.value == "expense"
-            ? "Expense"
-            : "Reminder",
-        "reminder": selectedType.value == "expense"
+        "id": id,
+        "type": model.value.type,
+        "sub_type": selectedType.value == "expense"
             ? expenseController.text.trim()
             : serviceController.text.trim(),
+        "odometer": model.value.odometer,
         "notes": model.value.notes,
+        "one_time": selectedIndex.value == 0 ? true : false,
+        "start_date": model.value.startDate,
+        "end_date": model.value.endDate,
+        "period": model.value.period,
       };
 
       try {
-        await FirebaseFirestore.instance
-            .collection(DatabaseTables.USER_PROFILE)
-            .doc(appService.appUser.value.id)
-            .collection(DatabaseTables.REMINDER)
-            .doc()
-            .set(map)
-            .then((e) {
-              if (Get.isDialogOpen == true) Get.back();
-              Get.back();
+        await ref.doc(id).set(map);
 
-              Utils.showSnackBar(message: "reminder_added".tr, success: true);
-            })
-            .catchError((e) {
-              if (Get.isDialogOpen == true) Get.back();
-              Utils.showSnackBar(message: "something_wrong".tr, success: false);
-            });
+        if (Get.isDialogOpen == true) Get.back();
+        Get.back();
+        Utils.showSnackBar(message: "reminder_added".tr, success: true);
       } catch (e) {
         if (Get.isDialogOpen == true) Get.back();
-
         Utils.showSnackBar(message: "something_wrong".tr, success: false);
       }
     }

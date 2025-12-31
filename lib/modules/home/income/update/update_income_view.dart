@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drivvo/custom-widget/button/custom_button.dart';
 import 'package:drivvo/custom-widget/common/confilcting_crad.dart';
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
@@ -35,263 +36,281 @@ class UpdateIncomeView extends GetView<UpdateIncomeController> {
             isUrdu: controller.isUrdu,
           ),
         ),
-        actions: [
-          IconButton(
-            onPressed: () => controller.updateIncome(),
-            icon: Text(
-              "update".tr,
-              style: Utils.getTextStyle(
-                baseSize: 14,
-                isBold: true,
-                color: Colors.white,
-                isUrdu: controller.isUrdu,
-              ),
-            ),
-          ),
-        ],
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
         ),
       ),
 
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: controller.formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Obx(
-                () => controller.showConflictingCard.value
-                    ? ConflictingCard(
-                        isUrdu: controller.isUrdu,
-                        lastRecordModel: controller.lastRecord,
-                        onTap: () => controller.showConflictingCard.value =
-                            !controller.showConflictingCard.value,
-                      )
-                    : SizedBox(),
-              ),
-              Row(
+      body: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: controller.formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: CardTextInputField(
+                  Obx(
+                    () => controller.showConflictingCard.value
+                        ? ConflictingCard(
+                            isUrdu: controller.isUrdu,
+                            lastRecordModel: controller.lastRecord,
+                            onTap: () => controller.showConflictingCard.value =
+                                !controller.showConflictingCard.value,
+                          )
+                        : SizedBox(),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CardTextInputField(
+                          isRequired: true,
+                          isNext: true,
+                          obscureText: false,
+                          readOnly: true,
+                          controller: controller.dateController,
+                          isUrdu: controller.isUrdu,
+                          labelText: "date".tr,
+                          hintText: "select_date".tr,
+                          sufixIcon: Icon(
+                            Icons.date_range,
+                            color: Utils.appColor,
+                          ),
+                          onSaved: (value) {},
+                          onTap: () => controller.selectDate(),
+                          onValidate: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'date_required'.tr;
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: CardTextInputField(
+                          isRequired: true,
+                          isNext: true,
+                          obscureText: false,
+                          readOnly: true,
+                          controller: controller.timeController,
+                          isUrdu: controller.isUrdu,
+                          labelText: "time".tr,
+                          hintText: "select_time".tr,
+                          sufixIcon: Icon(
+                            Icons.av_timer,
+                            color: Utils.appColor,
+                          ),
+                          onSaved: (value) {},
+                          onTap: () => controller.selectTime(),
+                          onValidate: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'time_required'.tr;
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Obx(
+                    () => TextInputField(
+                      isUrdu: controller.isUrdu,
                       isRequired: true,
                       isNext: true,
                       obscureText: false,
-                      readOnly: true,
-                      controller: controller.dateController,
-                      isUrdu: controller.isUrdu,
-                      labelText: "date".tr,
-                      hintText: "select_date".tr,
-                      sufixIcon: Icon(Icons.date_range, color: Utils.appColor),
-                      onSaved: (value) {},
-                      onTap: () => controller.selectDate(),
+                      readOnly: false,
+                      initialValue: controller.model.value.odometer.toString(),
+                      labelText: "odometer".tr,
+                      hintText:
+                          "${'last_odometer'.tr}: ${controller.lastOdometer.value} km",
+                      inputAction: TextInputAction.next,
+                      type: TextInputType.number,
+                      onTap: () {},
+                      onSaved: (value) {
+                        if (value != null) {
+                          controller.model.value.odometer = int.parse(value);
+                        }
+                      },
                       onValidate: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'date_required'.tr;
+                          return 'odometer_required'.tr;
+                        }
+                        final c = num.tryParse(value);
+                        if (c == null) {
+                          return 'invalid_odometer_value'.tr;
+                        }
+                        if (c < controller.lastOdometer.value) {
+                          return "odometer_greater_than_last".tr;
                         }
                         return null;
                       },
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: CardTextInputField(
-                      isRequired: true,
-                      isNext: true,
-                      obscureText: false,
-                      readOnly: true,
-                      controller: controller.timeController,
-                      isUrdu: controller.isUrdu,
-                      labelText: "time".tr,
-                      hintText: "select_time".tr,
-                      sufixIcon: Icon(Icons.av_timer, color: Utils.appColor),
-                      onSaved: (value) {},
-                      onTap: () => controller.selectTime(),
-                      onValidate: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'time_required'.tr;
-                        }
-                        return null;
-                      },
+                  const SizedBox(height: 16),
+                  CardTextInputField(
+                    isUrdu: controller.isUrdu,
+                    isRequired: true,
+                    isNext: true,
+                    obscureText: false,
+                    readOnly: true,
+                    labelText: "income_type".tr,
+                    hintText: "".tr,
+                    controller: controller.incomeTypeController,
+                    sufixIcon: Icon(Icons.keyboard_arrow_down),
+                    onTap: () {
+                      Get.toNamed(
+                        AppRoutes.GENERAL_VIEW,
+                        arguments: {
+                          "title": Constants.INCOME_TYPES,
+                          "selected_title":
+                              controller.incomeTypeController.text,
+                        },
+                      )?.then((e) {
+                        if (e != null) controller.incomeTypeController.text = e;
+                      });
+                    },
+                    onSaved: (value) {},
+                    onValidate: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'income_type_required'.tr;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextInputField(
+                    isUrdu: controller.isUrdu,
+                    isRequired: true,
+                    isNext: true,
+                    obscureText: false,
+                    readOnly: false,
+                    initialValue: controller.model.value.value.toString(),
+                    labelText: "value".tr,
+                    hintText: "100".tr,
+                    inputAction: TextInputAction.next,
+                    type: TextInputType.number,
+                    onTap: () {},
+                    onSaved: (value) {
+                      if (value != null) {
+                        controller.model.value.value = int.parse(value);
+                      }
+                    },
+                    onValidate: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'income_required'.tr;
+                      }
+
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextInputField(
+                    isUrdu: controller.isUrdu,
+                    isRequired: false,
+                    isNext: true,
+                    obscureText: false,
+                    readOnly: false,
+                    initialValue: controller.model.value.driverName,
+                    labelText: "driver".tr,
+                    hintText: "enter_driver_name".tr,
+                    inputAction: TextInputAction.next,
+                    type: TextInputType.name,
+                    onTap: () {},
+                    onSaved: (value) {
+                      if (value != null) {
+                        controller.model.value.driverName = value;
+                      }
+                    },
+                    onValidate: (value) => null,
+                  ),
+                  const SizedBox(height: 16),
+                  LabelText(title: "attach_file".tr, isUrdu: controller.isUrdu),
+                  GestureDetector(
+                    onTap: () => showImagePicker(),
+                    child: Container(
+                      width: double.maxFinite,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Utils.appColor.withValues(alpha: 0.1),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                        border: Border.all(
+                          color: Utils.appColor,
+                          style: BorderStyle.solid,
+                        ),
+                      ),
+                      child: Obx(
+                        () => Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            const Icon(
+                              Icons.add_a_photo,
+                              color: Utils.appColor,
+                            ),
+                            if (controller.filePath.value.isNotEmpty)
+                              controller.filePath.value.startsWith('http')
+                                  ? Image.network(controller.filePath.value)
+                                  : Image.file(File(controller.filePath.value)),
+                            if (controller.filePath.value.isNotEmpty)
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: IconButton(
+                                  onPressed: () => {
+                                    controller.filePath.value = "",
+                                  },
+                                  icon: const Icon(
+                                    Icons.cancel,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  TextInputField(
+                    isUrdu: controller.isUrdu,
+                    isRequired: false,
+                    isNext: false,
+                    obscureText: false,
+                    readOnly: false,
+                    maxLines: 4,
+                    maxLength: 250,
+                    initialValue: controller.model.value.notes,
+                    labelText: "notes".tr,
+                    hintText: "enter_your_notes".tr,
+                    inputAction: TextInputAction.done,
+                    type: TextInputType.name,
+                    onTap: () {},
+                    onSaved: (value) {
+                      if (value != null) {
+                        controller.model.value.notes = value;
+                      }
+                    },
+                    onValidate: (value) => null,
+                  ),
+                  const SizedBox(height: 80),
                 ],
               ),
-              const SizedBox(height: 16),
-              Obx(
-                () => TextInputField(
-                  isUrdu: controller.isUrdu,
-                  isRequired: true,
-                  isNext: true,
-                  obscureText: false,
-                  readOnly: false,
-                  initialValue: controller.model.value.odometer.toString(),
-                  labelText: "odometer".tr,
-                  hintText:
-                      "${'last_odometer'.tr}: ${controller.lastOdometer.value} km",
-                  inputAction: TextInputAction.next,
-                  type: TextInputType.number,
-                  onTap: () {},
-                  onSaved: (value) {
-                    if (value != null) {
-                      controller.model.value.odometer = int.parse(value);
-                    }
-                  },
-                  onValidate: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'odometer_required'.tr;
-                    }
-                    final c = num.tryParse(value);
-                    if (c == null) {
-                      return 'invalid_odometer_value'.tr;
-                    }
-                    if (c < controller.lastOdometer.value) {
-                      return "odometer_greater_than_last".tr;
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              CardTextInputField(
-                isUrdu: controller.isUrdu,
-                isRequired: true,
-                isNext: true,
-                obscureText: false,
-                readOnly: true,
-                labelText: "income_type".tr,
-                hintText: "".tr,
-                controller: controller.incomeTypeController,
-                sufixIcon: Icon(Icons.keyboard_arrow_down),
-                onTap: () {
-                  Get.toNamed(
-                    AppRoutes.GENERAL_VIEW,
-                    arguments: {
-                      "title": Constants.INCOME_TYPES,
-                      "selected_title": controller.incomeTypeController.text,
-                    },
-                  )?.then((e) {
-                    if (e != null) controller.incomeTypeController.text = e;
-                  });
-                },
-                onSaved: (value) {},
-                onValidate: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'income_type_required'.tr;
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextInputField(
-                isUrdu: controller.isUrdu,
-                isRequired: true,
-                isNext: true,
-                obscureText: false,
-                readOnly: false,
-                initialValue: controller.model.value.value.toString(),
-                labelText: "value".tr,
-                hintText: "100".tr,
-                inputAction: TextInputAction.next,
-                type: TextInputType.number,
-                onTap: () {},
-                onSaved: (value) {
-                  if (value != null) {
-                    controller.model.value.value = int.parse(value);
-                  }
-                },
-                onValidate: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'income_required'.tr;
-                  }
-
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextInputField(
-                isUrdu: controller.isUrdu,
-                isRequired: false,
-                isNext: true,
-                obscureText: false,
-                readOnly: false,
-                initialValue: controller.model.value.driverName,
-                labelText: "driver".tr,
-                hintText: "enter_driver_name".tr,
-                inputAction: TextInputAction.next,
-                type: TextInputType.name,
-                onTap: () {},
-                onSaved: (value) {
-                  if (value != null) {
-                    controller.model.value.driverName = value;
-                  }
-                },
-                onValidate: (value) => null,
-              ),
-              const SizedBox(height: 16),
-              LabelText(title: "attach_file".tr, isUrdu: controller.isUrdu),
-              GestureDetector(
-                onTap: () => showImagePicker(),
-                child: Container(
-                  width: double.maxFinite,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Utils.appColor.withValues(alpha: 0.1),
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    border: Border.all(
-                      color: Utils.appColor,
-                      style: BorderStyle.solid,
-                    ),
-                  ),
-                  child: Obx(
-                    () => Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        const Icon(Icons.add_a_photo, color: Utils.appColor),
-                        if (controller.filePath.value.isNotEmpty)
-                          controller.filePath.value.startsWith('http')
-                              ? Image.network(controller.filePath.value)
-                              : Image.file(File(controller.filePath.value)),
-                        if (controller.filePath.value.isNotEmpty)
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: IconButton(
-                              onPressed: () => {controller.filePath.value = ""},
-                              icon: const Icon(Icons.cancel, color: Colors.red),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextInputField(
-                isUrdu: controller.isUrdu,
-                isRequired: false,
-                isNext: false,
-                obscureText: false,
-                readOnly: false,
-                maxLines: 4,
-                maxLength: 250,
-                initialValue: controller.model.value.notes,
-                labelText: "notes".tr,
-                hintText: "enter_your_notes".tr,
-                inputAction: TextInputAction.done,
-                type: TextInputType.name,
-                onTap: () {},
-                onSaved: (value) {
-                  if (value != null) {
-                    controller.model.value.notes = value;
-                  }
-                },
-                onValidate: (value) => null,
-              ),
-              const SizedBox(height: 40),
-            ],
+            ),
           ),
-        ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 30.0, left: 16, right: 16),
+              child: CustomButton(
+                title: "save".tr,
+                onTap: () => controller.updateIncome(),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

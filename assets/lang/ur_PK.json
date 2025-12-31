@@ -462,6 +462,19 @@
   "enter_driver_name": "ڈرائیور کا نام درج کریں",
   "invalid_odometer_value": "اوڈومیٹر کی قدر غلط ہے",
   "final_odometer_greater_than_initial": "فائنل اوڈومیٹر ابتدائی اوڈومیٹر سے زیادہ ہونا چاہیے",
-  "invalid_number": "غلط نمبر","select_origin": "روانگی کا مقام منتخب کریں",
-  "select_destination": "منزل منتخب کریں"
+  "invalid_number": "غلط نمبر",
+  "select_origin": "روانگی کا مقام منتخب کریں",
+  "select_destination": "منزل منتخب کریں",
+  "monthly_expenses_chart": "ماہانہ اخراجات",
+  "monthly_refueling_chart": "ماہانہ ایندھن کی لاگت",
+  "monthly_expenses": "ماہانہ اخراجات",
+  "monthly_income": "ماہانہ آمدنی",
+  "monthly_services_costs": "ماہانہ سروس اخراجات",
+  "expenses_chart": "اخراجات کی تفصیل",
+  "income_chart": "آمدنی کی تفصیل",
+  "services_chart": "سروس کی تفصیل",
+  "fuel_chart": "ایندھن کی اقسام",
+  "day": "دن",
+  "month": "مہینہ",
+  "period_required": "مدت ضروری ہے"
 }

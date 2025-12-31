@@ -30,7 +30,7 @@ class ReportsView extends GetView<ReportsController> {
               children: [
                 // Teal header background
                 Container(
-                  height: 140,
+                  height: 120,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
@@ -64,23 +64,23 @@ class ReportsView extends GetView<ReportsController> {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                  Icons.tune,
-                                  color: Colors.white,
-                                  size: 22,
-                                ),
-                              ),
-                            ),
-                          ),
+                          // Padding(
+                          //   padding: const EdgeInsets.only(top: 8),
+                          //   child: Container(
+                          //     decoration: BoxDecoration(
+                          //       color: Colors.white.withValues(alpha: 0.15),
+                          //       borderRadius: BorderRadius.circular(12),
+                          //     ),
+                          //     child: IconButton(
+                          //       onPressed: () {},
+                          //       icon: const Icon(
+                          //         Icons.tune,
+                          //         color: Colors.white,
+                          //         size: 22,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),

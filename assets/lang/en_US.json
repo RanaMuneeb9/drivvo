@@ -465,6 +465,19 @@
   "enter_driver_name": "Enter driver name",
   "invalid_odometer_value": "Invalid odometer value",
   "final_odometer_greater_than_initial": "Final odometer must be greater than initial odometer",
-  "invalid_number": "Invalid number", "select_origin": "Select origin",
-  "select_destination": "Select destination"
+  "invalid_number": "Invalid number",
+  "select_origin": "Select origin",
+  "select_destination": "Select destination",
+  "monthly_expenses_chart": "Monthly Expenses",
+  "monthly_refueling_chart": "Monthly Refueling Cost",
+  "monthly_expenses": "Monthly Expenses",
+  "monthly_income": "Monthly Income",
+  "monthly_services_costs": "Monthly Service Costs",
+  "expenses_chart": "Expenses Breakdown",
+  "income_chart": "Income Breakdown",
+  "services_chart": "Services Breakdown",
+  "fuel_chart": "Fuel Type Distribution",
+  "day": "Day",
+  "month": "Month",
+  "period_required": "Period is required"
 }

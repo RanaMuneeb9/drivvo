@@ -3,7 +3,6 @@ import 'package:drivvo/model/expense/expense_model.dart';
 import 'package:drivvo/model/income/income_model.dart';
 import 'package:drivvo/model/refueling/refueling_model.dart';
 import 'package:drivvo/model/service/service_model.dart';
-import 'package:drivvo/modules/home/home_controller.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -98,9 +97,11 @@ class ReportsController extends GetxController
       }
     });
 
-    final home = Get.find<HomeController>();
-    startDate.value = home.getStartDate();
-    endDate.value = home.getEndDate();
+    // final home = Get.find<HomeController>();
+    // startDate.value = home.getStartDate();
+    // endDate.value = home.getEndDate();
+
+    startDate.value = DateTime(endDate.value.year, endDate.value.month, 1);
 
     calculateAllReports();
   }

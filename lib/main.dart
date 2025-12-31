@@ -2,6 +2,7 @@ import 'package:drivvo/firebase_options.dart';
 import 'package:drivvo/routes/app_pages.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/services/app_service.dart';
+import 'package:drivvo/services/notification_service.dart';
 import 'package:drivvo/services/translation_service.dart';
 import 'package:drivvo/utils/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,6 +20,7 @@ Future<void> main() async {
   FirebaseDatabase.instance.setPersistenceEnabled(true);
 
   await Get.putAsync<AppService>(() => AppService().init());
+  await NotificationService().init();
 
   runApp(MyApp(translations));
 }

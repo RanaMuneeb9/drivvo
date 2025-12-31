@@ -54,6 +54,8 @@ import 'package:drivvo/modules/more/vehicles/vehicles_bindings.dart';
 import 'package:drivvo/modules/more/vehicles/vehicles_view.dart';
 import 'package:drivvo/modules/reminder/create/create_reminder_binding.dart';
 import 'package:drivvo/modules/reminder/create/create_reminder_view.dart';
+import 'package:drivvo/modules/reminder/update/update_reminder_binding.dart';
+import 'package:drivvo/modules/reminder/update/update_reminder_view.dart';
 import 'package:drivvo/modules/root/root_bindings.dart';
 import 'package:drivvo/modules/root/root_view.dart';
 import 'package:drivvo/modules/setting/setting_bindings.dart';
@@ -245,6 +247,12 @@ class AppPages {
       name: AppRoutes.UPDATE_VEHICLE_VIEW,
       page: () => UpdateVehiclesView(),
       binding: UpdateVehiclesBindings(),
+    ),
+
+    GetPage(
+      name: AppRoutes.UPDATE_REMINDER_VIEW,
+      page: () => UpdateReminderView(),
+      binding: UpdateReminderBinding(),
     ),
   ];
 }

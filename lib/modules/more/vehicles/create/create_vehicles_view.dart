@@ -1,4 +1,4 @@
-import 'package:drivvo/custom-widget/button/custom_outline_button.dart';
+import 'package:drivvo/custom-widget/button/custom_button.dart';
 import 'package:drivvo/custom-widget/common/icon_with_text.dart';
 import 'package:drivvo/custom-widget/reminder/custom_toggle_btn.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
@@ -547,15 +547,9 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 30.0, left: 16, right: 16),
-              child: SizedBox(
-                width: double.infinity,
-                child: CustomOutlineButton(
-                  title: "save".tr,
-                  icon: Icons.check,
-                  isUrdu: controller.isUrdu,
-                  btnColor: Utils.appColor,
-                  onTap: () => controller.saveData(),
-                ),
+              child: CustomButton(
+                title: "save".tr,
+                onTap: () => controller.saveData(),
               ),
             ),
           ),

@@ -1,3 +1,4 @@
+import 'package:drivvo/custom-widget/button/custom_button.dart';
 import 'package:drivvo/custom-widget/reminder/custom_toggle_btn.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
@@ -32,20 +33,6 @@ class CreateReminderView extends GetView<CreateReminderController> {
             isUrdu: controller.isUrdu,
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => controller.saveReminder(),
-            child: Text(
-              'save'.tr,
-              style: Utils.getTextStyle(
-                baseSize: 14,
-                isBold: false,
-                color: Colors.white,
-                isUrdu: controller.isUrdu,
-              ),
-            ),
-          ),
-        ],
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
         ),
@@ -120,7 +107,9 @@ class CreateReminderView extends GetView<CreateReminderController> {
                             },
                             onSaved: (value) {},
                             onValidate: (value) {
-                              if (value == null || value == "") {
+                              if (value == null ||
+                                  value == "" ||
+                                  value == "Select expense type") {
                                 return "expense_type_required".tr;
                               } else {
                                 return null;
@@ -151,7 +140,9 @@ class CreateReminderView extends GetView<CreateReminderController> {
                             },
                             onSaved: (value) {},
                             onValidate: (value) {
-                              if (value == null || value == "") {
+                              if (value == null ||
+                                  value == "" ||
+                                  value == "Select service type") {
                                 return "service_type_required".tr;
                               } else {
                                 return null;
@@ -165,8 +156,8 @@ class CreateReminderView extends GetView<CreateReminderController> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       padding: const EdgeInsets.symmetric(
-                        vertical: 6,
-                        horizontal: 2,
+                        vertical: 4,
+                        horizontal: 4,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -188,77 +179,187 @@ class CreateReminderView extends GetView<CreateReminderController> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    controller.selectedIndex.value == 0
-                        ? Column(
+                    if (controller.selectedIndex.value == 0)
+                      const SizedBox(height: 20),
+                    if (controller.selectedIndex.value == 0)
+                      CardTextInputField(
+                        isRequired: true,
+                        isNext: true,
+                        obscureText: false,
+                        readOnly: true,
+                        controller: controller.startDateController,
+                        isUrdu: controller.isUrdu,
+                        labelText: "date".tr,
+                        hintText: "select_date".tr,
+                        sufixIcon: Icon(
+                          Icons.date_range,
+                          color: Utils.appColor,
+                        ),
+                        onSaved: (value) {},
+                        onTap: () => controller.selectDate(isStart: true),
+                        onValidate: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'date_required'.tr;
+                          }
+                          return null;
+                        },
+                      ),
+                    if (controller.selectedIndex.value == 1)
+                      SizedBox(height: 20),
+                    if (controller.selectedIndex.value == 1)
+                      Column(
+                        children: [
+                          Column(
                             children: [
-                              CardTextInputField(
-                                isRequired: true,
-                                isNext: true,
-                                obscureText: false,
-                                readOnly: true,
-                                controller: controller.dateController,
+                              FormLabelText(
+                                title: 'period'.tr,
                                 isUrdu: controller.isUrdu,
-                                labelText: "date".tr,
-                                hintText: "select_date".tr,
-                                sufixIcon: Icon(
-                                  Icons.date_range,
-                                  color: Utils.appColor,
+                              ),
+                              const SizedBox(height: 4),
+                              DropdownButtonFormField<String>(
+                                initialValue: "day",
+                                icon: const Icon(Icons.keyboard_arrow_down),
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
                                 ),
-                                onSaved: (value) {},
-                                onTap: () => controller.selectDate(),
-                                onValidate: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'date_required'.tr;
+                                items: Utils.dayMonthList
+                                    .map<DropdownMenuItem<String>>((element) {
+                                      return DropdownMenuItem<String>(
+                                        value: element,
+                                        child: Text(
+                                          element.tr,
+                                          style: Utils.getTextStyle(
+                                            baseSize: 14,
+                                            isBold: false,
+                                            color: Colors.black,
+                                            isUrdu: controller.isUrdu,
+                                          ),
+                                        ),
+                                      );
+                                    })
+                                    .toList(),
+                                onChanged: (String? value) =>
+                                    controller.onSelectPeriod(value!),
+                                validator: (value) {
+                                  if (value == null || value == "") {
+                                    return "period_required".tr;
+                                  } else {
+                                    return null;
                                   }
-                                  return null;
                                 },
-                              ),
-                              const SizedBox(height: 20),
-                              TextInputField(
-                                isUrdu: controller.isUrdu,
-                                isRequired: true,
-                                isNext: true,
-                                obscureText: false,
-                                readOnly: false,
-                                labelText: "odometer".tr,
-                                hintText: "100".tr,
-                                inputAction: TextInputAction.next,
-                                type: TextInputType.number,
-                                onTap: () {},
-                                onSaved: (value) {
-                                  controller.model.value.odometer =
-                                      double.tryParse(value ?? '') ?? 0.0;
-                                },
-                                onValidate: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'odometer_required'.tr;
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 20),
-                              TextInputField(
-                                isUrdu: controller.isUrdu,
-                                isRequired: false,
-                                isNext: false,
-                                obscureText: false,
-                                readOnly: false,
-                                maxLines: 4,
-                                maxLength: 250,
-                                labelText: "notes".tr,
-                                hintText: "reminder_notes_hint".tr,
-                                inputAction: TextInputAction.done,
-                                type: TextInputType.name,
-                                onTap: () {},
-                                onSaved: (value) {
-                                  controller.model.value.notes = value ?? '';
-                                },
-                                onValidate: (value) => null,
                               ),
                             ],
-                          )
-                        : Column(children: []),
+                          ),
+                          SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CardTextInputField(
+                                  isRequired: true,
+                                  isNext: true,
+                                  obscureText: false,
+                                  readOnly: true,
+                                  controller: controller.startDateController,
+                                  isUrdu: controller.isUrdu,
+                                  labelText: "start_date".tr,
+                                  hintText: "select_date".tr,
+                                  sufixIcon: Icon(
+                                    Icons.date_range,
+                                    color: Utils.appColor,
+                                  ),
+                                  onSaved: (value) {},
+                                  onTap: () =>
+                                      controller.selectDate(isStart: true),
+                                  onValidate: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'date_required'.tr;
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: CardTextInputField(
+                                  isRequired: true,
+                                  isNext: true,
+                                  obscureText: false,
+                                  readOnly: true,
+                                  controller: controller.endDateController,
+                                  isUrdu: controller.isUrdu,
+                                  labelText: "end_date".tr,
+                                  hintText: "select_date".tr,
+                                  sufixIcon: Icon(
+                                    Icons.date_range,
+                                    color: Utils.appColor,
+                                  ),
+                                  onSaved: (value) {},
+                                  onTap: () =>
+                                      controller.selectDate(isStart: false),
+                                  onValidate: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'date_required'.tr;
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+
+                    const SizedBox(height: 20),
+                    TextInputField(
+                      isUrdu: controller.isUrdu,
+                      isRequired: true,
+                      isNext: true,
+                      obscureText: false,
+                      readOnly: false,
+                      labelText: "odometer".tr,
+                      hintText:
+                          "${'last_odometer'.tr}: ${controller.lastOdometer.value} km",
+                      inputAction: TextInputAction.next,
+                      type: TextInputType.number,
+                      onTap: () {},
+                      onSaved: (value) {
+                        if (value != null) {
+                          controller.model.value.odometer = int.parse(value);
+                        }
+                      },
+                      onValidate: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'odometer_required'.tr;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TextInputField(
+                      isUrdu: controller.isUrdu,
+                      isRequired: false,
+                      isNext: false,
+                      obscureText: false,
+                      readOnly: false,
+                      maxLines: 4,
+                      maxLength: 250,
+                      labelText: "notes".tr,
+                      hintText: "reminder_notes_hint".tr,
+                      inputAction: TextInputAction.done,
+                      type: TextInputType.name,
+                      onTap: () {},
+                      onSaved: (value) {
+                        controller.model.value.notes = value ?? '';
+                      },
+                      onValidate: (value) => null,
+                    ),
+                    const SizedBox(height: 20),
+                    CustomButton(
+                      title: "save".tr,
+                      onTap: () => controller.saveReminder(),
+                    ),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),

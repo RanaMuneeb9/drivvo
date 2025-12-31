@@ -1,3 +1,4 @@
+import 'package:drivvo/custom-widget/button/custom_button.dart';
 import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
@@ -23,20 +24,6 @@ class CreateGeneralView extends GetView<CreateGeneralController> {
         bgColor: Utils.appColor,
         textColor: Colors.white,
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () => controller.saveData(),
-            icon: Text(
-              "save".tr,
-              style: Utils.getTextStyle(
-                baseSize: 16,
-                isBold: true,
-                color: Colors.white,
-                isUrdu: controller.isUrdu,
-              ),
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -186,22 +173,22 @@ class CreateGeneralView extends GetView<CreateGeneralController> {
                       initialValue: null,
                       icon: const Icon(Icons.keyboard_arrow_down),
                       style: const TextStyle(color: Colors.black, fontSize: 16),
-                      items: Utils.fuelTypeList
-                          .map<DropdownMenuItem<String>>((element) {
-                            return DropdownMenuItem<String>(
-                              value: element,
-                              child: Text(
-                                element.tr,
-                                style: Utils.getTextStyle(
-                                  baseSize: 14,
-                                  isBold: false,
-                                  color: Colors.black,
-                                  isUrdu: controller.isUrdu,
-                                ),
-                              ),
-                            );
-                          })
-                          .toList(),
+                      items: Utils.fuelTypeList.map<DropdownMenuItem<String>>((
+                        element,
+                      ) {
+                        return DropdownMenuItem<String>(
+                          value: element,
+                          child: Text(
+                            element.tr,
+                            style: Utils.getTextStyle(
+                              baseSize: 14,
+                              isBold: false,
+                              color: Colors.black,
+                              isUrdu: controller.isUrdu,
+                            ),
+                          ),
+                        );
+                      }).toList(),
                       onChanged: (String? value) =>
                           controller.onSelectFuelType(value!),
                       validator: (value) {
@@ -338,6 +325,15 @@ class CreateGeneralView extends GetView<CreateGeneralController> {
                   ],
                 ),
               ),
+
+            SizedBox(height: 40),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: CustomButton(
+                title: "save".tr,
+                onTap: () => controller.saveData(),
+              ),
+            ),
           ],
         ),
       ),

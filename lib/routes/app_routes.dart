@@ -61,4 +61,6 @@ abstract class AppRoutes {
   static const UPDATE_SERVICE_VIEW = '/home/service/update_service_view';
   // ignore: constant_identifier_names
   static const UPDATE_ROUTE_VIEW = '/home/route/update_route_view';
+  // ignore: constant_identifier_names
+  static const UPDATE_REMINDER_VIEW = '/reminder/update_reminder_view';
 }

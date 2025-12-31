@@ -407,6 +407,43 @@ class Utils {
     'Electrical',
   ];
 
+  static final List<String> dayMonthList = ['day', 'month'];
+
+  static List<DateTime> getDatesBetween({
+    required DateTime start,
+    required DateTime end,
+  }) {
+    final List<DateTime> dates = [];
+
+    // Normalize to avoid time issues
+    DateTime current = DateTime(start.year, start.month, start.day);
+    DateTime last = DateTime(end.year, end.month, end.day);
+
+    while (!current.isAfter(last)) {
+      dates.add(current);
+      current = current.add(const Duration(days: 1));
+    }
+
+    return dates;
+  }
+
+  static List<Map<String, int>> getMonthsBetween(DateTime start, DateTime end) {
+    if (start.isAfter(end)) return [];
+
+    final List<Map<String, int>> months = [];
+
+    DateTime current = DateTime(start.year, start.month);
+    DateTime last = DateTime(end.year, end.month);
+
+    while (!current.isAfter(last)) {
+      months.add({'year': current.year, 'month': current.month});
+
+      current = DateTime(current.year, current.month + 1);
+    }
+
+    return months;
+  }
+
   static List<DateRangeModel> getDateRangeList({required List<String> titles}) {
     List<DateRangeModel> list = [];
 
