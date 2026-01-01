@@ -31,6 +31,7 @@ class UpdateRefuelingController extends GetxController {
   late Map<String, dynamic> oldRefuelingMap;
 
   var isFirstTime = true;
+  var fuelValue = "".obs;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
@@ -66,6 +67,7 @@ class UpdateRefuelingController extends GetxController {
       gasStationCostController.text = refueling.fuelStation.toString();
       isFullTank.value = refueling.fullTank;
       missedPreviousRefueling.value = refueling.missedPrevious;
+      fuelValue.value = refueling.fuelType;
     }
 
     lastOdometer.value = appService.appUser.value.lastOdometer;

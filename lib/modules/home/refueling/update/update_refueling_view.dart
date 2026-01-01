@@ -172,7 +172,10 @@ class UpdateRefuelingView extends GetView<UpdateRefuelingController> {
                           "selected_title": controller.fuelController.text,
                         },
                       )?.then((e) {
-                        if (e != null) controller.fuelController.text = e;
+                        if (e != null) {
+                          controller.fuelController.text = e;
+                          controller.fuelValue.value = e;
+                        }
                       });
                     },
                     onSaved: (value) {},
@@ -184,51 +187,68 @@ class UpdateRefuelingView extends GetView<UpdateRefuelingController> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  TextInputFieldWithController(
-                    isUrdu: controller.isUrdu,
-                    isRequired: true,
-                    isNext: true,
-                    obscureText: false,
-                    readOnly: false,
-                    labelText: "liters".tr,
-                    hintText: "70".tr,
-                    controller: controller.litersController,
-                    inputAction: TextInputAction.next,
-                    type: TextInputType.number,
-                    onChange: (value) => controller.onLitersChanged(value),
-                    onTap: () {},
-                    onSaved: (value) {},
-                    onValidate: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'liters_required'.tr;
-                      }
-                      return null;
-                    },
+                  Obx(
+                    () => TextInputFieldWithController(
+                      isUrdu: controller.isUrdu,
+                      isRequired: true,
+                      isNext: true,
+                      obscureText: false,
+                      readOnly: false,
+                      labelText: controller.fuelValue.value == "CNG"
+                          ? "m³"
+                          : controller.fuelValue.value == "Electric"
+                          ? "KWH"
+                          : "liters".tr,
+                      hintText: controller.fuelValue.value == "CNG"
+                          ? "m³"
+                          : controller.fuelValue.value == "Electric"
+                          ? "KWH"
+                          : "liters".tr,
+                      controller: controller.litersController,
+                      inputAction: TextInputAction.next,
+                      type: TextInputType.number,
+                      onChange: (value) => controller.onLitersChanged(value),
+                      onTap: () {},
+                      onSaved: (value) {},
+                      onValidate: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'liters_required'.tr;
+                        }
+                        return null;
+                      },
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
                       Expanded(
-                        child: TextInputFieldWithController(
-                          isUrdu: controller.isUrdu,
-                          isRequired: true,
-                          isNext: true,
-                          obscureText: false,
-                          readOnly: false,
-                          labelText: "price_per_liter".tr,
-                          hintText: "amount".tr,
-                          controller: controller.priceController,
-                          inputAction: TextInputAction.next,
-                          type: TextInputType.number,
-                          onChange: (value) => controller.onPriceChanged(value),
-                          onTap: () {},
-                          onSaved: (value) {},
-                          onValidate: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'amount_required'.tr;
-                            }
-                            return null;
-                          },
+                        child: Obx(
+                          () => TextInputFieldWithController(
+                            isUrdu: controller.isUrdu,
+                            isRequired: true,
+                            isNext: true,
+                            obscureText: false,
+                            readOnly: false,
+                            labelText: controller.fuelValue.value == "CNG"
+                                ? "price_per_m³"
+                                : controller.fuelValue.value == "Electric"
+                                ? "price_per_kwh"
+                                : "price_per_liter".tr,
+                            hintText: "amount".tr,
+                            controller: controller.priceController,
+                            inputAction: TextInputAction.next,
+                            type: TextInputType.number,
+                            onChange: (value) =>
+                                controller.onPriceChanged(value),
+                            onTap: () {},
+                            onSaved: (value) {},
+                            onValidate: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'amount_required'.tr;
+                              }
+                              return null;
+                            },
+                          ),
                         ),
                       ),
                       const SizedBox(width: 16),

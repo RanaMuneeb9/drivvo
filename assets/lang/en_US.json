@@ -486,4 +486,9 @@
   "last_update": "Last Update",
   "legal": "Legal",
   "terms_of_use": "Terms of Use",
-  "visit_our": "Visit our:"}
+  "visit_our": "Visit our:",
+  "enter_your_place_name": "Enter your place name",
+  "price_per_m³": "Price per m³",
+  "enter_gas_station_name": "Enter gas station name",
+  "price_per_kwh": "Price per kWh"
+}

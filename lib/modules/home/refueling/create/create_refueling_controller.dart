@@ -39,6 +39,7 @@ class CreateRefuelingController extends GetxController {
   final paymentMethodController = TextEditingController();
   final reasonController = TextEditingController();
 
+  var fuelValue = "".obs;
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
