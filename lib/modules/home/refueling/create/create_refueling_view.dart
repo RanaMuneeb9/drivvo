@@ -151,29 +151,7 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                       },
                     ),
                   ),
-                  // Align(
-                  //   alignment: Alignment.centerRight,
-                  //   child: Padding(
-                  //     padding: const EdgeInsets.only(top: 8),
-                  //     child: Obx(
-                  //       () => Text(
-                  //         '${'last_odometer'.tr}: ${controller.lastOdometer.value} km',
-                  //         style: Utils.getTextStyle(
-                  //           baseSize: 12,
-                  //           isBold: false,
-                  //           color: Colors.grey[600]!,
-                  //           isUrdu: controller.isUrdu,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                   const SizedBox(height: 16),
-                  // Fuel Section
-                  // CardHeaderText(
-                  //   title: "fuel_and_price".tr,
-                  //   isUrdu: controller.isUrdu,
-                  // ),
                   CardTextInputField(
                     isUrdu: controller.isUrdu,
                     isRequired: true,
@@ -230,7 +208,6 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                       inputAction: TextInputAction.next,
                       type: TextInputType.number,
                       onChange: (value) {
-                        //controller.model.value.liter = double.parse(value!);
                         controller.onLitersChanged(value);
                       },
                       onTap: () {},
@@ -264,7 +241,6 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                             inputAction: TextInputAction.next,
                             type: TextInputType.number,
                             onChange: (value) {
-                              //controller.model.value.price = double.parse(value!);
                               controller.onPriceChanged(value);
                             },
                             onTap: () {},
@@ -292,7 +268,6 @@ class CreateRefuelingView extends GetView<CreateRefuelingController> {
                           inputAction: TextInputAction.next,
                           type: TextInputType.number,
                           onChange: (value) {
-                            // controller.model.value.totalCost = double.parse(value!);
                             controller.onTotalCostChanged(value);
                           },
                           onTap: () {},

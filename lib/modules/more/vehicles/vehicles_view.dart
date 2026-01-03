@@ -1,4 +1,3 @@
-import 'package:drivvo/custom-widget/button/custom_floating_action_button.dart';
 import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/custom-widget/common/error_refresh_view.dart';
 import 'package:drivvo/custom-widget/common/refresh_indicator_view.dart';
@@ -15,13 +14,26 @@ class VehiclesView extends GetView<VehiclesController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: CustomFloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () =>
             Get.toNamed(AppRoutes.CREATE_VEHICLES_VIEW, arguments: false)?.then(
               (e) {
                 controller.getVehicleList();
               },
             ),
+        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFF00796B),
+        shape: const StadiumBorder(),
+        icon: const Icon(Icons.add),
+        label: Text(
+          "add_vehicle".tr,
+          style: Utils.getTextStyle(
+            baseSize: 14,
+            isBold: true,
+            color: Colors.white,
+            isUrdu: controller.isUrdu,
+          ),
+        ),
       ),
       appBar: CustomAppBar(
         name: "Vehicles",
@@ -66,6 +78,8 @@ class VehiclesView extends GetView<VehiclesController> {
                             onTap: () {
                               controller.isFromHome.value
                                   ? controller.getBackToHome(vehicle: model)
+                                  : controller.isFromUser.value
+                                  ? Get.back(result: model)
                                   : Get.toNamed(
                                       AppRoutes.UPDATE_VEHICLE_VIEW,
                                       arguments: model,
@@ -100,6 +114,11 @@ class VehiclesView extends GetView<VehiclesController> {
                                               color: Colors.grey.shade300,
                                               width: 1,
                                             )
+                                    : controller.isFromUser.value
+                                    ? Border.all(
+                                        color: Colors.grey.shade300,
+                                        width: 1,
+                                      )
                                     : Border.all(
                                         color: Colors.grey.shade300,
                                         width: 1,

@@ -15,6 +15,8 @@ class VehicleModel {
   late String identificationNumber;
   late String notes;
 
+  late String assignUserId;
+
   VehicleModel() {
     id = "";
     vehicleType = "";
@@ -31,6 +33,8 @@ class VehicleModel {
     chassisNumber = "";
     identificationNumber = "";
     notes = "";
+
+    assignUserId = "";
   }
 
   VehicleModel.fromJson(Map<String, dynamic> json) {
@@ -49,6 +53,8 @@ class VehicleModel {
     chassisNumber = json["chassis_number"] ?? "";
     identificationNumber = json["identification_number"] ?? "";
     notes = json["notes"] ?? "";
+
+    assignUserId = json["assign_user_id"] ?? "";
   }
 
   Map<String, dynamic> toJson(String id) {

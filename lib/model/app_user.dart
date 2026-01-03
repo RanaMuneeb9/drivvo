@@ -21,6 +21,9 @@ class AppUser {
   late String confirmPassword;
   late String notificationTime;
 
+  late String adminId;
+  late String userType;
+
   late bool isSubscribed;
   late String productId;
   late String purchaseToken;
@@ -50,6 +53,9 @@ class AppUser {
     password = "";
     confirmPassword = "";
     notificationTime = "12:00 PM";
+
+    adminId = "";
+    userType = "";
 
     isSubscribed = false;
     productId = "";
@@ -87,6 +93,9 @@ class AppUser {
 
     lastOdometer = json["last_odometer"] ?? 0;
     notificationTime = json["notification_time"] ?? "12:00 PM";
+
+    userType = json["user_type"] ?? "";
+    adminId = json["admin_id"] ?? "";
 
     refuelingList =
         (json["refueling_list"] as List<dynamic>?)
@@ -134,6 +143,8 @@ class AppUser {
       "license_category": licenseCategory,
       "license_issue_date": licenseIssueDate,
       "license_expiry_date": licenseExpiryDate,
+      "user_type": userType,
+      "admin_id": adminId,
     };
   }
 }

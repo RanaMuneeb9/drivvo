@@ -31,4 +31,6 @@ class DatabaseTables {
   static const String ROUTES = "Routes";
   // ignore: constant_identifier_names
   static const String REMINDER = "Reminders";
+  // ignore: constant_identifier_names
+  static const String USER_VEHICLE = "User-Vehicle";
 }

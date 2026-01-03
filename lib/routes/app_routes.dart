@@ -65,4 +65,15 @@ abstract class AppRoutes {
   static const UPDATE_REMINDER_VIEW = '/reminder/update_reminder_view';
   // ignore: constant_identifier_names
   static const ABOUT_US_VIEW = '/more/about_us_view';
+  // ignore: constant_identifier_names
+  static const USER_VIEW = '/more/user_view';
+  // ignore: constant_identifier_names
+  static const CREATE_USER_VIEW = '/more/user/create_user_view';
+  // ignore: constant_identifier_names
+  static const UPDATE_USER_VIEW = '/more/user/update_user_view';
+  // ignore: constant_identifier_names
+  static const USER_VEHICLE_VIEW = '/more/user-vehicle/user_vehicle_view';
+  // ignore: constant_identifier_names
+  static const CREATE_USER_VEHICLE_VIEW =
+      '/more/user-vehicle/create_user_vehicle_view';
 }

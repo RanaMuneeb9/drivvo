@@ -283,7 +283,10 @@ class HomeView extends GetView<HomeController> {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                Get.toNamed(AppRoutes.VEHICLES_VIEW, arguments: true);
+                Get.toNamed(
+                  AppRoutes.VEHICLES_VIEW,
+                  arguments: {"is_from_home": true, "is_from_user": false},
+                );
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

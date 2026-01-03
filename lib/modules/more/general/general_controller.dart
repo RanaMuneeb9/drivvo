@@ -141,9 +141,15 @@ class GeneralController extends GetxController {
   }
 
   void onSearch(String text) {
-    generalFilterList.value = generalList
+    final filteredList = generalList
         .where((e) => e.name.toLowerCase().contains(text.toLowerCase()))
         .toList();
+
+    filteredList.sort(
+      (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+    );
+
+    generalFilterList.value = filteredList;
   }
 
   @override

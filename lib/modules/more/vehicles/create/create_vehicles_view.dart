@@ -277,7 +277,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                             children: [
                               const SizedBox(height: 16),
                               Text(
-                                "main_tank".tr,
+                                "tank_1".tr,
                                 style: Utils.getTextStyle(
                                   baseSize: 16,
                                   isBold: true,
@@ -349,7 +349,7 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                             children: [
                               const SizedBox(height: 16),
                               Text(
-                                "secondary_tank".tr,
+                                "tank_2".tr,
                                 style: Utils.getTextStyle(
                                   baseSize: 16,
                                   isBold: true,

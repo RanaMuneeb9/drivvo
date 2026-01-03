@@ -11,12 +11,21 @@ class ReminderView extends GetView<ReminderController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Get.toNamed(AppRoutes.CREATE_REMINDER_VIEW),
-        shape: const CircleBorder(),
         foregroundColor: Colors.white,
         backgroundColor: const Color(0xFF00796B),
-        child: const Icon(Icons.add, color: Colors.white),
+        shape: const StadiumBorder(),
+        icon: const Icon(Icons.add),
+        label: Text(
+          "add_reminder".tr,
+          style: Utils.getTextStyle(
+            baseSize: 14,
+            isBold: true,
+            color: Colors.white,
+            isUrdu: controller.isUrdu,
+          ),
+        ),
       ),
       appBar: AppBar(
         backgroundColor: Utils.appColor,

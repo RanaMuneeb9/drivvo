@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/date_range_model.dart';
 import 'package:drivvo/model/general_model.dart';
+import 'package:drivvo/model/onboarding_model.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -75,8 +76,11 @@ class Utils {
 
   static void getFirebaseException(FirebaseException e) {
     if (Get.isDialogOpen == true) Get.back();
-
-    if (e.code == 'permission-denied') {
+    if (e.code == 'email-already-in-use') {
+      Utils.showSnackBar(message: "email_already_in_use", success: false);
+    } else if (e.code == 'weak-password') {
+      Utils.showSnackBar(message: "weak_password", success: false);
+    } else if (e.code == 'permission-denied') {
       Utils.showSnackBar(message: "permission_denied".tr, success: false);
     } else if (e.code == 'unavailable') {
       Utils.showSnackBar(message: "network_error".tr, success: false);
@@ -977,7 +981,27 @@ class Utils {
     {'name': 'Bitcoin', 'code': 'BTC', 'symbol': '₿', 'format': '₿0.00000000'},
   ];
 
-  static final List<String> vehicleTypesList = ['car', 'bike', 'truck', 'bus'];
+  static final List<String> vehicleTypesList = [
+    'car',
+    'bike',
+    'truck',
+    'bus',
+    'others',
+  ];
+
+  static final List<OnboardingModel> userTypeList = [
+    OnboardingModel(
+      title: "user_type_admin_title",
+      description: "user_type_admin_desc",
+      imagePath: "",
+    ),
+    OnboardingModel(
+      title: "user_type_driver_title",
+      description: "user_type_driver_desc",
+      imagePath: "",
+    ),
+  ];
+
   static final List<String> fuelTypeList = [
     'Liquids',
     'Liquefied petroleum gas',

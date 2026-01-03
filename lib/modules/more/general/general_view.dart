@@ -1,9 +1,9 @@
-import 'package:drivvo/custom-widget/button/custom_floating_action_button.dart';
 import 'package:drivvo/custom-widget/common/error_refresh_view.dart';
 import 'package:drivvo/custom-widget/common/refresh_indicator_view.dart';
 import 'package:drivvo/custom-widget/text-input-field/search_text_input_field.dart';
 import 'package:drivvo/modules/more/general/general_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
+import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,13 +21,42 @@ class GeneralView extends GetView<GeneralController> {
         }
       },
       child: Scaffold(
-        floatingActionButton: CustomFloatingActionButton(
+        floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             Get.toNamed(
               AppRoutes.CREATE_GENERAL_VIEW,
               arguments: controller.title,
             )?.then((e) => controller.loadDataByTitle());
           },
+          foregroundColor: Colors.white,
+          backgroundColor: const Color(0xFF00796B),
+          shape: const StadiumBorder(),
+          icon: const Icon(Icons.add),
+          label: Text(
+            controller.title == Constants.FUEL
+                ? "add_fuel".tr
+                : controller.title == Constants.GAS_STATIONS
+                ? "add_gas_station".tr
+                : controller.title == Constants.PLACES
+                ? "add_places".tr
+                : controller.title == Constants.EXPENSE_TYPES
+                ? "add_expense_type".tr
+                : controller.title == Constants.INCOME_TYPES
+                ? "add_income_type".tr
+                : controller.title == Constants.SERVICE_TYPES
+                ? "add_service_type".tr
+                : controller.title == Constants.PAYMENT_METHOD
+                ? "add_payment_method".tr
+                : controller.title == Constants.REASONS
+                ? "add_reason".tr
+                : "".tr,
+            style: Utils.getTextStyle(
+              baseSize: 14,
+              isBold: true,
+              color: Colors.white,
+              isUrdu: controller.isUrdu,
+            ),
+          ),
         ),
         appBar: AppBar(
           automaticallyImplyLeading: false,

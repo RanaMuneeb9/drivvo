@@ -48,6 +48,16 @@ import 'package:drivvo/modules/more/general/general_bindings.dart';
 import 'package:drivvo/modules/more/general/general_view.dart';
 import 'package:drivvo/modules/more/plan/plan_bindings.dart';
 import 'package:drivvo/modules/more/plan/plan_view.dart';
+import 'package:drivvo/modules/more/user-vehicle/create/create_user_vehicle_bindings.dart';
+import 'package:drivvo/modules/more/user-vehicle/create/create_user_vehicle_view.dart';
+import 'package:drivvo/modules/more/user-vehicle/user_vehicle_bindings.dart';
+import 'package:drivvo/modules/more/user-vehicle/user_vehicle_view.dart';
+import 'package:drivvo/modules/more/user/create/create_user_bindings.dart';
+import 'package:drivvo/modules/more/user/create/create_user_view.dart';
+import 'package:drivvo/modules/more/user/update/update_user_bindings.dart';
+import 'package:drivvo/modules/more/user/update/update_user_view.dart';
+import 'package:drivvo/modules/more/user/user_bindings.dart';
+import 'package:drivvo/modules/more/user/user_view.dart';
 import 'package:drivvo/modules/more/vehicles/create/create_vehicles_bindings.dart';
 import 'package:drivvo/modules/more/vehicles/create/create_vehicles_view.dart';
 import 'package:drivvo/modules/more/vehicles/update/update_vehicles_bindings.dart';
@@ -261,6 +271,36 @@ class AppPages {
       name: AppRoutes.ABOUT_US_VIEW,
       page: () => AboutUsView(),
       binding: AboutUsBindings(),
+    ),
+
+    GetPage(
+      name: AppRoutes.USER_VIEW,
+      page: () => UserView(),
+      binding: UserBindings(),
+    ),
+
+    GetPage(
+      name: AppRoutes.CREATE_USER_VIEW,
+      page: () => CreateUserView(),
+      binding: CreateUserBindings(),
+    ),
+
+    GetPage(
+      name: AppRoutes.UPDATE_USER_VIEW,
+      page: () => const UpdateUserView(),
+      binding: UpdateUserBindings(),
+    ),
+
+    GetPage(
+      name: AppRoutes.USER_VEHICLE_VIEW,
+      page: () => const UserVehicleView(),
+      binding: UserVehicleBindings(),
+    ),
+
+    GetPage(
+      name: AppRoutes.CREATE_USER_VEHICLE_VIEW,
+      page: () => const CreateUserVehicleView(),
+      binding: CreateUserVehicleBindings(),
     ),
   ];
 }

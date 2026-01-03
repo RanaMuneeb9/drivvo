@@ -89,8 +89,10 @@ class MoreView extends GetView<MoreController> {
                   subtitle: controller.registeredVehicles.value > 1
                       ? '${controller.registeredVehicles.value} ${"vehicles_registered".tr}'
                       : '${controller.registeredVehicles.value} ${"vehicle_registered".tr}',
-                  onTap: () =>
-                      Get.toNamed(AppRoutes.VEHICLES_VIEW, arguments: false),
+                  onTap: () => Get.toNamed(
+                    AppRoutes.VEHICLES_VIEW,
+                    arguments: {"is_from_home": false, "is_from_user": false},
+                  ),
                 ),
               ),
               _buildDivider(),
@@ -98,14 +100,18 @@ class MoreView extends GetView<MoreController> {
                 imagePath: "assets/images/more/users.png",
                 title: 'users'.tr,
                 subtitle: 'users_sub'.tr,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.USER_VIEW, arguments: "");
+                },
               ),
               _buildDivider(),
               _buildTile(
                 imagePath: "assets/images/more/vehicle_user.png",
                 title: 'vehicle_user'.tr,
                 subtitle: 'vehicle_user_sub'.tr,
-                onTap: () {},
+                onTap: () {
+                  Get.toNamed(AppRoutes.USER_VEHICLE_VIEW);
+                },
               ),
             ]),
             CardHeaderText(
