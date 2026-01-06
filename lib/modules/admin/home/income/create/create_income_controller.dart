@@ -26,6 +26,7 @@ class CreateIncomeController extends GetxController {
   final dateController = TextEditingController();
   final timeController = TextEditingController();
   final incomeTypeController = TextEditingController();
+  final driverController = TextEditingController();
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
@@ -42,6 +43,7 @@ class CreateIncomeController extends GetxController {
     timeController.text = DateFormat('hh:mm a').format(now);
 
     incomeTypeController.text = "select_income_type".tr;
+    driverController.text = "select_your_driver".tr;
 
     lastOdometer.value = appService.vehicleModel.value.lastOdometer;
   }
@@ -51,6 +53,7 @@ class CreateIncomeController extends GetxController {
     dateController.dispose();
     timeController.dispose();
     incomeTypeController.dispose();
+    driverController.dispose();
     super.onClose();
   }
 
@@ -124,6 +127,21 @@ class CreateIncomeController extends GetxController {
 
       Utils.showProgressDialog();
 
+      String? uploadedImageUrl;
+      if (filePath.value.isNotEmpty) {
+        try {
+          uploadedImageUrl = await Utils.uploadImage(
+            collectionPath: DatabaseTables.INCOME_IMAGES,
+            filePath: filePath.value,
+          );
+          model.value.imagePath = uploadedImageUrl;
+        } catch (e) {
+          if (Get.isDialogOpen == true) Get.back();
+          Utils.showSnackBar(message: "image_upload_failed".tr, success: false);
+          return;
+        }
+      }
+
       final map = {
         "user_id": appService.appUser.value.id,
         "vehicle_id": appService.currentVehicleId.value,
@@ -135,6 +153,7 @@ class CreateIncomeController extends GetxController {
         "driver_name": model.value.driverName,
         "file_path": filePath.value,
         "notes": model.value.notes,
+        "image_path": model.value.imagePath,
       };
 
       final lastRecordMap = {

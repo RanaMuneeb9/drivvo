@@ -34,6 +34,7 @@ class UpdateServiceController extends GetxController {
   final placeController = TextEditingController();
   final paymentMethodController = TextEditingController();
   final reasonController = TextEditingController();
+  final driverController = TextEditingController();
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
@@ -60,6 +61,7 @@ class UpdateServiceController extends GetxController {
       placeController.text = service.place;
       paymentMethodController.text = service.paymentMethod;
       reasonController.text = service.reason;
+      driverController.text = service.driverName;
       // Update display text
       updateServiceTypeDisplay();
     }
@@ -85,6 +87,7 @@ class UpdateServiceController extends GetxController {
     placeController.dispose();
     paymentMethodController.dispose();
     reasonController.dispose();
+    driverController.dispose();
     super.onClose();
   }
 
@@ -149,6 +152,21 @@ class UpdateServiceController extends GetxController {
       }
 
       Utils.showProgressDialog();
+
+      String? uploadedImageUrl;
+      if (filePath.value.isNotEmpty) {
+        try {
+          uploadedImageUrl = await Utils.uploadImage(
+            collectionPath: DatabaseTables.INCOME_IMAGES,
+            filePath: filePath.value,
+          );
+          model.value.imagePath = uploadedImageUrl;
+        } catch (e) {
+          if (Get.isDialogOpen == true) Get.back();
+          Utils.showSnackBar(message: "image_upload_failed".tr, success: false);
+          return;
+        }
+      }
 
       final newServiceMap = {
         "user_id": appService.appUser.value.id,

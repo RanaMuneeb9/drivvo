@@ -38,6 +38,7 @@ class CreateRefuelingController extends GetxController {
   final gasStationCostController = TextEditingController();
   final paymentMethodController = TextEditingController();
   final reasonController = TextEditingController();
+  final driverController = TextEditingController();
 
   var fuelValue = "".obs;
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
@@ -58,6 +59,7 @@ class CreateRefuelingController extends GetxController {
     gasStationCostController.text = "select_gas_station".tr;
     paymentMethodController.text = "select_payment_method".tr;
     reasonController.text = "select_reason".tr;
+    driverController.text = "select_your_driver".tr;
 
     lastOdometer.value = appService.vehicleModel.value.lastOdometer;
   }
@@ -73,6 +75,7 @@ class CreateRefuelingController extends GetxController {
     gasStationCostController.dispose();
     paymentMethodController.dispose();
     reasonController.dispose();
+    driverController.dispose();
     super.onClose();
   }
 
@@ -237,6 +240,21 @@ class CreateRefuelingController extends GetxController {
 
       Utils.showProgressDialog();
 
+      String? uploadedImageUrl;
+      if (filePath.value.isNotEmpty) {
+        try {
+          uploadedImageUrl = await Utils.uploadImage(
+            collectionPath: DatabaseTables.INCOME_IMAGES,
+            filePath: filePath.value,
+          );
+          model.value.imagePath = uploadedImageUrl;
+        } catch (e) {
+          if (Get.isDialogOpen == true) Get.back();
+          Utils.showSnackBar(message: "image_upload_failed".tr, success: false);
+          return;
+        }
+      }
+
       double liter = double.parse(litersController.text);
       double price = double.parse(priceController.text);
       double totalCost = double.parse(totalCostController.text);
@@ -257,6 +275,8 @@ class CreateRefuelingController extends GetxController {
         "payment_method": paymentMethodController.text.trim(),
         "notes": model.value.notes,
         "driver_name": model.value.driverName,
+        "file_path": filePath.value,
+        "image_path": model.value.imagePath,
       };
 
       final lastRecordMap = {

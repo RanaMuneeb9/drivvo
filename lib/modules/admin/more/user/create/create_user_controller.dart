@@ -4,6 +4,8 @@ import 'package:drivvo/model/onboarding_model.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -61,10 +63,34 @@ class CreateUserController extends GetxController {
       Utils.showProgressDialog();
 
       try {
+        // Verify user is authenticated before calling Cloud Function
+        final currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser == null) {
+          Get.back();
+          Utils.showSnackBar(message: 'error_unauthenticated', success: false);
+          return;
+        }
+        // Force refresh the ID token to ensure it's valid
+        try {
+          await currentUser.getIdToken(true);
+        } catch (e) {
+          Get.back();
+          Utils.showSnackBar(
+            message: 'error_token_refresh_failed',
+            success: false,
+          );
+          return;
+        }
+        if (kDebugMode) {
+          print('User authenticated: ${currentUser.uid}');
+          print('Email: ${currentUser.email}');
+        }
+
         // Call the Cloud Function to create user
-        final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-          'createUser',
-        );
+        // Specify the region explicitly for 2nd Gen Cloud Functions
+        final HttpsCallable callable = FirebaseFunctions.instanceFor(
+          region: 'us-central1',
+        ).httpsCallable('createUser');
 
         final result = await callable.call<Map<String, dynamic>>({
           'email': model.email,
@@ -103,7 +129,8 @@ class CreateUserController extends GetxController {
             );
             break;
           case 'unauthenticated':
-            Utils.showSnackBar(message: 'unauthenticated', success: false);
+            Utils.showSnackBar(message: e.message.toString(), success: false);
+            debugPrint(e.message);
             break;
           default:
             Utils.showSnackBar(message: 'save_data_failed', success: false);

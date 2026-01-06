@@ -33,6 +33,7 @@ class CreateServiceController extends GetxController {
   final placeController = TextEditingController();
   final paymentMethodController = TextEditingController();
   final reasonController = TextEditingController();
+  final driverController = TextEditingController();
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
@@ -52,6 +53,7 @@ class CreateServiceController extends GetxController {
     placeController.text = "select_your_place".tr;
     paymentMethodController.text = "select_payment_method".tr;
     reasonController.text = "select_reason".tr;
+    driverController.text = "select_your_driver".tr;
 
     lastOdometer.value = appService.vehicleModel.value.lastOdometer;
   }
@@ -64,6 +66,7 @@ class CreateServiceController extends GetxController {
     placeController.dispose();
     paymentMethodController.dispose();
     reasonController.dispose();
+    driverController.dispose();
     super.onClose();
   }
 
@@ -137,6 +140,21 @@ class CreateServiceController extends GetxController {
 
       Utils.showProgressDialog();
 
+      String? uploadedImageUrl;
+      if (filePath.value.isNotEmpty) {
+        try {
+          uploadedImageUrl = await Utils.uploadImage(
+            collectionPath: DatabaseTables.INCOME_IMAGES,
+            filePath: filePath.value,
+          );
+          model.value.imagePath = uploadedImageUrl;
+        } catch (e) {
+          if (Get.isDialogOpen == true) Get.back();
+          Utils.showSnackBar(message: "image_upload_failed".tr, success: false);
+          return;
+        }
+      }
+
       final map = {
         "user_id": appService.appUser.value.id,
         "vehicle_id": appService.currentVehicleId.value,
@@ -150,6 +168,7 @@ class CreateServiceController extends GetxController {
         "reason": reasonController.text.trim(),
         "file_path": filePath.value,
         "notes": model.value.notes,
+        "image_path": model.value.imagePath,
         "expense_types": serviceTyesList.map((e) => e.toJson()).toList(),
       };
 

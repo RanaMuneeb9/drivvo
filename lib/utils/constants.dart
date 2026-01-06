@@ -47,6 +47,10 @@ class Constants {
   // ignore: constant_identifier_names
   static const String GOOGLE = "google";
   // ignore: constant_identifier_names
+  static const String EMAIL = "email";
+  // ignore: constant_identifier_names
+  static const String PASSWORD = "password";
+  // ignore: constant_identifier_names
   static const String SELECTED_DATE_FORMAT = "SelectedDateFormat";
   // ignore: constant_identifier_names
   static const String REFUELING_FILTER = "RefuelingFilter";

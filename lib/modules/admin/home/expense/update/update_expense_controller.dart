@@ -32,6 +32,7 @@ class UpdateExpenseController extends GetxController {
   final placeController = TextEditingController();
   final paymentMethodController = TextEditingController();
   final reasonController = TextEditingController();
+  final driverController = TextEditingController();
 
   var showConfilctingCard = false.obs;
   late LastRecordModel lastRecord;
@@ -61,6 +62,7 @@ class UpdateExpenseController extends GetxController {
       placeController.text = expense.place;
       paymentMethodController.text = expense.paymentMethod;
       reasonController.text = expense.reason;
+      driverController.text = expense.driverName;
 
       lastOdometer.value = appService.vehicleModel.value.lastOdometer;
 
@@ -87,6 +89,7 @@ class UpdateExpenseController extends GetxController {
     placeController.dispose();
     paymentMethodController.dispose();
     reasonController.dispose();
+    driverController.dispose();
     super.onClose();
   }
 
@@ -151,6 +154,21 @@ class UpdateExpenseController extends GetxController {
       }
 
       Utils.showProgressDialog();
+
+      String? uploadedImageUrl;
+      if (filePath.value.isNotEmpty) {
+        try {
+          uploadedImageUrl = await Utils.uploadImage(
+            collectionPath: DatabaseTables.INCOME_IMAGES,
+            filePath: filePath.value,
+          );
+          model.value.imagePath = uploadedImageUrl;
+        } catch (e) {
+          if (Get.isDialogOpen == true) Get.back();
+          Utils.showSnackBar(message: "image_upload_failed".tr, success: false);
+          return;
+        }
+      }
 
       final newExpenseMap = {
         "user_id": appService.appUser.value.id,

@@ -30,6 +30,7 @@ class CreateExpenseController extends GetxController {
   final placeController = TextEditingController();
   final paymentMethodController = TextEditingController();
   final reasonController = TextEditingController();
+  final driverController = TextEditingController();
 
   var showConfilctingCard = false.obs;
 
@@ -53,6 +54,7 @@ class CreateExpenseController extends GetxController {
     placeController.text = "select_your_place".tr;
     paymentMethodController.text = "select_payment_method".tr;
     reasonController.text = "select_reason".tr;
+    driverController.text = "select_your_driver".tr;
 
     lastOdometer.value = appService.vehicleModel.value.lastOdometer;
   }
@@ -65,6 +67,7 @@ class CreateExpenseController extends GetxController {
     placeController.dispose();
     paymentMethodController.dispose();
     reasonController.dispose();
+    driverController.dispose();
     super.onClose();
   }
 
@@ -131,6 +134,21 @@ class CreateExpenseController extends GetxController {
       }
       Utils.showProgressDialog();
 
+      String? uploadedImageUrl;
+      if (filePath.value.isNotEmpty) {
+        try {
+          uploadedImageUrl = await Utils.uploadImage(
+            collectionPath: DatabaseTables.INCOME_IMAGES,
+            filePath: filePath.value,
+          );
+          model.value.imagePath = uploadedImageUrl;
+        } catch (e) {
+          if (Get.isDialogOpen == true) Get.back();
+          Utils.showSnackBar(message: "image_upload_failed".tr, success: false);
+          return;
+        }
+      }
+
       final map = {
         "user_id": appService.appUser.value.id,
         "vehicle_id": appService.currentVehicleId.value,
@@ -144,6 +162,7 @@ class CreateExpenseController extends GetxController {
         "reason": reasonController.text.trim(),
         "file_path": filePath.value,
         "notes": model.value.notes,
+        "image_path": model.value.imagePath,
         "expense_types": expenseTypesList.map((e) => e.toJson()).toList(),
       };
 

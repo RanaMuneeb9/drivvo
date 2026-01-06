@@ -42,6 +42,7 @@ class UpdateRefuelingController extends GetxController {
   final gasStationCostController = TextEditingController();
   final paymentMethodController = TextEditingController();
   final reasonController = TextEditingController();
+  final driverController = TextEditingController();
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
@@ -68,6 +69,9 @@ class UpdateRefuelingController extends GetxController {
       isFullTank.value = refueling.fullTank;
       missedPreviousRefueling.value = refueling.missedPrevious;
       fuelValue.value = refueling.fuelType;
+      driverController.text = refueling.driverName;
+
+      filePath.value = model.value.filePath;
     }
 
     lastOdometer.value = appService.vehicleModel.value.lastOdometer;
@@ -82,6 +86,7 @@ class UpdateRefuelingController extends GetxController {
     litersController.dispose();
     fuelController.dispose();
     paymentMethodController.dispose();
+    driverController.dispose();
     super.onClose();
   }
 
@@ -243,6 +248,21 @@ class UpdateRefuelingController extends GetxController {
       }
 
       Utils.showProgressDialog();
+
+      String? uploadedImageUrl;
+      if (filePath.value.isNotEmpty) {
+        try {
+          uploadedImageUrl = await Utils.uploadImage(
+            collectionPath: DatabaseTables.INCOME_IMAGES,
+            filePath: filePath.value,
+          );
+          model.value.imagePath = uploadedImageUrl;
+        } catch (e) {
+          if (Get.isDialogOpen == true) Get.back();
+          Utils.showSnackBar(message: "image_upload_failed".tr, success: false);
+          return;
+        }
+      }
 
       double liter = double.parse(litersController.text);
       double price = double.parse(priceController.text);

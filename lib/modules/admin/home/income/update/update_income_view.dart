@@ -5,13 +5,13 @@ import 'package:drivvo/custom-widget/common/confilcting_crad.dart';
 import 'package:drivvo/custom-widget/common/label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
+import 'package:drivvo/model/app_user.dart';
 import 'package:drivvo/modules/admin/home/income/update/update_income_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
 class UpdateIncomeView extends GetView<UpdateIncomeController> {
   const UpdateIncomeView({super.key});
@@ -207,29 +207,50 @@ class UpdateIncomeView extends GetView<UpdateIncomeController> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  TextInputField(
+                  CardTextInputField(
                     isUrdu: controller.isUrdu,
                     isRequired: false,
                     isNext: true,
                     obscureText: false,
-                    readOnly: false,
-                    initialValue: controller.model.value.driverName,
+                    readOnly: true,
                     labelText: "driver".tr,
                     hintText: "enter_driver_name".tr,
-                    inputAction: TextInputAction.next,
-                    type: TextInputType.name,
-                    onTap: () {},
-                    onSaved: (value) {
-                      if (value != null) {
-                        controller.model.value.driverName = value;
-                      }
+                    controller: controller.driverController,
+                    sufixIcon: Icon(Icons.keyboard_arrow_down),
+                    onTap: () {
+                      controller.appService.appUser.value.isSubscribed
+                          ? Get.toNamed(
+                              AppRoutes.USER_VIEW,
+                              arguments: controller.driverController.text,
+                            )?.then((e) {
+                              if (e != null) {
+                                if (e is AppUser) {
+                                  final firstName = e.firstName;
+                                  final lastName = e.lastName;
+                                  final name = "$firstName $lastName".trim();
+                                  if (name.isNotEmpty) {
+                                    controller.driverController.text = name;
+                                    controller.model.value.driverName = name;
+                                  }
+                                }
+                              }
+                            })
+                          : Get.toNamed(AppRoutes.PLAN_VIEW);
                     },
+                    onSaved: (value) {},
                     onValidate: (value) => null,
                   ),
                   const SizedBox(height: 16),
                   LabelText(title: "attach_file".tr, isUrdu: controller.isUrdu),
                   GestureDetector(
-                    onTap: () => showImagePicker(),
+                    onTap: () =>
+                        controller.appService.appUser.value.isSubscribed
+                        ? Utils.showImagePicker(
+                            isUrdu: controller.isUrdu,
+                            pickFile: (path) =>
+                                controller.filePath.value = path,
+                          )
+                        : Get.toNamed(AppRoutes.PLAN_VIEW),
                     child: Container(
                       width: double.maxFinite,
                       height: 200,
@@ -311,97 +332,6 @@ class UpdateIncomeView extends GetView<UpdateIncomeController> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  void showImagePicker() async {
-    final ImagePicker imgPicker = ImagePicker();
-
-    Get.defaultDialog(
-      title: "choose_option".tr,
-      titleStyle: Utils.getTextStyle(
-        baseSize: 16,
-        isBold: true,
-        color: Colors.black,
-        isUrdu: controller.isUrdu,
-      ),
-      backgroundColor: Colors.white,
-      content: Padding(
-        padding: const EdgeInsets.only(top: 10, left: 16, right: 16),
-        child: Column(
-          children: [
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () async {
-                Get.back();
-                final pickedFile = await imgPicker.pickImage(
-                  source: ImageSource.camera,
-                  imageQuality: 100,
-                );
-                if (pickedFile != null) {
-                  Utils.onPickedFile(
-                    pickedFile: pickedFile,
-                    onTap: (path) => controller.filePath.value = path,
-                  );
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "take_photo".tr,
-                    style: Utils.getTextStyle(
-                      baseSize: 14,
-                      isBold: false,
-                      color: Colors.black,
-                      isUrdu: controller.isUrdu,
-                    ),
-                  ),
-                  const Icon(Icons.camera_alt, color: Colors.black, size: 18),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
-            const Divider(thickness: 0.5, color: Color(0x20000000)),
-            const SizedBox(height: 5),
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () async {
-                Get.back();
-                final pickedFile = await imgPicker.pickImage(
-                  source: ImageSource.gallery,
-                  imageQuality: 100,
-                );
-                if (pickedFile != null) {
-                  Utils.onPickedFile(
-                    pickedFile: pickedFile,
-                    onTap: (path) => controller.filePath.value = path,
-                  );
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "gallery".tr,
-                    style: Utils.getTextStyle(
-                      baseSize: 14,
-                      isBold: false,
-                      color: Colors.black,
-                      isUrdu: controller.isUrdu,
-                    ),
-                  ),
-                  const Icon(
-                    Icons.photo_library,
-                    color: Colors.black,
-                    size: 18,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

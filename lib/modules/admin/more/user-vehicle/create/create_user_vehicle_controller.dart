@@ -71,13 +71,14 @@ class CreateUserVehicleController extends GetxController {
         final batch = FirebaseFirestore.instance.batch();
 
         batch.set(ref.doc(id), map);
+
         batch.update(
           FirebaseFirestore.instance
               .collection(DatabaseTables.USER_PROFILE)
               .doc(appService.appUser.value.id)
               .collection(DatabaseTables.VEHICLES)
               .doc(vehicle.value.id),
-          {"assign_user_id": appService.appUser.value.id},
+          {"driver_id": user.value.id},
         );
 
         await batch.commit();

@@ -36,6 +36,7 @@ class CreateRouteController extends GetxController {
   final finalOdometerController = TextEditingController();
   final valuePerKmController = TextEditingController();
   final totalController = TextEditingController();
+  final driverController = TextEditingController();
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
@@ -57,6 +58,7 @@ class CreateRouteController extends GetxController {
     reasonController.text = "select_reason".tr;
     originController.text = "select_origin".tr;
     destinationController.text = "select_destination".tr;
+    driverController.text = "select_your_driver".tr;
 
     lastOdometer.value = appService.vehicleModel.value.lastOdometer;
     calculateTotal();
@@ -75,6 +77,7 @@ class CreateRouteController extends GetxController {
     finalOdometerController.dispose();
     valuePerKmController.dispose();
     totalController.dispose();
+    driverController.dispose();
     super.onClose();
   }
 
@@ -175,6 +178,21 @@ class CreateRouteController extends GetxController {
 
       Utils.showProgressDialog();
 
+      String? uploadedImageUrl;
+      if (filePath.value.isNotEmpty) {
+        try {
+          uploadedImageUrl = await Utils.uploadImage(
+            collectionPath: DatabaseTables.INCOME_IMAGES,
+            filePath: filePath.value,
+          );
+          model.value.imagePath = uploadedImageUrl;
+        } catch (e) {
+          if (Get.isDialogOpen == true) Get.back();
+          Utils.showSnackBar(message: "image_upload_failed".tr, success: false);
+          return;
+        }
+      }
+
       final map = {
         "user_id": appService.appUser.value.id,
         "vehicle_id": appService.currentVehicleId.value,
@@ -192,6 +210,7 @@ class CreateRouteController extends GetxController {
         "reason": reasonController.text.trim(),
         "file_path": filePath.value,
         "notes": model.value.notes,
+        "image_path": model.value.imagePath,
       };
 
       final lastRecordMap = {

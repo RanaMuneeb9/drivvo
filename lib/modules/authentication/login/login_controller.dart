@@ -143,16 +143,24 @@ class LoginController extends GetxController {
       if (data != null) {
         Get.back(closeOverlays: true);
         final userData = AppUser.fromJson(data);
-        appService.setProfile(userData);
+        await appService.setProfile(userData);
 
         if (appService.importData) {
           if (userData.userType.toLowerCase() == Constants.ADMIN) {
+            appService.setEmailAndPwd(
+              email: userData.email,
+              pwd: userData.password,
+            );
             Get.offAllNamed(AppRoutes.ADMIN_ROOT_VIEW);
           }
           if (userData.userType.toLowerCase() == Constants.DRIVER) {
             Get.offAllNamed(AppRoutes.DRIVER_ROOT_VIEW);
           }
         } else {
+          appService.setEmailAndPwd(
+            email: userData.email,
+            pwd: userData.password,
+          );
           Get.offAllNamed(AppRoutes.IMPORT_DATA_VIEW);
         }
       } else {

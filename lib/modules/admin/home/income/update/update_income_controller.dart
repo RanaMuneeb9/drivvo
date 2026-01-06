@@ -29,6 +29,7 @@ class UpdateIncomeController extends GetxController {
   final dateController = TextEditingController();
   final timeController = TextEditingController();
   final incomeTypeController = TextEditingController();
+  final driverController = TextEditingController();
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
@@ -46,6 +47,7 @@ class UpdateIncomeController extends GetxController {
       oldIncomeMap = income.rawMap;
 
       // Initialize controllers with existing data
+      driverController.text = income.driverName;
       dateController.text = Utils.formatDate(date: income.date);
       timeController.text = income.time;
       incomeTypeController.text = income.incomeType;
@@ -60,6 +62,7 @@ class UpdateIncomeController extends GetxController {
     dateController.dispose();
     timeController.dispose();
     incomeTypeController.dispose();
+    driverController.dispose();
     super.onClose();
   }
 
@@ -132,6 +135,21 @@ class UpdateIncomeController extends GetxController {
       }
 
       Utils.showProgressDialog();
+
+      String? uploadedImageUrl;
+      if (filePath.value.isNotEmpty) {
+        try {
+          uploadedImageUrl = await Utils.uploadImage(
+            collectionPath: DatabaseTables.INCOME_IMAGES,
+            filePath: filePath.value,
+          );
+          model.value.imagePath = uploadedImageUrl;
+        } catch (e) {
+          if (Get.isDialogOpen == true) Get.back();
+          Utils.showSnackBar(message: "image_upload_failed".tr, success: false);
+          return;
+        }
+      }
 
       final newIncomeMap = {
         "user_id": appService.appUser.value.id,

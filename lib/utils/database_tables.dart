@@ -33,4 +33,14 @@ class DatabaseTables {
   static const String REMINDER = "Reminders";
   // ignore: constant_identifier_names
   static const String USER_VEHICLE = "User-Vehicle";
+  // ignore: constant_identifier_names
+  static const String REFUELING_IMAGES = "RefuelingImages";
+  // ignore: constant_identifier_names
+  static const String EXPENSE_IMAGES = "ExpenseImages";
+  // ignore: constant_identifier_names
+  static const String SERVICE_IMAGES = "ServiceImages";
+  // ignore: constant_identifier_names
+  static const String ROUTE_IMAGES = "RouteImages";
+  // ignore: constant_identifier_names
+  static const String INCOME_IMAGES = "IncomeImages";
 }

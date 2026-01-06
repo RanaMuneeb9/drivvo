@@ -22,7 +22,7 @@ class VehicleModel {
   late String notes;
 
   late int lastOdometer;
-  late String assignUserId;
+  late String driverId;
 
   late List<RefuelingModel> refuelingList;
   late List<ExpenseModel> expenseList;
@@ -48,7 +48,7 @@ class VehicleModel {
     notes = "";
 
     lastOdometer = 0;
-    assignUserId = "";
+    driverId = "";
 
     refuelingList = [];
     expenseList = [];
@@ -75,7 +75,7 @@ class VehicleModel {
     notes = json["notes"] ?? "";
 
     lastOdometer = json["last_odometer"] ?? 0;
-    assignUserId = json["assign_user_id"] ?? "";
+    driverId = json["driver_id"] ?? "";
 
     refuelingList =
         (json["refueling_list"] as List<dynamic>?)
@@ -127,7 +127,7 @@ class VehicleModel {
       "notes": notes,
 
       "last_odometer": lastOdometer,
-      "assign_user_id": assignUserId,
+      "driver_id": driverId,
 
       "refueling_list": refuelingList.map((e) => e.toJson()).toList(),
       "expense_list": expenseList.map((e) => e.toJson()).toList(),

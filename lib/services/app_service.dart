@@ -23,6 +23,10 @@ class AppService extends GetxService {
 
   bool onBoarding = false;
   bool importData = false;
+
+  String email = "";
+  String password = "";
+
   var currentVehicleId = "".obs;
   var currentVehicle = "".obs;
 
@@ -69,6 +73,10 @@ class AppService extends GetxService {
     fuelUnit.value = _box.read<String>(Constants.FUEL_UNIT) ?? "Liter (L)";
     gasUnit.value = _box.read<String>(Constants.GAS_UNIT) ?? "m³";
     currentVehicle.value = _box.read<String>(Constants.CURRENT_VEHICLE) ?? "";
+
+    email = _box.read<String>(Constants.EMAIL) ?? "";
+    password = _box.read<String>(Constants.PASSWORD) ?? "";
+
     onBoarding = _box.read<bool>(Constants.ONBOARDING) ?? false;
     importData = _box.read<bool>(Constants.IMPORT_DATA) ?? false;
 
@@ -208,6 +216,14 @@ class AppService extends GetxService {
     await _box.write(Constants.DATE_FORMAT, value);
   }
 
+  Future<void> setEmailAndPwd({
+    required String email,
+    required String pwd,
+  }) async {
+    await _box.write(Constants.EMAIL, email);
+    await _box.write(Constants.PASSWORD, pwd);
+  }
+
   Future<void> setCurrencyFormat({
     required String symbol,
     required String code,
@@ -316,6 +332,7 @@ class AppService extends GetxService {
   @override
   void onClose() {
     _userSubscription?.cancel();
+    _vehicleSubscription?.cancel();
     super.onClose();
   }
 }

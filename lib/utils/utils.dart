@@ -1,9 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
+
 import 'package:drivvo/model/date_range_model.dart';
 import 'package:drivvo/model/general_model.dart';
 import 'package:drivvo/model/onboarding_model.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -114,6 +116,155 @@ class Utils {
       'dec',
     ];
     return '${date.day.toString().padLeft(2, '0')} ${months[date.month - 1]}';
+  }
+
+  static Future<void> showImagePicker({
+    required bool isUrdu,
+    required Function(String path) pickFile,
+  }) async {
+    final ImagePicker imgPicker = ImagePicker();
+
+    Get.defaultDialog(
+      title: "choose_option".tr,
+      titleStyle: Utils.getTextStyle(
+        baseSize: 16,
+        isBold: true,
+        color: Colors.black,
+        isUrdu: isUrdu,
+      ),
+      backgroundColor: Colors.white,
+      content: Padding(
+        padding: const EdgeInsets.only(top: 10, left: 16, right: 16),
+        child: Column(
+          children: [
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () async {
+                Get.back();
+                final pickedFile = await imgPicker.pickImage(
+                  source: ImageSource.camera,
+                  imageQuality: 100,
+                );
+                if (pickedFile != null) {
+                  onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => pickFile(path),
+                  );
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "take_photo".tr,
+                    style: Utils.getTextStyle(
+                      baseSize: 14,
+                      isBold: false,
+                      color: Colors.black,
+                      isUrdu: isUrdu,
+                    ),
+                  ),
+                  const Icon(Icons.camera_alt, color: Colors.black, size: 18),
+                ],
+              ),
+            ),
+            const SizedBox(height: 5),
+            const Divider(thickness: 0.5, color: Color(0x20000000)),
+            const SizedBox(height: 5),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () async {
+                Get.back();
+                final pickedFile = await imgPicker.pickImage(
+                  source: ImageSource.gallery,
+                  imageQuality: 100,
+                );
+                if (pickedFile != null) {
+                  Utils.onPickedFile(
+                    pickedFile: pickedFile,
+                    onTap: (path) => pickFile(path),
+                  );
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "gallery".tr,
+                    style: Utils.getTextStyle(
+                      baseSize: 14,
+                      isBold: false,
+                      color: Colors.black,
+                      isUrdu: isUrdu,
+                    ),
+                  ),
+                  const Icon(
+                    Icons.photo_library,
+                    color: Colors.black,
+                    size: 18,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Future<String> uploadImage({
+    required String collectionPath,
+    required String filePath,
+  }) async {
+    if (filePath.isEmpty) {
+      Utils.showSnackBar(message: "select_photo", success: false);
+      return "";
+    }
+
+    String getContentType(String path) {
+      final extension = path.toLowerCase().split('.').last;
+      switch (extension) {
+        case 'jpg':
+        case 'jpeg':
+          return 'image/jpeg';
+        case 'png':
+          return 'image/png';
+        case 'gif':
+          return 'image/gif';
+        case 'webp':
+          return 'image/webp';
+        default:
+          return 'image/jpeg';
+      }
+    }
+
+    final metadata = SettableMetadata(
+      contentType: getContentType(filePath),
+      customMetadata: {'picked-file-path': filePath},
+    );
+
+    // Generate unique filename
+    final extension = filePath.split('.').last;
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final uniqueFileName = '$timestamp.$extension';
+    try {
+      final snapshot = await FirebaseStorage.instance
+          .ref()
+          .child(collectionPath)
+          //.child(filePath)
+          .child(uniqueFileName)
+          .putFile(File(filePath), metadata);
+
+      final url = await snapshot.ref.getDownloadURL();
+      if (url.isNotEmpty) {
+        return url;
+      }
+    } catch (error) {
+      Utils.showSnackBar(message: "image_upload_failed", success: false);
+      return "";
+    }
+
+    return "";
   }
 
   // !Format date as "dd MMM" (e.g., "17 Dec")

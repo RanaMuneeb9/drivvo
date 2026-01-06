@@ -53,40 +53,37 @@ class CreateVehiclesController extends GetxController {
     if (formStateKey.currentState?.validate() == true) {
       formStateKey.currentState?.save();
 
-      final ref = FirebaseFirestore.instance
-          .collection(DatabaseTables.USER_PROFILE)
-          .doc(appService.appUser.value.id)
-          .collection(DatabaseTables.VEHICLES);
+      try {
+        final ref = FirebaseFirestore.instance
+            .collection(DatabaseTables.USER_PROFILE)
+            .doc(appService.appUser.value.id)
+            .collection(DatabaseTables.VEHICLES);
 
-      final id = ref.doc().id;
+        final id = ref.doc().id;
 
-      Utils.showProgressDialog();
-      final map = model.toJson(id);
+        Utils.showProgressDialog();
+        final map = model.toJson(id);
 
-      await ref
-          .doc(id)
-          .set(map)
-          .then(
-            (_) {
-              if (isFromImportdata.value) {
-                Get.offAllNamed(AppRoutes.ADMIN_ROOT_VIEW);
-                appService.setCurrentVehicle(model.name);
-                appService.setCurrentVehicleId(id);
-                return;
-              }
-              Get.back(closeOverlays: true);
-              Utils.showSnackBar(
-                message: "vehicle_added_successfully".tr,
-                success: true,
-              );
+        await ref.doc(id).set(map);
 
-              final con = Get.find<MoreController>();
-              con.getAllVehicleList();
-            },
-            onError: (e) {
-              Get.back();
-            },
-          );
+        if (isFromImportdata.value) {
+          Get.offAllNamed(AppRoutes.ADMIN_ROOT_VIEW);
+          appService.setCurrentVehicle(model.name);
+          appService.setCurrentVehicleId(id);
+          return;
+        }
+        Get.back(closeOverlays: true);
+        Utils.showSnackBar(
+          message: "vehicle_added_successfully".tr,
+          success: true,
+        );
+
+        final con = Get.find<MoreController>();
+        con.getAllVehicleList();
+      } catch (e) {
+        Get.back();
+        Utils.showSnackBar(message: "something_went_wrong", success: false);
+      }
     }
   }
 

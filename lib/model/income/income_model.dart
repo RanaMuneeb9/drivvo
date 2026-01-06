@@ -11,6 +11,7 @@ class IncomeModel {
   late String driverName;
   late String filePath;
   late String notes;
+  late String imagePath;
   Map<String, dynamic> rawMap = {};
 
   IncomeModel() {
@@ -24,6 +25,7 @@ class IncomeModel {
     driverName = "";
     filePath = "";
     notes = "";
+    imagePath = "";
   }
 
   IncomeModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +47,7 @@ class IncomeModel {
     driverName = json["driver_name"] ?? "";
     filePath = json["file_path"] ?? "";
     notes = json["notes"] ?? "";
+    imagePath = json["image_path"] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -59,6 +62,7 @@ class IncomeModel {
       "driver_name": driverName,
       "file_path": filePath,
       "notes": notes,
+      "image_path": imagePath,
     };
   }
 }
