@@ -69,51 +69,8 @@ class DriverMoreView extends GetView<DriverMoreController> {
                 onTap: () {},
               ),
               _buildDivider(),
-              _buildTile(
-                imagePath: "assets/images/more/transfer.png",
-                title: 'transfer'.tr,
-                subtitle: 'transfer_sub'.tr,
-                onTap: () {},
-              ),
             ]),
-            CardHeaderText(
-              title: 'section_vehicles'.tr,
-              isUrdu: controller.isUrdu,
-              color: Utils.appColor,
-            ),
-            _buildSectionCard([
-              Obx(
-                () => _buildTile(
-                  imagePath: "assets/images/more/vehicle.png",
-                  title: 'my_vehicles'.tr,
-                  subtitle: controller.registeredVehicles.value > 1
-                      ? '${controller.registeredVehicles.value} ${"vehicles_registered".tr}'
-                      : '${controller.registeredVehicles.value} ${"vehicle_registered".tr}',
-                  onTap: () => Get.toNamed(
-                    AppRoutes.VEHICLES_VIEW,
-                    arguments: {"is_from_home": false, "is_from_user": false},
-                  ),
-                ),
-              ),
-              _buildDivider(),
-              _buildTile(
-                imagePath: "assets/images/more/users.png",
-                title: 'users'.tr,
-                subtitle: 'users_sub'.tr,
-                onTap: () {
-                  Get.toNamed(AppRoutes.USER_VIEW, arguments: "");
-                },
-              ),
-              _buildDivider(),
-              _buildTile(
-                imagePath: "assets/images/more/vehicle_user.png",
-                title: 'vehicle_user'.tr,
-                subtitle: 'vehicle_user_sub'.tr,
-                onTap: () {
-                  Get.toNamed(AppRoutes.USER_VEHICLE_VIEW);
-                },
-              ),
-            ]),
+
             CardHeaderText(
               title: 'section_tracking'.tr,
               isUrdu: controller.isUrdu,
@@ -243,58 +200,12 @@ class DriverMoreView extends GetView<DriverMoreController> {
                 },
               ),
             ]),
-            // CardHeaderText(
-            //   title: 'section_tools'.tr,
-            //   isUrdu: controller.isUrdu,
-            //   color: Utils.appColor,
-            // ),
-            // _buildSectionCard([
-            // _buildTile(
-            //   imagePath: "assets/images/more/form.png",
-            //   title: 'forms'.tr,
-            //   subtitle: 'forms_sub'.tr,
-            //   onTap: () {},
-            // ),
-            // _buildDivider(),
-            // _buildTile(
-            //   imagePath: "assets/images/more/my_places.png",
-            //   title: 'my_places'.tr,
-            //   subtitle: 'my_places_sub'.tr,
-            //   onTap: () {},
-            // ),
-            // _buildDivider(),
-            // _buildTile(
-            //   imagePath: "assets/images/more/calculater.png",
-            //   title: 'flex_calculator'.tr,
-            //   subtitle: 'flex_calculator_sub'.tr,
-            //   onTap: () {},
-            // ),
-            // _buildDivider(),
-            // _buildTile(
-            //   imagePath: "assets/images/more/achievements.png",
-            //   title: 'achievements'.tr,
-            //   subtitle: 'achievements_sub'.tr,
-            //   trailingInfo: 'achievements_new'.tr,
-            //   trailingColor: Color(0xFF00796B),
-            //   onTap: () {},
-            //   isBadge: true,
-            // ),
-            // ]),
             CardHeaderText(
               title: 'section_preferences'.tr,
               isUrdu: controller.isUrdu,
               color: Utils.appColor,
             ),
             _buildSectionCard([
-              _buildTile(
-                imagePath: "assets/images/more/setting.png",
-                title: 'settings'.tr,
-                subtitle: 'settings_sub'.tr,
-                onTap: () {
-                  Get.toNamed(AppRoutes.SETTING_VIEW);
-                },
-              ),
-              _buildDivider(),
               _buildTile(
                 imagePath: "assets/images/more/translation.png",
                 title: 'translation'.tr,
