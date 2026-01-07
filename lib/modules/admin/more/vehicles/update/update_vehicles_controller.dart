@@ -77,7 +77,8 @@ class UpdateVehiclesController extends GetxController {
           .then(
             (_) {
               if (appService.currentVehicleId.value == model.id) {
-                appService.setCurrentVehicle(model.name);
+                //appService.vehicleModel.value = model;
+                appService.vehicleModel.value = VehicleModel.fromJson(model.toJson(model.id));
               }
               Get.back(closeOverlays: true);
               Utils.showSnackBar(
@@ -97,6 +98,7 @@ class UpdateVehiclesController extends GetxController {
       manufacturerId = value.id;
       manufacturerController.text = value.name;
       model.manufacturer = value.name;
+      model.logoUrl = value.logoUrl;
     }
   }
 

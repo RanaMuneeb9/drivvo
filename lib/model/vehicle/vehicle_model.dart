@@ -20,6 +20,7 @@ class VehicleModel {
   late String chassisNumber;
   late String identificationNumber;
   late String notes;
+  late String logoUrl;
 
   late int lastOdometer;
   late String driverId;
@@ -46,6 +47,7 @@ class VehicleModel {
     chassisNumber = "";
     identificationNumber = "";
     notes = "";
+    logoUrl = "";
 
     lastOdometer = 0;
     driverId = "";
@@ -73,6 +75,7 @@ class VehicleModel {
     chassisNumber = json["chassis_number"] ?? "";
     identificationNumber = json["identification_number"] ?? "";
     notes = json["notes"] ?? "";
+    logoUrl = json["logo_url"] ?? "";
 
     lastOdometer = json["last_odometer"] ?? 0;
     driverId = json["driver_id"] ?? "";
@@ -125,6 +128,7 @@ class VehicleModel {
       "chassis_number": chassisNumber,
       "identification_number": identificationNumber,
       "notes": notes,
+      "logo_url": logoUrl,
 
       "last_odometer": lastOdometer,
       "driver_id": driverId,

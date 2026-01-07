@@ -29,7 +29,7 @@ class DriverVehiclesController extends GetxController {
   }
 
   Future<void> getBackToHome({required VehicleModel vehicle}) async {
-    await appService.setDriverCurrentVehicle(vehicle.name);
+    appService.driverVehicleModel.value = vehicle;
     await appService.setDriverCurrentVehicleId(vehicle.id);
 
     await appService.getDriverCurrentVehicle();

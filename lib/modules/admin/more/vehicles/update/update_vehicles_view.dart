@@ -1,5 +1,6 @@
 import 'package:drivvo/custom-widget/button/custom_button.dart';
 import 'package:drivvo/custom-widget/common/icon_with_text.dart';
+import 'package:drivvo/custom-widget/common/profile_network_image.dart';
 import 'package:drivvo/custom-widget/reminder/custom_toggle_btn.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
@@ -617,16 +618,29 @@ class UpdateVehiclesView extends GetView<UpdateVehiclesController> {
                                   : Colors.white,
                             ),
                           ),
-                          child: Text(
-                            model.name,
-                            // overflow: TextOverflow.ellipsis,
-                            // maxLines: 2,
-                            style: Utils.getTextStyle(
-                              baseSize: 16,
-                              isBold: false,
-                              color: Colors.black,
-                              isUrdu: controller.isUrdu,
-                            ),
+                          child: Row(
+                            children: [
+                              ProfileNetworkImage(
+                                imageUrl: model.logoUrl,
+                                width: 50,
+                                height: 30,
+                                borderRadius: 0,
+                                placeholder:
+                                    "assets/images/car_placeholder.png",
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                model.name,
+                                // overflow: TextOverflow.ellipsis,
+                                // maxLines: 2,
+                                style: Utils.getTextStyle(
+                                  baseSize: 16,
+                                  isBold: false,
+                                  color: Colors.black,
+                                  isUrdu: controller.isUrdu,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       );

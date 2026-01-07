@@ -1,5 +1,6 @@
 import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/custom-widget/common/error_refresh_view.dart';
+import 'package:drivvo/custom-widget/common/profile_network_image.dart';
 import 'package:drivvo/custom-widget/common/refresh_indicator_view.dart';
 import 'package:drivvo/custom-widget/text-input-field/search_text_input_field.dart';
 import 'package:drivvo/modules/admin/more/vehicles/vehicles_controller.dart';
@@ -127,15 +128,13 @@ class VehiclesView extends GetView<VehiclesController> {
                               ),
                               child: Row(
                                 children: [
-                                  Image.asset(
-                                    "assets/images/more/vehicle.png",
-                                    height: 36,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Icon(
-                                        Icons.directions_car,
-                                        size: 36,
-                                      );
-                                    },
+                                  ProfileNetworkImage(
+                                    imageUrl: model.logoUrl,
+                                    width: 50,
+                                    height: 30,
+                                    borderRadius: 0,
+                                    placeholder:
+                                        "assets/images/car_placeholder.png",
                                   ),
                                   SizedBox(width: 10),
                                   Expanded(

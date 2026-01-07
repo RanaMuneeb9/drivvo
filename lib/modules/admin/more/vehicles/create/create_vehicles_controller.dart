@@ -68,7 +68,7 @@ class CreateVehiclesController extends GetxController {
 
         if (isFromImportdata.value) {
           Get.offAllNamed(AppRoutes.ADMIN_ROOT_VIEW);
-          appService.setCurrentVehicle(model.name);
+          appService.vehicleModel.value = model;
           appService.setCurrentVehicleId(id);
           return;
         }
@@ -92,6 +92,7 @@ class CreateVehiclesController extends GetxController {
       manufacturerId = value.id;
       manufacturerController.text = value.name;
       model.manufacturer = value.name;
+      model.logoUrl = value.logoUrl;
     }
   }
 

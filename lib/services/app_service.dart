@@ -29,10 +29,8 @@ class AppService extends GetxService {
   bool importData = false;
 
   var currentVehicleId = "".obs;
-  var currentVehicle = "".obs;
 
   var driverCurrentVehicleId = "".obs;
-  var driverCurrentVehicle = "".obs;
 
   var refuelingFilter = true.obs;
   var expenseFilter = true.obs;
@@ -72,19 +70,6 @@ class AppService extends GetxService {
   Future<void> onInit() async {
     super.onInit();
 
-    currentVehicleId.value =
-        _box.read<String>(Constants.CURRENT_VEHICLE_ID) ?? "";
-    selectedDateFormat.value =
-        _box.read<String>(Constants.DATE_FORMAT) ?? "dd MMM yyyy";
-    fuelUnit.value = _box.read<String>(Constants.FUEL_UNIT) ?? "Liter (L)";
-    gasUnit.value = _box.read<String>(Constants.GAS_UNIT) ?? "m³";
-    currentVehicle.value = _box.read<String>(Constants.CURRENT_VEHICLE) ?? "";
-
-    driverCurrentVehicleId.value =
-        _box.read<String>(Constants.DRIVER_CURRENT_VEHICLE_ID) ?? "";
-    driverCurrentVehicle.value =
-        _box.read<String>(Constants.DRIVER_CURRENT_VEHICLE) ?? "";
-
     onBoarding = _box.read<bool>(Constants.ONBOARDING) ?? false;
     importData = _box.read<bool>(Constants.IMPORT_DATA) ?? false;
 
@@ -93,6 +78,16 @@ class AppService extends GetxService {
     incomeFilter.value = _box.read<bool>(Constants.INCOME_FILTER) ?? true;
     serviceFilter.value = _box.read<bool>(Constants.SERVICE_FILTER) ?? true;
     routeFilter.value = _box.read<bool>(Constants.ROUTE_FILTER) ?? true;
+
+    currentVehicleId.value =
+        _box.read<String>(Constants.CURRENT_VEHICLE_ID) ?? "";
+    driverCurrentVehicleId.value =
+        _box.read<String>(Constants.DRIVER_CURRENT_VEHICLE_ID) ?? "";
+
+    selectedDateFormat.value =
+        _box.read<String>(Constants.DATE_FORMAT) ?? "dd MMM yyyy";
+    fuelUnit.value = _box.read<String>(Constants.FUEL_UNIT) ?? "Liter (L)";
+    gasUnit.value = _box.read<String>(Constants.GAS_UNIT) ?? "m³";
 
     // Load saved currency format
     selectedCurrencySymbol.value =
@@ -368,21 +363,11 @@ class AppService extends GetxService {
     await _box.write(Constants.CURRENT_VEHICLE_ID, id);
   }
 
-  Future<void> setCurrentVehicle(String name) async {
-    currentVehicle.value = name;
-    await _box.write(Constants.CURRENT_VEHICLE, name);
-  }
-
   Future<void> setDriverCurrentVehicleId(String id) async {
     driverCurrentVehicleId.value = id;
     await _box.write(Constants.DRIVER_CURRENT_VEHICLE_ID, id);
   }
-
-  Future<void> setDriverCurrentVehicle(String name) async {
-    driverCurrentVehicle.value = name;
-    await _box.write(Constants.DRIVER_CURRENT_VEHICLE, name);
-  }
-
+  
   Future<void> setOnboarding({required bool value}) async {
     onBoarding = value;
     await _box.write(Constants.ONBOARDING, value);

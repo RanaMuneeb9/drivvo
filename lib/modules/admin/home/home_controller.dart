@@ -2,7 +2,6 @@ import 'package:circular_menu/circular_menu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/timeline_entry.dart';
 import 'package:drivvo/model/vehicle/vehicle_model.dart';
-import 'package:drivvo/modules/admin/reports/reports_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
@@ -326,13 +325,6 @@ class HomeController extends GetxController {
         });
       });
 
-      // Future.delayed(Duration(milliseconds: 2000), () async {
-      //   await loadTimelineData();
-      // });
-
-      if (Get.isRegistered<ReportsController>()) {
-        await Get.find<ReportsController>().calculateAllReports();
-      }
       Get.back(closeOverlays: true);
       Utils.showSnackBar(message: "entry_deleted".tr, success: true);
     } on FirebaseException catch (e) {

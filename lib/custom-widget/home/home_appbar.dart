@@ -1,3 +1,4 @@
+import 'package:drivvo/custom-widget/common/profile_network_image.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class HomeAppbar extends StatelessWidget {
   final int disabledFilterCount;
   final String currentVehicleId;
   final String currentVehicle;
+  final String logoUrl;
   final int lastOdometer;
 
   const HomeAppbar({
@@ -20,6 +22,7 @@ class HomeAppbar extends StatelessWidget {
     required this.disabledFilterCount,
     required this.currentVehicleId,
     required this.currentVehicle,
+    required this.logoUrl,
     required this.lastOdometer,
   });
 
@@ -127,16 +130,6 @@ class HomeAppbar extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Text(
-                  //   'ready_to_start_add_first_entry'.tr,
-                  //   style: Utils.getTextStyle(
-                  //     baseSize: 13,
-                  //     isBold: false,
-                  //     color: Colors.white70,
-                  //     isUrdu: controller.isUrdu,
-                  //   ),
-                  // ),
-                  // const Spacer(),
                   //!Current Vehicle Card
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -156,18 +149,12 @@ class HomeAppbar extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        // Vehicle Icon
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Utils.appColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.directions_car,
-                            color: Colors.white,
-                            size: 22,
-                          ),
+                        ProfileNetworkImage(
+                          imageUrl: logoUrl,
+                          width: 50,
+                          height: 30,
+                          borderRadius: 0,
+                          placeholder: "assets/images/car_placeholder.png",
                         ),
                         const SizedBox(width: 14),
 
