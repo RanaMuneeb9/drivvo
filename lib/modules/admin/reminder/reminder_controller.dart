@@ -7,6 +7,7 @@ import 'package:drivvo/services/notification_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
 import 'package:drivvo/utils/utils.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ReminderController extends GetxController {
@@ -17,7 +18,8 @@ class ReminderController extends GetxController {
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   StreamSubscription? _subscription;
-  bool isFirstTime = true;
+  bool _isFirstTime = true;
+  bool _isSchedulingReminders = false; // Guard to prevent concurrent scheduling
 
   @override
   void onInit() {
@@ -31,11 +33,15 @@ class ReminderController extends GetxController {
   @override
   void onClose() {
     _subscription?.cancel();
+    _subscription = null;
+    _isSchedulingReminders = false;
     super.onClose();
   }
 
   Future<void> getReminders() async {
-    _subscription?.cancel();
+    // Cancel existing subscription before creating new one
+    await _subscription?.cancel();
+    _subscription = null;
 
     isLoading.value = true;
 
@@ -45,25 +51,57 @@ class ReminderController extends GetxController {
           .doc(appService.appUser.value.id)
           .collection(DatabaseTables.REMINDER)
           .snapshots()
-          .listen((docSnapshot) {
-            if (docSnapshot.docs.isNotEmpty) {
-              reminderList.value = docSnapshot.docs.map((doc) {
-                return ReminderModel.fromJson(doc.data());
-              }).toList();
+          .listen(
+            (docSnapshot) async {
+              try {
+                if (docSnapshot.docs.isNotEmpty) {
+                  reminderList.value = docSnapshot.docs.map((doc) {
+                    return ReminderModel.fromJson(doc.data());
+                  }).toList();
 
-              if (isFirstTime && reminderList.isNotEmpty) {
-                NotificationService().scheduleReminders(
-                  reminders: reminderList,
-                );
-                isFirstTime = false;
+                  // Atomic check-and-set to prevent race condition
+                  // Use local variable to capture the flag state atomically
+                  final shouldSchedule =
+                      _isFirstTime && !_isSchedulingReminders;
+
+                  if (shouldSchedule && reminderList.isNotEmpty) {
+                    // Set flag immediately to prevent concurrent execution
+                    _isSchedulingReminders = true;
+                    _isFirstTime = false;
+
+                    try {
+                      await NotificationService().scheduleReminders(
+                        reminders: reminderList,
+                      );
+                    } catch (e) {
+                      debugPrint('Error scheduling reminders: $e');
+                      // Reset flag on error so it can be retried
+                      _isFirstTime = true;
+                    } finally {
+                      _isSchedulingReminders = false;
+                    }
+                  }
+                }
+                isLoading.value = false;
+              } catch (e) {
+                debugPrint('Error processing reminder snapshot: $e');
+                isLoading.value = false;
               }
+            },
+            onError: (e) {
+              debugPrint('Reminder stream error: $e');
+              _subscription?.cancel();
+              _subscription = null;
               isLoading.value = false;
-            }
-            isLoading.value = false;
-          });
+            },
+            cancelOnError: false,
+          );
     } catch (e) {
       isLoading.value = false;
       Utils.showSnackBar(message: "something_went_wrong".tr, success: false);
+      // Ensure subscription is canceled on exception
+      await _subscription?.cancel();
+      _subscription = null;
     }
   }
 

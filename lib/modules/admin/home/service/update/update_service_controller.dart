@@ -197,27 +197,27 @@ class UpdateServiceController extends GetxController {
             ? appService.currentVehicleId.value
             : appService.driverCurrentVehicleId.value;
 
-        final batch = FirebaseFirestore.instance.batch();
-
         final vehicleRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(adminId)
             .collection(DatabaseTables.VEHICLES)
             .doc(vehicleId);
 
-        batch.set(vehicleRef, {
-          'service_list': FieldValue.arrayRemove([oldServiceMap]),
-        }, SetOptions(merge: true));
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          transaction.update(vehicleRef, {
+            'service_list': FieldValue.arrayRemove([oldServiceMap]),
+          });
 
-        batch.set(vehicleRef, {
-          'service_list': FieldValue.arrayUnion([newServiceMap]),
-        }, SetOptions(merge: true));
+          transaction.update(vehicleRef, {
+            'service_list': FieldValue.arrayUnion([newServiceMap]),
+          });
 
-        if (model.value.odometer >= lastOdometer.value) {
-          batch.update(vehicleRef, {"last_odometer": model.value.odometer});
-        }
-
-        await batch.commit();
+          if (model.value.odometer >= lastOdometer.value) {
+            transaction.update(vehicleRef, {
+              "last_odometer": model.value.odometer,
+            });
+          }
+        });
 
         await Utils.loadHomeAndReportData(snakBarMsg: "service_updated".tr);
       } on FirebaseException catch (e) {

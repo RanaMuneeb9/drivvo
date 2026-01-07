@@ -109,8 +109,7 @@ class Utils {
   }) async {
     final appService = Get.find<AppService>();
 
-    if (appService.appUser.value.userType.toLowerCase() ==
-        Constants.ADMIN.toLowerCase()) {
+    if (appService.appUser.value.userType == Constants.ADMIN) {
       if (Get.isRegistered<HomeController>()) {
         await Get.find<HomeController>().loadTimelineData();
       }
@@ -251,6 +250,32 @@ class Utils {
       return "";
     }
 
+    // TOCTOU fix: Verify file exists and get file reference atomically
+    final file = File(filePath);
+    if (!await file.exists()) {
+      debugPrint('Upload failed: File does not exist at path: $filePath');
+      Utils.showSnackBar(message: "file_not_found", success: false);
+      return "";
+    }
+
+    // Validate file size (max 10MB)
+    const maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+    try {
+      final fileSize = await file.length();
+      if (fileSize > maxFileSize) {
+        Utils.showSnackBar(message: "file_too_large".tr, success: false);
+        return "";
+      }
+      if (fileSize == 0) {
+        Utils.showSnackBar(message: "file_empty", success: false);
+        return "";
+      }
+    } catch (e) {
+      debugPrint('Error checking file size: $e');
+      Utils.showSnackBar(message: "file_read_error", success: false);
+      return "";
+    }
+
     String getContentType(String path) {
       final extension = path.toLowerCase().split('.').last;
       switch (extension) {
@@ -277,19 +302,34 @@ class Utils {
     final extension = filePath.split('.').last;
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final uniqueFileName = '$timestamp.$extension';
+
     try {
+      // Re-check file exists right before upload to prevent TOCTOU
+      if (!await file.exists()) {
+        debugPrint('Upload failed: File was deleted before upload: $filePath');
+        Utils.showSnackBar(message: "file_not_found", success: false);
+        return "";
+      }
+
       final snapshot = await FirebaseStorage.instance
           .ref()
           .child(collectionPath)
-          //.child(filePath)
           .child(uniqueFileName)
-          .putFile(File(filePath), metadata);
+          .putFile(file, metadata);
 
       final url = await snapshot.ref.getDownloadURL();
       if (url.isNotEmpty) {
+        // Clean up temporary file after successful upload
+        // Only delete if it's a temporary/cropped file (contains typical temp paths)
+        await _cleanupTempFile(filePath);
         return url;
       }
+    } on FirebaseException catch (error) {
+      debugPrint('Firebase upload error: ${error.code} - ${error.message}');
+      Utils.showSnackBar(message: "image_upload_failed", success: false);
+      return "";
     } catch (error) {
+      debugPrint('Upload error: $error');
       Utils.showSnackBar(message: "image_upload_failed", success: false);
       return "";
     }
@@ -297,10 +337,48 @@ class Utils {
     return "";
   }
 
+  /// Clean up temporary file if it's a temporary/cropped file
+  static Future<void> _cleanupTempFile(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (await file.exists()) {
+        // Check if it's a temporary file (cropped images are typically in temp directories)
+        final path = filePath.toLowerCase();
+        final isTempFile =
+            path.contains('cache') ||
+            path.contains('temp') ||
+            path.contains('cropped') ||
+            path.contains('image_picker');
+
+        if (isTempFile) {
+          await file.delete();
+          debugPrint('Cleaned up temporary file: $filePath');
+        }
+      }
+    } catch (e) {
+      // Silently fail cleanup - file may already be deleted or in use
+      debugPrint('Error cleaning up temp file: $e');
+    }
+  }
+
   // !Format date as "dd MMM" (e.g., "17 Dec")
   // static String formatAccountDate(DateTime date) {
   //   return DateFormat("dd MMM").format(date).toLowerCase();
   // }
+
+  static Future<void> cleanupFile(String? filePath) async {
+    if (filePath == null || filePath.isEmpty) return;
+
+    try {
+      final file = File(filePath);
+      if (await file.exists()) {
+        await file.delete();
+        debugPrint('Cleaned up file: $filePath');
+      }
+    } catch (e) {
+      debugPrint('Error cleaning up file: $e');
+    }
+  }
 
   static void showProgressDialog() {
     Get.dialog(
@@ -347,6 +425,22 @@ class Utils {
   }) async {
     if (pickedFile != null) {
       try {
+        // TOCTOU fix: Verify file exists before cropping
+        final file = File(pickedFile.path);
+        if (!await file.exists()) {
+          debugPrint('File does not exist: ${pickedFile.path}');
+          Utils.showSnackBar(message: "file_not_found", success: false);
+          return;
+        }
+
+        // Validate file size before cropping
+        const maxFileSize = 10 * 1024 * 1024; // 10MB
+        final fileSize = await file.length();
+        if (fileSize > maxFileSize) {
+          Utils.showSnackBar(message: "file_too_large".tr, success: false);
+          return;
+        }
+
         CroppedFile? croppedFile = await ImageCropper().cropImage(
           sourcePath: pickedFile.path,
           aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
@@ -368,10 +462,18 @@ class Utils {
           ],
         );
         if (croppedFile != null) {
-          onTap(croppedFile.path);
+          // Verify cropped file exists before using it
+          final croppedFileExists = await File(croppedFile.path).exists();
+          if (croppedFileExists) {
+            onTap(croppedFile.path);
+          } else {
+            debugPrint('Cropped file does not exist: ${croppedFile.path}');
+            Utils.showSnackBar(message: "file_not_found", success: false);
+          }
         }
       } catch (e) {
-        debugPrint(e.toString());
+        debugPrint('Error in onPickedFile: $e');
+        Utils.showSnackBar(message: "file_processing_error", success: false);
       }
     }
   }

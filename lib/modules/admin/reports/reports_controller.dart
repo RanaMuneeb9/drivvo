@@ -20,7 +20,7 @@ class ReportsController extends GetxController
   var selectedName = "General".obs;
 
   // Date range
-  var startDate = DateTime.now().subtract(const Duration(days: 5)).obs;
+  var startDate = DateTime.now().obs;
   var endDate = DateTime.now().obs;
 
   // General Tab Calculations

@@ -204,7 +204,6 @@ class UpdateExpenseController extends GetxController {
         final vehicleId = isAdmin
             ? appService.currentVehicleId.value
             : appService.driverCurrentVehicleId.value;
-        final batch = FirebaseFirestore.instance.batch();
 
         final vehicleRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
@@ -216,24 +215,25 @@ class UpdateExpenseController extends GetxController {
             .collection(DatabaseTables.USER_PROFILE)
             .doc(appService.appUser.value.id);
 
-        // Single atomic operation
-        batch.set(vehicleRef, {
-          'expense_list': FieldValue.arrayRemove([oldExpenseMap]),
-        }, SetOptions(merge: true));
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          transaction.update(vehicleRef, {
+            'expense_list': FieldValue.arrayRemove([oldExpenseMap]),
+          });
 
-        batch.set(vehicleRef, {
-          'expense_list': FieldValue.arrayUnion([newExpenseMap]),
-        }, SetOptions(merge: true));
+          transaction.update(vehicleRef, {
+            'expense_list': FieldValue.arrayUnion([newExpenseMap]),
+          });
 
-        if (model.value.odometer >= lastOdometer.value) {
-          batch.update(vehicleRef, {"last_odometer": model.value.odometer});
-        }
+          if (model.value.odometer >= lastOdometer.value) {
+            transaction.update(vehicleRef, {
+              "last_odometer": model.value.odometer,
+            });
+          }
 
-        batch.set(userRef, {
-          "last_record": lastRecordMap,
-        }, SetOptions(merge: true));
-
-        await batch.commit();
+          transaction.set(userRef, {
+            "last_record": lastRecordMap,
+          }, SetOptions(merge: true));
+        });
 
         await Utils.loadHomeAndReportData(snakBarMsg: "expense_updated".tr);
       } on FirebaseException catch (e) {

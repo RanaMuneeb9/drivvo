@@ -132,7 +132,12 @@ class UpdateServiceView extends GetView<UpdateServiceController> {
                       onTap: () {},
                       onSaved: (value) {
                         if (value != null) {
-                          controller.model.value.odometer = int.parse(value);
+                          final odometer = int.tryParse(
+                            value.replaceAll(',', ''),
+                          );
+                          if (odometer != null) {
+                            controller.model.value.odometer = odometer;
+                          }
                         }
                       },
                       onValidate: (value) {

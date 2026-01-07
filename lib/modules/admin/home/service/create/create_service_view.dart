@@ -131,8 +131,13 @@ class CreateServiceView extends GetView<CreateServiceController> {
                       type: TextInputType.number,
                       onTap: () {},
                       onSaved: (value) {
-                        if (value != null) {
-                          controller.model.value.odometer = int.parse(value);
+                        if (value != null && value.isNotEmpty) {
+                          final odometer = int.tryParse(
+                            value.replaceAll(',', ''),
+                          );
+                          if (odometer != null) {
+                            controller.model.value.odometer = odometer;
+                          }
                         }
                       },
                       onValidate: (value) {
@@ -375,7 +380,7 @@ class CreateServiceView extends GetView<CreateServiceController> {
                     onValidate: (value) => null,
                   ),
                   const SizedBox(height: 16),
-                 CardTextInputField(
+                  CardTextInputField(
                     isUrdu: controller.isUrdu,
                     isRequired: false,
                     isNext: true,
@@ -387,7 +392,7 @@ class CreateServiceView extends GetView<CreateServiceController> {
                     sufixIcon: Icon(Icons.keyboard_arrow_down),
                     onTap: () {
                       controller.appService.appUser.value.isSubscribed
-                          ?  Get.toNamed(
+                          ? Get.toNamed(
                               AppRoutes.USER_VIEW,
                               arguments: controller.driverController.text,
                             )?.then((e) {

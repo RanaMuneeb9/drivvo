@@ -41,6 +41,7 @@ class AppService extends GetxService {
   StreamSubscription? _userSubscription;
   StreamSubscription? _vehicleSubscription;
   StreamSubscription? _driverVehicleSubscription;
+  bool _isInitializingSubscriptions = false;
 
   String _languageCode = "";
   String _countryCode = "";
@@ -127,16 +128,27 @@ class AppService extends GetxService {
   }
 
   Future<void> getUserProfile() async {
+    // Prevent concurrent initialization
+    if (_isInitializingSubscriptions) {
+      debugPrint("getUserProfile: Already initializing, skipping");
+      return;
+    }
+
     try {
+      _isInitializingSubscriptions = true;
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
+        _isInitializingSubscriptions = false;
         return;
       }
 
-      _userSubscription?.cancel();
+      // Cancel existing subscription before creating new one to prevent leaks
+      await _userSubscription?.cancel();
+      _userSubscription = null;
 
       final completer = Completer<void>();
       bool isFirst = true;
+      bool isCompleted = false;
 
       _userSubscription = db
           .collection(DatabaseTables.USER_PROFILE)
@@ -144,40 +156,62 @@ class AppService extends GetxService {
           .snapshots()
           .listen(
             (docSnapshot) {
-              if (docSnapshot.exists) {
-                Map<String, dynamic>? data = docSnapshot.data();
-                if (data != null) {
-                  final userData = AppUser.fromJson(data);
-                  setProfile(userData);
+              try {
+                if (docSnapshot.exists) {
+                  Map<String, dynamic>? data = docSnapshot.data();
+                  if (data != null) {
+                    final userData = AppUser.fromJson(data);
+                    setProfile(userData);
+                  }
                 }
-              }
-              if (isFirst) {
-                isFirst = false;
-                completer.complete();
+                if (isFirst && !isCompleted) {
+                  isFirst = false;
+                  isCompleted = true;
+                  completer.complete();
+                  _isInitializingSubscriptions = false;
+                }
+              } catch (e) {
+                debugPrint("Error processing user profile snapshot: $e");
               }
             },
             onError: (e) {
-              debugPrint("getUserProfile error: $e");
-              if (isFirst) {
+              debugPrint("getUserProfile stream error: $e");
+              // Cancel subscription on error to prevent memory leaks
+              _userSubscription?.cancel();
+              _userSubscription = null;
+              _isInitializingSubscriptions = false;
+              if (isFirst && !isCompleted) {
                 isFirst = false;
+                isCompleted = true;
                 completer.completeError(e);
               }
             },
+            cancelOnError: false, // We handle cancellation manually
           );
 
       return completer.future;
     } catch (e) {
+      _isInitializingSubscriptions = false;
       debugPrint("getUserProfile error: $e");
+      // Ensure subscription is canceled on exception
+      await _userSubscription?.cancel();
+      _userSubscription = null;
+      rethrow;
     }
   }
 
   Future<void> getCurrentVehicle() async {
     try {
       if (currentVehicleId.value.isEmpty || appUser.value.id.isEmpty) {
+        // Cancel subscription if conditions not met
+        await _vehicleSubscription?.cancel();
+        _vehicleSubscription = null;
         return;
       }
 
-      _vehicleSubscription?.cancel();
+      // Cancel existing subscription before creating new one
+      await _vehicleSubscription?.cancel();
+      _vehicleSubscription = null;
 
       _vehicleSubscription = db
           .collection(DatabaseTables.USER_PROFILE)
@@ -187,22 +221,33 @@ class AppService extends GetxService {
           .snapshots()
           .listen(
             (docSnapshot) async {
-              if (docSnapshot.exists) {
-                Map<String, dynamic>? data = docSnapshot.data();
-                if (data != null) {
-                  final vehicle = VehicleModel.fromJson(data);
-                  await setVehicle(vehicle);
+              try {
+                if (docSnapshot.exists) {
+                  Map<String, dynamic>? data = docSnapshot.data();
+                  if (data != null) {
+                    final vehicle = VehicleModel.fromJson(data);
+                    await setVehicle(vehicle);
+                  }
                 }
+              } catch (e) {
+                debugPrint("Error processing vehicle snapshot: $e");
               }
             },
             onError: (e) {
-              debugPrint("getCurrentVehicle  error: $e");
+              debugPrint("getCurrentVehicle stream error: $e");
+              // Cancel subscription on error to prevent memory leaks
+              _vehicleSubscription?.cancel();
+              _vehicleSubscription = null;
             },
+            cancelOnError: false, // We handle cancellation manually
           );
 
       return;
     } catch (e) {
-      debugPrint("getCurrentVehicle  error: $e");
+      debugPrint("getCurrentVehicle error: $e");
+      // Ensure subscription is canceled on exception
+      await _vehicleSubscription?.cancel();
+      _vehicleSubscription = null;
     }
   }
 
@@ -210,10 +255,15 @@ class AppService extends GetxService {
     try {
       if (driverCurrentVehicleId.value.isEmpty ||
           appUser.value.adminId.isEmpty) {
+        // Cancel subscription if conditions not met
+        await _driverVehicleSubscription?.cancel();
+        _driverVehicleSubscription = null;
         return;
       }
 
-      _driverVehicleSubscription?.cancel();
+      // Cancel existing subscription before creating new one
+      await _driverVehicleSubscription?.cancel();
+      _driverVehicleSubscription = null;
 
       _driverVehicleSubscription = db
           .collection(DatabaseTables.USER_PROFILE)
@@ -223,22 +273,33 @@ class AppService extends GetxService {
           .snapshots()
           .listen(
             (docSnapshot) async {
-              if (docSnapshot.exists) {
-                Map<String, dynamic>? data = docSnapshot.data();
-                if (data != null) {
-                  final vehicle = VehicleModel.fromJson(data);
-                  await setDriverVehicle(vehicle);
+              try {
+                if (docSnapshot.exists) {
+                  Map<String, dynamic>? data = docSnapshot.data();
+                  if (data != null) {
+                    final vehicle = VehicleModel.fromJson(data);
+                    await setDriverVehicle(vehicle);
+                  }
                 }
+              } catch (e) {
+                debugPrint("Error processing driver vehicle snapshot: $e");
               }
             },
             onError: (e) {
-              debugPrint("getDriverCurrentVehicle error: $e");
+              debugPrint("getDriverCurrentVehicle stream error: $e");
+              // Cancel subscription on error to prevent memory leaks
+              _driverVehicleSubscription?.cancel();
+              _driverVehicleSubscription = null;
             },
+            cancelOnError: false, // We handle cancellation manually
           );
 
       return;
     } catch (e) {
       debugPrint("getDriverCurrentVehicle error: $e");
+      // Ensure subscription is canceled on exception
+      await _driverVehicleSubscription?.cancel();
+      _driverVehicleSubscription = null;
     }
   }
 
@@ -379,9 +440,14 @@ class AppService extends GetxService {
 
   @override
   void onClose() {
+    // Ensure all subscriptions are properly canceled
     _userSubscription?.cancel();
+    _userSubscription = null;
     _vehicleSubscription?.cancel();
+    _vehicleSubscription = null;
     _driverVehicleSubscription?.cancel();
+    _driverVehicleSubscription = null;
+    _isInitializingSubscriptions = false;
     super.onClose();
   }
 }

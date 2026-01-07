@@ -225,6 +225,12 @@ class UpdateRouteController extends GetxController {
             : appService.appUser.value.id,
       };
 
+      final cc = int.tryParse(finalOdometerController.text.trim());
+      if (cc == null) {
+        return;
+      }
+      model.value.finalOdometer = cc;
+
       try {
         final adminId = isAdmin
             ? appService.appUser.value.id
@@ -234,30 +240,27 @@ class UpdateRouteController extends GetxController {
             ? appService.currentVehicleId.value
             : appService.driverCurrentVehicleId.value;
 
-        final batch = FirebaseFirestore.instance.batch();
-
         final vehicleRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(adminId)
             .collection(DatabaseTables.VEHICLES)
             .doc(vehicleId);
 
-        // Single atomic operation
-        batch.set(vehicleRef, {
-          'route_list': FieldValue.arrayRemove([oldRouteMap]),
-        }, SetOptions(merge: true));
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          transaction.update(vehicleRef, {
+            'route_list': FieldValue.arrayRemove([oldRouteMap]),
+          });
 
-        batch.set(vehicleRef, {
-          'route_list': FieldValue.arrayUnion([newRouteMap]),
-        }, SetOptions(merge: true));
+          transaction.update(vehicleRef, {
+            'route_list': FieldValue.arrayUnion([newRouteMap]),
+          });
 
-        if (model.value.finalOdometer >= lastOdometer.value) {
-          batch.set(vehicleRef, {
-            "last_odometer": model.value.finalOdometer,
-          }, SetOptions(merge: true));
-        }
-
-        await batch.commit();
+          if (model.value.finalOdometer >= lastOdometer.value) {
+            transaction.update(vehicleRef, {
+              "last_odometer": model.value.finalOdometer,
+            });
+          }
+        });
 
         await Utils.loadHomeAndReportData(snakBarMsg: "route_updated".tr);
       } on FirebaseException catch (e) {

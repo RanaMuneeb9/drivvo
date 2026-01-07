@@ -324,8 +324,13 @@ class CreateReminderView extends GetView<CreateReminderController> {
                       type: TextInputType.number,
                       onTap: () {},
                       onSaved: (value) {
-                        if (value != null) {
-                          controller.model.value.odometer = int.parse(value);
+                        if (value != null && value.isNotEmpty) {
+                          final odometer = int.tryParse(
+                            value.replaceAll(',', ''),
+                          );
+                          if (odometer != null) {
+                            controller.model.value.odometer = odometer;
+                          }
                         }
                       },
                       onValidate: (value) {

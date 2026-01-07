@@ -96,7 +96,7 @@ class CreateRefuelingController extends GetxController {
     final price = int.tryParse(value.replaceAll(',', ''));
     if (price == null) return;
 
-    model.value.price = int.parse(value);
+    model.value.price = price;
     updateManualEdit('price');
     calculateThirdValue();
   }
@@ -122,10 +122,11 @@ class CreateRefuelingController extends GetxController {
       model.value.liter = 0;
       return;
     }
-    final liter = double.tryParse(value.replaceAll(',', ''));
+    final sanitizedValue = value.replaceAll(',', '');
+    final liter = double.tryParse(sanitizedValue);
     if (liter == null) return;
 
-    model.value.liter = int.parse(value);
+    model.value.liter = liter.toInt();
     updateManualEdit('liter');
     calculateThirdValue();
   }
@@ -256,9 +257,19 @@ class CreateRefuelingController extends GetxController {
         }
       }
 
-      double liter = double.parse(litersController.text);
-      double price = double.parse(priceController.text);
-      double totalCost = double.parse(totalCostController.text);
+      final sanitizedLiter = litersController.text.replaceAll(',', '');
+      final sanitizedPrice = priceController.text.replaceAll(',', '');
+      final sanitizedTotalCost = totalCostController.text.replaceAll(',', '');
+
+      final liter = double.tryParse(sanitizedLiter);
+      final price = double.tryParse(sanitizedPrice);
+      final totalCost = double.tryParse(sanitizedTotalCost);
+
+      if (liter == null || price == null || totalCost == null) {
+        if (Get.isDialogOpen == true) Get.back();
+        Utils.showSnackBar(message: "invalid_values".tr, success: false);
+        return;
+      }
 
       final map = {
         "id": appService.appUser.value.id,

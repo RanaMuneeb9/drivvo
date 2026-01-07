@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:drivvo/model/reminder/reminder_model.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
-import 'package:intl/intl.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -13,6 +14,10 @@ class NotificationService {
 
   bool _initialized = false;
   bool get isInitialized => _initialized;
+
+  // Mutex/lock to prevent concurrent scheduling
+  bool _isScheduling = false;
+  Completer<void>? _schedulingCompleter;
 
   Future<void> init() async {
     if (_initialized) return;
@@ -76,8 +81,18 @@ class NotificationService {
     final parts = tim.split(' ');
     final timeParts = parts[0].split(':');
 
-    int hour = int.parse(timeParts[0]);
-    int minute = int.parse(timeParts[1]);
+    if (timeParts.length < 2) {
+      debugPrint('Invalid time format: $tim');
+      return;
+    }
+
+    final hour = int.tryParse(timeParts[0]);
+    final minute = int.tryParse(timeParts[1]);
+
+    if (hour == null || minute == null) {
+      debugPrint('Failed to parse time: $tim');
+      return;
+    }
 
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
@@ -105,108 +120,116 @@ class NotificationService {
   Future<void> scheduleReminders({
     required List<ReminderModel> reminders,
   }) async {
-    await cancelAll();
-    debugPrint("Cancelled previous notifications");
+    // Mutex: Wait if already scheduling
+    if (_isScheduling) {
+      debugPrint("Schedule reminders already in progress, waiting...");
+      if (_schedulingCompleter != null) {
+        await _schedulingCompleter!.future;
+      }
+      // After waiting, check if we should proceed or skip
+      // If still scheduling, this call is redundant
+      if (_isScheduling) {
+        debugPrint("Skipping duplicate schedule request");
+        return;
+      }
+    }
 
-    int id = 100; // starting ID
+    // Acquire lock
+    _isScheduling = true;
+    _schedulingCompleter = Completer<void>();
 
-    for (var reminder in reminders) {
-      // We expect ReminderModel but use dynamic to avoid circular dependency if any,
-      // or just import it if it's safe. In this project it seems safe.
+    try {
+      await cancelAll();
+      debugPrint("Cancelled previous notifications");
 
-      final bool isOneTime = reminder.oneTime;
+      int id = 100; // starting ID
 
-      if (isOneTime) {
-        final time = reminder.startDate;
-        if (time.isAfter(DateTime.now())) {
-          await scheduleNotification(
-            id: id++,
-            title: "Reminder",
-            body: "${reminder.subType} Reminder",
-            time: time,
-          );
-        }
-      } else {
-        // Daily reminder
-        final startDate = reminder.startDate;
-        final endDate = reminder.endDate;
+      for (var reminder in reminders) {
+        // We expect ReminderModel but use dynamic to avoid circular dependency if any,
+        // or just import it if it's safe. In this project it seems safe.
 
-        final subType = reminder.subType;
-        final period = reminder.period;
+        final bool isOneTime = reminder.oneTime;
 
-        //!final dateList = Utils.getDatesBetween(start: startDate, end: endDate);
-        final months = Utils.getMonthsBetween(startDate, endDate);
-
-        if (period == "day") {
-          //! for (var date in dateList) {}
-          final appService = Get.find<AppService>();
-
-          final tim = appService.appUser.value.notificationTime;
-
-          final parts = tim.split(' ');
-          final timeParts = parts[0].split(':');
-
-          if (timeParts.length < 2) {
-            throw FormatException('Invalid time format');
-          }
-
-          int hour = int.parse(timeParts[0]);
-          int minute = int.parse(timeParts[1]);
-
-          await scheduleDailyReminder(
-            id: id++,
-            title: "Reminder",
-            body: "$subType Reminder",
-            hour: hour,
-            minute: minute,
-          );
-          continue;
-        } else {
-          for (var e in months) {
-            final int year = e['year']!;
-            final int month = e['month']!;
-
-            // Use day = 1 and time = 12:00 PM (safe for all months)
-            final DateTime time = DateTime(year, month, 1, 12);
-
+        if (isOneTime) {
+          final time = reminder.startDate;
+          if (time.isAfter(DateTime.now())) {
             await scheduleNotification(
               id: id++,
               title: "Reminder",
-              body: "$subType Reminder",
+              body: "${reminder.subType} Reminder",
               time: time,
             );
           }
-          continue;
+        } else {
+          // Daily reminder
+          final startDate = reminder.startDate;
+          final endDate = reminder.endDate;
+
+          final subType = reminder.subType;
+          final period = reminder.period;
+
+          //!final dateList = Utils.getDatesBetween(start: startDate, end: endDate);
+          final months = Utils.getMonthsBetween(startDate, endDate);
+
+          if (period == "day") {
+            //! for (var date in dateList) {}
+            final appService = Get.find<AppService>();
+
+            final tim = appService.appUser.value.notificationTime;
+
+            final parts = tim.split(' ');
+            final timeParts = parts[0].split(':');
+
+            if (timeParts.length < 2) {
+              debugPrint('Invalid time format: $tim');
+              continue;
+            }
+
+            final hour = int.tryParse(timeParts[0]);
+            final minute = int.tryParse(timeParts[1]);
+
+            if (hour == null || minute == null) {
+              debugPrint('Failed to parse time: $tim');
+              continue;
+            }
+
+            await scheduleDailyReminder(
+              id: id++,
+              title: "Reminder",
+              body: "$subType Reminder",
+              hour: hour,
+              minute: minute,
+            );
+          } else {
+            for (var e in months) {
+              final int year = e['year']!;
+              final int month = e['month']!;
+
+              // Use day = 1 and time = 12:00 PM (safe for all months)
+              final DateTime time = DateTime(year, month, 1, 12);
+
+              await scheduleNotification(
+                id: id++,
+                title: "Reminder",
+                body: "$subType Reminder",
+                time: time,
+              );
+            }
+          }
         }
       }
-    }
-  }
 
-  // Schedule multiple notifications
-  Future<void> scheduleAll({
-    required List<DateTime> times,
-    required String title,
-    required String subTitle,
-  }) async {
-    await cancelAll();
-    debugPrint("Cancelled previous notifications");
-
-    final futureTimes = times.where((t) => t.isAfter(DateTime.now())).toList();
-
-    int id = 500; // separate starting ID to avoid conflict with reminders
-
-    for (var time in futureTimes) {
-      String formatted = DateFormat('h:mm a').format(time);
-      String date = Utils.formatDate(date: time);
-
-      await scheduleNotification(
-        id: id++,
-        title: title,
-        body: subTitle,
-        time: time,
-      );
-
-      debugPrint("Notification scheduled for $date at $formatted");
+      debugPrint("Successfully scheduled ${reminders.length} reminders");
+    } catch (e) {
+      debugPrint("Error scheduling reminders: $e");
+      rethrow;
+    } finally {
+      // Release lock
+      _isScheduling = false;
+      if (_schedulingCompleter != null && !_schedulingCompleter!.isCompleted) {
+        _schedulingCompleter!.complete();
+      }
+      _schedulingCompleter = null;
     }
   }
 

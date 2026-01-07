@@ -266,9 +266,19 @@ class UpdateRefuelingController extends GetxController {
         }
       }
 
-      double liter = double.parse(litersController.text);
-      double price = double.parse(priceController.text);
-      double totalCost = double.parse(totalCostController.text);
+      final sanitizedLiter = litersController.text.replaceAll(',', '');
+      final sanitizedPrice = priceController.text.replaceAll(',', '');
+      final sanitizedTotalCost = totalCostController.text.replaceAll(',', '');
+
+      final liter = double.tryParse(sanitizedLiter);
+      final price = double.tryParse(sanitizedPrice);
+      final totalCost = double.tryParse(sanitizedTotalCost);
+
+      if (liter == null || price == null || totalCost == null) {
+        if (Get.isDialogOpen == true) Get.back();
+        Utils.showSnackBar(message: "invalid_values".tr, success: false);
+        return;
+      }
 
       final newRefuelingMap = {
         "user_id": appService.appUser.value.id,
@@ -300,27 +310,27 @@ class UpdateRefuelingController extends GetxController {
             ? appService.currentVehicleId.value
             : appService.driverCurrentVehicleId.value;
 
-        final batch = FirebaseFirestore.instance.batch();
-
         final vehicleRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(adminId)
             .collection(DatabaseTables.VEHICLES)
             .doc(vehicleId);
 
-        batch.set(vehicleRef, {
-          'refueling_list': FieldValue.arrayRemove([oldRefuelingMap]),
-        }, SetOptions(merge: true));
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          transaction.update(vehicleRef, {
+            'refueling_list': FieldValue.arrayRemove([oldRefuelingMap]),
+          });
 
-        batch.set(vehicleRef, {
-          'refueling_list': FieldValue.arrayUnion([newRefuelingMap]),
-        }, SetOptions(merge: true));
+          transaction.update(vehicleRef, {
+            'refueling_list': FieldValue.arrayUnion([newRefuelingMap]),
+          });
 
-        if (model.value.odometer >= lastOdometer.value) {
-          batch.update(vehicleRef, {"last_odometer": model.value.odometer});
-        }
-
-        await batch.commit();
+          if (model.value.odometer >= lastOdometer.value) {
+            transaction.update(vehicleRef, {
+              "last_odometer": model.value.odometer,
+            });
+          }
+        });
 
         await Utils.loadHomeAndReportData(snakBarMsg: "refueling_updated".tr);
       } on FirebaseException catch (e) {

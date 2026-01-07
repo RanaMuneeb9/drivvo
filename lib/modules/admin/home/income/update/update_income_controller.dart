@@ -177,28 +177,27 @@ class UpdateIncomeController extends GetxController {
             ? appService.currentVehicleId.value
             : appService.driverCurrentVehicleId.value;
 
-        final batch = FirebaseFirestore.instance.batch();
-
         final vehicleRef = FirebaseFirestore.instance
             .collection(DatabaseTables.USER_PROFILE)
             .doc(adminId)
             .collection(DatabaseTables.VEHICLES)
             .doc(vehicleId);
 
-        // Single atomic operation
-        batch.set(vehicleRef, {
-          'income_list': FieldValue.arrayRemove([oldIncomeMap]),
-        }, SetOptions(merge: true));
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          transaction.update(vehicleRef, {
+            'income_list': FieldValue.arrayRemove([oldIncomeMap]),
+          });
 
-        batch.set(vehicleRef, {
-          'income_list': FieldValue.arrayUnion([newIncomeMap]),
-        }, SetOptions(merge: true));
+          transaction.update(vehicleRef, {
+            'income_list': FieldValue.arrayUnion([newIncomeMap]),
+          });
 
-        if (model.value.odometer >= lastOdometer.value) {
-          batch.update(vehicleRef, {"last_odometer": model.value.odometer});
-        }
-
-        await batch.commit();
+          if (model.value.odometer >= lastOdometer.value) {
+            transaction.update(vehicleRef, {
+              "last_odometer": model.value.odometer,
+            });
+          }
+        });
 
         await Utils.loadHomeAndReportData(snakBarMsg: "income_updated".tr);
       } on FirebaseException catch (e) {

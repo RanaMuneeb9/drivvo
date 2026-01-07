@@ -130,7 +130,12 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                       onTap: () {},
                       onSaved: (value) {
                         if (value != null) {
-                          controller.model.value.odometer = int.parse(value);
+                          final odometer = int.tryParse(
+                            value.replaceAll(',', ''),
+                          );
+                          if (odometer != null) {
+                            controller.model.value.odometer = odometer;
+                          }
                         }
                       },
                       onValidate: (value) {
@@ -211,7 +216,12 @@ class CreateIncomeView extends GetView<CreateIncomeController> {
                     onTap: () {},
                     onSaved: (value) {
                       if (value != null) {
-                        controller.model.value.value = int.parse(value);
+                        final incomeValue = int.tryParse(
+                          value.replaceAll(',', ''),
+                        );
+                        if (incomeValue != null) {
+                          controller.model.value.value = incomeValue;
+                        }
                       }
                     },
                     onValidate: (value) {

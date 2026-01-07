@@ -307,17 +307,24 @@ class HomeController extends GetxController {
           fieldName = "route_list";
           break;
         default:
+          if (Get.isDialogOpen == true) Get.back();
           return;
       }
 
-      await db
+      final vehicleRef = db
           .collection(DatabaseTables.USER_PROFILE)
           .doc(appService.appUser.value.id)
           .collection(DatabaseTables.VEHICLES)
-          .doc(appService.currentVehicleId.value)
-          .update({
-            fieldName: FieldValue.arrayRemove([entry.originalData.rawMap]),
-          });
+          .doc(appService.currentVehicleId.value);
+
+      // Use transaction for atomic delete operation to prevent race conditions
+      await db.runTransaction((transaction) async {
+        final entryToRemove = entry.originalData.rawMap;
+        // Perform atomic array remove
+        transaction.update(vehicleRef, {
+          fieldName: FieldValue.arrayRemove([entryToRemove]),
+        });
+      });
 
       await loadTimelineData();
 
@@ -326,6 +333,10 @@ class HomeController extends GetxController {
       }
       Get.back(closeOverlays: true);
       Utils.showSnackBar(message: "entry_deleted".tr, success: true);
+    } on FirebaseException catch (e) {
+      if (Get.isDialogOpen == true) Get.back();
+      debugPrint("Firebase error deleting entry: ${e.code} - ${e.message}");
+      Utils.showSnackBar(message: "failed_to_delete_entry".tr, success: false);
     } catch (e) {
       if (Get.isDialogOpen == true) Get.back();
       debugPrint("Error deleting entry: $e");
