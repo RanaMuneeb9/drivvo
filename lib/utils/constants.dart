@@ -29,7 +29,7 @@ class Constants {
   // ignore: constant_identifier_names
   static const String ONBOARDING = "Onboarding";
   // ignore: constant_identifier_names
-  static const String IMPORT_DATA = "ImportData";
+  static const String ALL_VEHICLES_COUNT = "AllVehicleCount";
   // ignore: constant_identifier_names
   static const String USER_PROFILE = "UserProfile";
   // ignore: constant_identifier_names

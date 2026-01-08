@@ -60,7 +60,7 @@ class HomeView extends GetView<HomeController> {
               hasActiveFilter: controller.hasActiveFilter,
               disabledFilterCount: controller.disabledFilterCount,
               currentVehicleId: controller.appService.currentVehicleId.value,
-              currentVehicle:  controller.appService.vehicleModel.value.name,
+              currentVehicle: controller.appService.vehicleModel.value.name,
               lastOdometer:
                   controller.appService.vehicleModel.value.lastOdometer,
             ),
@@ -136,6 +136,4 @@ class HomeView extends GetView<HomeController> {
       ),
     );
   }
-
-
 }

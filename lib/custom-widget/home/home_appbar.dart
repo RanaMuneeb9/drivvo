@@ -189,15 +189,21 @@ class HomeAppbar extends StatelessWidget {
                                 const SizedBox(height: 2),
                                 Row(
                                   children: [
-                                    Text(
-                                      currentVehicleId.isEmpty
-                                          ? 'select_your_vehicle'.tr
-                                          : currentVehicle,
-                                      style: Utils.getTextStyle(
-                                        baseSize: 16,
-                                        isBold: true,
-                                        color: Colors.black87,
-                                        isUrdu: isUrdu,
+                                    Expanded(
+                                      child: Text(
+                                        currentVehicleId.isEmpty
+                                            ? 'select_your_vehicle'.tr
+                                            : currentVehicle,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        style: Utils.getTextStyle(
+                                          baseSize: currentVehicleId.isEmpty
+                                              ? 15
+                                              : 16,
+                                          isBold: true,
+                                          color: Colors.black87,
+                                          isUrdu: isUrdu,
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(width: 4),

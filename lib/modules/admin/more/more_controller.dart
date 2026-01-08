@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
-import 'package:drivvo/utils/database_tables.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,31 +16,12 @@ class MoreController extends GetxController {
     appService = Get.find<AppService>();
     super.onInit();
 
-    getAllVehicleList();
-
     // Load saved language
     final savedLanguageCode = appService.savedLanguage;
     if (savedLanguageCode == 'ur') {
       currentLanguage.value = "urdu";
     } else {
       currentLanguage.value = "english";
-    }
-  }
-
-  Future<void> getAllVehicleList() async {
-    try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection(DatabaseTables.USER_PROFILE)
-          .doc(appService.appUser.value.id)
-          .collection(DatabaseTables.VEHICLES)
-          .get();
-
-      if (snapshot.docs.isNotEmpty) {
-        registeredVehicles.value = snapshot.docs.length;
-      }
-    } catch (e) {
-      // Log error or set default value
-      registeredVehicles.value = 0;
     }
   }
 

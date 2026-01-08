@@ -86,9 +86,9 @@ class MoreView extends GetView<MoreController> {
                 () => _buildTile(
                   imagePath: "assets/images/more/vehicle.png",
                   title: 'my_vehicles'.tr,
-                  subtitle: controller.registeredVehicles.value > 1
-                      ? '${controller.registeredVehicles.value} ${"vehicles_registered".tr}'
-                      : '${controller.registeredVehicles.value} ${"vehicle_registered".tr}',
+                  subtitle: controller.appService.allVehiclesCount.value > 1
+                      ? '${ controller.appService.allVehiclesCount.value} ${"vehicles_registered".tr}'
+                      : '${ controller.appService.allVehiclesCount.value} ${"vehicle_registered".tr}',
                   onTap: () => Get.toNamed(
                     AppRoutes.VEHICLES_VIEW,
                     arguments: {"is_from_home": false, "is_from_user": false},

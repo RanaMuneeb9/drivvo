@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/general_model.dart';
 import 'package:drivvo/model/vehicle/vehicle_model.dart';
-import 'package:drivvo/modules/admin/more/more_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
@@ -72,14 +71,13 @@ class CreateVehiclesController extends GetxController {
           appService.setCurrentVehicleId(id);
           return;
         }
+        
+        await appService.getAllVehicleList();
         Get.back(closeOverlays: true);
         Utils.showSnackBar(
           message: "vehicle_added_successfully".tr,
           success: true,
         );
-
-        final con = Get.find<MoreController>();
-        con.getAllVehicleList();
       } catch (e) {
         Get.back();
         Utils.showSnackBar(message: "something_went_wrong", success: false);

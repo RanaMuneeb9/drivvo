@@ -145,15 +145,19 @@ class LoginController extends GetxController {
         final userData = AppUser.fromJson(data);
         await appService.setProfile(userData);
 
-        if (appService.importData) {
-          if (userData.userType == Constants.ADMIN) {
+        try {
+          await appService.getAllVehicleList();
+        } catch (e) {
+          debugPrint("Error fetching vehicle list: $e");
+        }
+        if (appService.appUser.value.userType == Constants.ADMIN) {
+          if (appService.allVehiclesCount.value > 0) {
             Get.offAllNamed(AppRoutes.ADMIN_ROOT_VIEW);
-          }
-          if (userData.userType.toLowerCase() == Constants.DRIVER) {
-            Get.offAllNamed(AppRoutes.DRIVER_ROOT_VIEW);
+          } else {
+            Get.offAllNamed(AppRoutes.IMPORT_DATA_VIEW);
           }
         } else {
-          Get.offAllNamed(AppRoutes.IMPORT_DATA_VIEW);
+          Get.offAllNamed(AppRoutes.DRIVER_ROOT_VIEW);
         }
       } else {
         Get.back();

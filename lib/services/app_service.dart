@@ -26,7 +26,7 @@ class AppService extends GetxService {
   static AppService get to => Get.find();
 
   bool onBoarding = false;
-  bool importData = false;
+  var allVehiclesCount = 0.obs;
 
   var currentVehicleId = "".obs;
 
@@ -71,7 +71,7 @@ class AppService extends GetxService {
     super.onInit();
 
     onBoarding = _box.read<bool>(Constants.ONBOARDING) ?? false;
-    importData = _box.read<bool>(Constants.IMPORT_DATA) ?? false;
+    allVehiclesCount.value = _box.read<int>(Constants.ALL_VEHICLES_COUNT) ?? 0;
 
     refuelingFilter.value = _box.read<bool>(Constants.REFUELING_FILTER) ?? true;
     expenseFilter.value = _box.read<bool>(Constants.EXPENSE_FILTER) ?? true;
@@ -123,6 +123,7 @@ class AppService extends GetxService {
     await getUserProfile();
     await getCurrentVehicle();
     await getDriverCurrentVehicle();
+    await getAllVehicleList();
   }
 
   Future<void> getUserProfile() async {
@@ -367,15 +368,35 @@ class AppService extends GetxService {
     driverCurrentVehicleId.value = id;
     await _box.write(Constants.DRIVER_CURRENT_VEHICLE_ID, id);
   }
-  
+
   Future<void> setOnboarding({required bool value}) async {
     onBoarding = value;
     await _box.write(Constants.ONBOARDING, value);
   }
 
-  Future<void> setImportData({required bool value}) async {
-    importData = value;
-    await _box.write(Constants.IMPORT_DATA, value);
+  // Future<void> setAllVehicleCount({required int count}) async {
+  //   allVehilcesCount.value = count;
+  //   await _box.write(Constants.ALL_VEHICLES_COUNT, count);
+  // }
+
+  Future<void> getAllVehicleList() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection(DatabaseTables.USER_PROFILE)
+          .doc(appUser.value.id)
+          .collection(DatabaseTables.VEHICLES)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        allVehiclesCount.value = snapshot.docs.length;
+        await _box.write(Constants.ALL_VEHICLES_COUNT, snapshot.docs.length);
+        return;
+      }
+    } catch (e) {
+      debugPrint("getAllVehicleList error: $e");
+      return;
+    }
+    return;
   }
 
   Future<void> logOut() async {
