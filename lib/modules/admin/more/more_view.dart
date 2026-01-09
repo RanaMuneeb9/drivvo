@@ -57,7 +57,13 @@ class MoreView extends GetView<MoreController> {
                 imagePath: "assets/images/more/syncronize_data.png",
                 title: 'sync_data'.tr,
                 subtitle: 'sync_data_sub'.tr,
-                onTap: () {},
+                onTap: () {
+                  if (controller.appService.appUser.value.isSubscribed) {
+                    return;
+                  } else {
+                    Get.toNamed(AppRoutes.PLAN_VIEW);
+                  }
+                },
               ),
               _buildDivider(),
               _buildTile(
@@ -73,7 +79,13 @@ class MoreView extends GetView<MoreController> {
                 imagePath: "assets/images/more/transfer.png",
                 title: 'transfer'.tr,
                 subtitle: 'transfer_sub'.tr,
-                onTap: () {},
+                onTap: () {
+                  if (controller.appService.appUser.value.isSubscribed) {
+                    return null;
+                  } else {
+                    Get.toNamed(AppRoutes.PLAN_VIEW);
+                  }
+                },
               ),
             ]),
             CardHeaderText(
@@ -87,8 +99,8 @@ class MoreView extends GetView<MoreController> {
                   imagePath: "assets/images/more/vehicle.png",
                   title: 'my_vehicles'.tr,
                   subtitle: controller.appService.allVehiclesCount.value > 1
-                      ? '${ controller.appService.allVehiclesCount.value} ${"vehicles_registered".tr}'
-                      : '${ controller.appService.allVehiclesCount.value} ${"vehicle_registered".tr}',
+                      ? '${controller.appService.allVehiclesCount.value} ${"vehicles_registered".tr}'
+                      : '${controller.appService.allVehiclesCount.value} ${"vehicle_registered".tr}',
                   onTap: () => Get.toNamed(
                     AppRoutes.VEHICLES_VIEW,
                     arguments: {"is_from_home": false, "is_from_user": false},

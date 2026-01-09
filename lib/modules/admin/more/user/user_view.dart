@@ -14,9 +14,13 @@ class UserView extends GetView<UserController> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Get.toNamed(
-          AppRoutes.CREATE_USER_VIEW,
-        )?.then((e) => controller.getUserList()),
+        onPressed: () {
+          if (controller.appService.appUser.value.isSubscribed) {
+            Get.toNamed(AppRoutes.CREATE_USER_VIEW);
+          } else {
+            Get.toNamed(AppRoutes.PLAN_VIEW);
+          }
+        },
         foregroundColor: Colors.white,
         backgroundColor: const Color(0xFF00796B),
         shape: const StadiumBorder(),

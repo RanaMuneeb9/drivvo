@@ -101,7 +101,7 @@ class UpdateUserView extends GetView<UpdateUserController> {
                     DropdownButtonFormField<OnboardingModel>(
                       icon: const Icon(Icons.keyboard_arrow_down),
                       style: const TextStyle(color: Colors.black, fontSize: 16),
-                      value: Utils.userTypeList.firstWhereOrNull(
+                      initialValue: Utils.userTypeList.firstWhereOrNull(
                         (e) => e.title.tr == controller.model.userType,
                       ),
                       items: Utils.userTypeList

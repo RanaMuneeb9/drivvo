@@ -2,6 +2,7 @@ import 'package:drivvo/modules/admin/more/plan/plan_controller.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 class PlanView extends GetView<PlanController> {
   const PlanView({super.key});
@@ -9,7 +10,8 @@ class PlanView extends GetView<PlanController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F7FA),
+      backgroundColor: Colors.white,
+
       appBar: AppBar(
         backgroundColor: Utils.appColor,
         elevation: 0,
@@ -17,7 +19,7 @@ class PlanView extends GetView<PlanController> {
         surfaceTintColor: Colors.transparent,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
         ),
         title: Text(
           'premium_plans'.tr,
@@ -28,288 +30,388 @@ class PlanView extends GetView<PlanController> {
             isUrdu: controller.isUrdu,
           ),
         ),
+        centerTitle: true,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Column(
-            children: [
-              Text(
-                "Driving Pins",
-                style: Utils.getTextStyle(
-                  baseSize: 28,
-                  isBold: true,
-                  color: const Color(0xFF1E2E4B),
-                  isUrdu: controller.isUrdu,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                "Complete Fleet Management Solution. Keep track of your vehicles with real-time monitoring, maintenance alerts, and detailed reporting.",
-                textAlign: TextAlign.center,
-                style: Utils.getTextStyle(
-                  baseSize: 14,
-                  isBold: false,
-                  color: Colors.grey[600]!,
-                  isUrdu: controller.isUrdu,
-                ),
-              ),
-
-              const SizedBox(height: 30),
-              _buildPlanCard(
-                title: "Free",
-                price: "Rs 0",
-                description:
-                    "Perfect for individuals or small fleets getting started with fleet management.",
-                buttonText: "Get Started Free",
-                buttonColor: const Color(0xFF90A4AE),
-                features: [
-                  "Basic vehicle tracking",
-                  "Up to 3 vehicles",
-                  "Basic operation logging",
-                  "Monthly reports",
-                  {"Priority support": false},
-                ],
-              ),
-              const SizedBox(height: 20),
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  _buildPlanCard(
-                    title: "Individual",
-                    price: "₹12,500",
-                    description:
-                        "Ideal for small businesses or fleet owners with up to 10 vehicles.",
-                    buttonText: "Subscribe",
-                    buttonColor: Utils.appColor,
-                    isHighlighted: true,
-                    features: [
-                      "Everything from Free plan",
-                      "User management & themes",
-                      "Up to 10 vehicles",
-                      "100 MB storage per vehicle",
-                      "Data export (CSV/Excel)",
-                      "Unlimited records",
-                      "Priority support (24h response)",
-                    ],
-                  ),
-                  Positioned(
-                    top: -12,
-                    right: 20,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  children: [
+                    SizedBox(height: 20),
+                    // Header Icon
+                    Container(
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF3498DB),
-                        borderRadius: BorderRadius.circular(4),
+                        color: Utils.appColor.withValues(alpha: 0.3),
+                        shape: BoxShape.circle,
                       ),
-                      child: Text(
-                        "MOST POPULAR",
-                        style: Utils.getTextStyle(
-                          baseSize: 10,
-                          isBold: true,
-                          color: Colors.white,
-                          isUrdu: controller.isUrdu,
+                      child: const Icon(
+                        Icons.workspace_premium,
+                        color: Utils.appColor,
+                        size: 32,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Title
+                    Text(
+                      "everything_included".tr,
+                      style: Utils.getTextStyle(
+                        baseSize: 20,
+                        isBold: true,
+                        color: Colors.black,
+                        isUrdu: controller.isUrdu,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Features List
+                    _buildFeatureItem(
+                      Icons.flight_takeoff,
+                      "add_unlimited_vehicles".tr,
+                    ),
+                    _buildFeatureItem(
+                      Icons.account_balance,
+                      "upload_unlimited_pictures".tr,
+                    ),
+                    _buildFeatureItem(
+                      Icons.color_lens,
+                      "add_unlimited_drivers".tr,
+                    ),
+                    _buildFeatureItem(Icons.category, "transfer_vehicles".tr),
+                    _buildFeatureItem(
+                      Icons.category,
+                      "assign_vehicles_to_drivers".tr,
+                    ),
+                    _buildFeatureItem(Icons.groups, "technical_support_24h".tr),
+                    const SizedBox(height: 32),
+
+                    // "Choose Your Plan" Header
+                    Text(
+                      "choose_your_plan".tr,
+                      style: Utils.getTextStyle(
+                        baseSize: 18,
+                        isBold: true,
+                        color: Colors.black,
+                        isUrdu: controller.isUrdu,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    // Products List
+                    Obx(() {
+                      if (controller.isLoading.value) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      final products = controller.productsList;
+                      if (products.isEmpty) {
+                        return Center(child: Text("no_plans_available".tr));
+                      }
+                      return Column(
+                        children: products.map((product) {
+                          final isSelected =
+                              controller.selectedProduct.value?.id ==
+                              product.id;
+                          return _buildSubscriptionCard(product, isSelected);
+                        }).toList(),
+                      );
+                    }),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+
+            // Bottom Button
+            Obx(
+              () => Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                child: GestureDetector(
+                  onTap:
+                      controller.isPurchasing.value ||
+                          !controller.isAvailable.value ||
+                          !controller.hasProducts
+                      ? null
+                      : () => controller.buySelectedProduct(),
+
+                  child: Opacity(
+                    opacity:
+                        controller.isPurchasing.value ||
+                            !controller.isAvailable.value ||
+                            !controller.hasProducts
+                        ? 0.6
+                        : 1.0,
+                    child: Container(
+                      width: double.maxFinite,
+                      decoration: BoxDecoration(
+                        color: Utils.appColor,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(16),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Center(
+                          child: controller.isPurchasing.value
+                              ? SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : Text(
+                                  "subscribe_your_plan".tr,
+                                  style: Utils.getTextStyle(
+                                    baseSize: 16,
+                                    isBold: true,
+                                    color: Colors.white,
+                                    isUrdu: controller.isUrdu,
+                                  ),
+                                ),
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              _buildPlanCard(
-                title: "Corporate",
-                price: "Custom",
-                priceSuffix: " pricing",
-                description:
-                    "For enterprises with large fleets requiring advanced features and dedicated support.",
-                buttonText: "Contact Sales",
-                buttonColor: const Color(0xFF2C3E50),
-                features: [
-                  "Everything from Individual plan",
-                  "Unlimited vehicles",
-                  "Custom storage allocation",
-                  "Advanced analytics & reports",
-                  "API access & integrations",
-                  "Dedicated account manager",
-                  "24/7 phone & chat support",
-                ],
-              ),
-              const SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  "All plans come with a 30-day money-back guarantee. No credit card required for free plan.",
-                  textAlign: TextAlign.center,
-                  style: Utils.getTextStyle(
-                    baseSize: 12,
-                    isBold: false,
-                    color: Colors.grey[500]!,
-                    isUrdu: controller.isUrdu,
-                  ),
                 ),
               ),
-              const SizedBox(height: 40),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildPlanCard({
-    required String title,
-    required String price,
-    String? priceSuffix,
-    required String description,
-    required String buttonText,
-    required Color buttonColor,
-    required List<dynamic> features,
-    bool isHighlighted = false,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: isHighlighted
-            ? Border.all(color: const Color(0xFF3498DB), width: 2)
-            : null,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+  Widget _buildFeatureItem(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Utils.appColor.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 16, color: Utils.appColor),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            text,
+            style: Utils.getTextStyle(
+              baseSize: 14,
+              isBold: false,
+              color: Colors.black87,
+              isUrdu: controller.isUrdu,
+            ),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Utils.getTextStyle(
-              baseSize: 22,
-              isBold: true,
-              color: const Color(0xFF1E2E4B),
-              isUrdu: controller.isUrdu,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                price,
-                style: Utils.getTextStyle(
-                  baseSize: 32,
-                  isBold: true,
-                  color: const Color(0xFF1E2E4B),
-                  isUrdu: controller.isUrdu,
-                ),
-              ),
-              if (priceSuffix != null)
-                Text(
-                  priceSuffix,
-                  style: Utils.getTextStyle(
-                    baseSize: 14,
-                    isBold: false,
-                    color: Colors.grey[500]!,
-                    isUrdu: controller.isUrdu,
-                  ),
-                )
-              else
-                Text(
-                  "/year",
-                  style: Utils.getTextStyle(
-                    baseSize: 14,
-                    isBold: false,
-                    color: Colors.grey[500]!,
-                    isUrdu: controller.isUrdu,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            description,
-            style: Utils.getTextStyle(
-              baseSize: 13,
-              isBold: false,
-              color: Colors.grey[600]!,
-              isUrdu: controller.isUrdu,
-            ),
-          ),
-          const SizedBox(height: 24),
-          ...features.map((feature) {
-            bool isIncluded = true;
-            String text = "";
-            if (feature is String) {
-              text = feature;
-            } else if (feature is Map) {
-              text = feature.keys.first;
-              isIncluded = feature.values.first;
-            }
+    );
+  }
 
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                children: [
-                  Icon(
-                    isIncluded ? Icons.check : Icons.close,
-                    size: 18,
-                    color: isIncluded
-                        ? const Color(0xFF2ECC71)
-                        : Colors.red[400],
+  Widget _buildSubscriptionCard(ProductDetails product, bool isSelected) {
+    // Determine badges based on ID or details
+    bool sMostPopular = product.id.toLowerCase().contains('month');
+    bool isBestValue = product.id.toLowerCase().contains('year');
+
+    // If we can't determine by ID, maybe just default:
+    // If strict match fails, we might just assume logic or leave it (no badges).
+    // Or we could pass index if mapped with index.
+    // For now, let's keep ID checks.
+
+    // Color theme
+    final borderColor = isSelected ? Utils.appColor : Colors.grey.shade300;
+
+    return GestureDetector(
+      onTap: () => controller.selectProduct(product),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
+              boxShadow: [
+                if (isSelected)
+                  BoxShadow(
+                    color: Utils.appColor.withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      text,
-                      style: Utils.getTextStyle(
-                        baseSize: 14,
-                        isBold: false,
-                        color: Colors.grey[700]!,
-                        isUrdu: controller.isUrdu,
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.title.replaceAll(
+                          RegExp(r'\(.*\)'),
+                          '',
+                        ), // Clean title
+                        style: Utils.getTextStyle(
+                          baseSize: 16,
+                          isBold: true,
+                          color: Colors.black,
+                          isUrdu: controller.isUrdu,
+                        ),
                       ),
+                      const SizedBox(height: 4),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            product.price,
+                            style: Utils.getTextStyle(
+                              baseSize: 24,
+                              isBold: true,
+                              color: Colors.black,
+                              isUrdu: controller.isUrdu,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            isBestValue ? " per year" : " per month",
+                            style: Utils.getTextStyle(
+                              baseSize: 12,
+                              isBold: false,
+                              color: Colors.grey,
+                              isUrdu: controller.isUrdu,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      // Daily calculate logic or static text can go here
+                      Text(
+                        isBestValue
+                            ? "Rs 6.16/day"
+                            : "Rs 9.33/day", // Placeholder calculation
+                        style: Utils.getTextStyle(
+                          baseSize: 10,
+                          isBold: false,
+                          color: Colors.grey,
+                          isUrdu: controller.isUrdu,
+                        ),
+                      ),
+                      if (isBestValue) ...[
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE8F5E9),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            "Save Rs 1110",
+                            style: Utils.getTextStyle(
+                              baseSize: 10,
+                              isBold: true,
+                              color: Utils.appColor,
+                              isUrdu: controller.isUrdu,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                // Radio Button
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? Utils.appColor : Colors.grey.shade400,
+                      width: 2,
                     ),
                   ),
-                ],
-              ),
-            );
-          }),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  child: isSelected
+                      ? Center(
+                          child: Container(
+                            width: 12,
+                            height: 12,
+                            decoration: const BoxDecoration(
+                              color: Utils.appColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        )
+                      : null,
                 ),
-                elevation: 0,
-              ),
-              child: Text(
-                buttonText,
-                style: Utils.getTextStyle(
-                  baseSize: 16,
-                  isBold: true,
-                  color: Colors.white,
-                  isUrdu: controller.isUrdu,
+              ],
+            ),
+          ),
+
+          // Badges
+          if (sMostPopular)
+            Positioned(
+              top: -10,
+              right: 20,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF9C27B0), // Purple
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  "most_popular".tr,
+                  style: Utils.getTextStyle(
+                    baseSize: 10,
+                    isBold: true,
+                    color: Colors.white,
+                    isUrdu: controller.isUrdu,
+                  ),
                 ),
               ),
             ),
-          ),
+
+          if (isBestValue)
+            Positioned(
+              top: -10,
+              right: 20,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF03A9F4), // Light Blue
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  "best_value".tr,
+                  style: Utils.getTextStyle(
+                    baseSize: 10,
+                    isBold: true,
+                    color: Colors.white,
+                    isUrdu: controller.isUrdu,
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );

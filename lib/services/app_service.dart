@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drivvo/model/app_user.dart';
 import 'package:drivvo/model/date_range_model.dart';
 import 'package:drivvo/model/vehicle/vehicle_model.dart';
@@ -58,10 +59,34 @@ class AppService extends GetxService {
   var selectedCurrencyFormat = "Rs 1,000.00".obs;
   var selectedCurrencyName = "Pakistani Rupee".obs;
 
+  final connected = false.obs;
+  StreamSubscription<List<ConnectivityResult>>? _connectionSubscription;
+  StreamSubscription<User?>? _authSubscription;
+
   Future<AppService> init() async {
+    // Initial connectivity check
+    final result = await Connectivity().checkConnectivity();
+    _updateStatus(result);
+
+    // Listen for changes
+    _connectionSubscription = Connectivity().onConnectivityChanged.listen((
+      result,
+    ) {
+      _updateStatus(result);
+    });
+
     await GetStorage.init();
     _box = GetStorage();
     return this;
+  }
+
+  void _updateStatus(List<ConnectivityResult> result) {
+    if (result.contains(ConnectivityResult.mobile) ||
+        result.contains(ConnectivityResult.wifi)) {
+      connected.value = true;
+    } else {
+      connected.value = false;
+    }
   }
 
   Locale get locale => Locale(_languageCode, _countryCode);
@@ -69,6 +94,17 @@ class AppService extends GetxService {
   @override
   Future<void> onInit() async {
     super.onInit();
+
+    // Listen to Auth changes to keep user data in sync
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((
+      User? firebaseUser,
+    ) async {
+      if (firebaseUser != null) {
+        await getUserProfile();
+      } else {
+        appUser.value = AppUser();
+      }
+    });
 
     onBoarding = _box.read<bool>(Constants.ONBOARDING) ?? false;
     allVehiclesCount.value = _box.read<int>(Constants.ALL_VEHICLES_COUNT) ?? 0;
@@ -417,39 +453,6 @@ class AppService extends GetxService {
     }
   }
 
-  Future<void> deleteAccount() async {
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      Utils.showSnackBar(message: "something_went_wrong".tr, success: false);
-      return;
-    }
-
-    Utils.showProgressDialog();
-
-    try {
-      await user.delete();
-
-      Get.back(); // close progress dialog
-      await FirebaseAuth.instance.signOut();
-
-      Get.offAllNamed(AppRoutes.LOGIN_VIEW);
-
-      Utils.showSnackBar(message: "account_deleted".tr, success: true);
-    } on FirebaseAuthException catch (e) {
-      Get.back();
-
-      if (e.code == 'requires-recent-login') {
-        Utils.showSnackBar(message: "login_again_to_delete".tr, success: false);
-      } else {
-        Utils.showSnackBar(message: "account_delete_failed".tr, success: false);
-      }
-    } catch (e) {
-      Get.back();
-      Utils.showSnackBar(message: "something_went_wrong".tr, success: false);
-    }
-  }
-
   void changeLanguage(String langCode, String country) {
     _languageCode = langCode;
     _countryCode = country;
@@ -467,6 +470,11 @@ class AppService extends GetxService {
     _vehicleSubscription = null;
     _driverVehicleSubscription?.cancel();
     _driverVehicleSubscription = null;
+    _connectionSubscription?.cancel();
+    _connectionSubscription = null;
+    _authSubscription?.cancel();
+    _authSubscription = null;
+
     _isInitializingSubscriptions = false;
     super.onClose();
   }

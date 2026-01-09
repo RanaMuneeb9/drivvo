@@ -14,7 +14,13 @@ class UserVehicleView extends GetView<UserVehicleController> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Get.toNamed(AppRoutes.CREATE_USER_VEHICLE_VIEW),
+        onPressed: () {
+          if (controller.appService.appUser.value.isSubscribed) {
+            Get.toNamed(AppRoutes.CREATE_USER_VEHICLE_VIEW);
+          } else {
+            Get.toNamed(AppRoutes.PLAN_VIEW);
+          }
+        },
         foregroundColor: Colors.white,
         backgroundColor: const Color(0xFF00796B),
         shape: const StadiumBorder(),

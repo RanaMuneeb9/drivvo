@@ -18,6 +18,17 @@ class ProfileNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (imageUrl.isEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: Image.asset(
+          placeholder,
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: FadeInImage.assetNetwork(

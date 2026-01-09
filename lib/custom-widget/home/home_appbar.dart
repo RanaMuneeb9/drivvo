@@ -150,6 +150,7 @@ class HomeAppbar extends StatelessWidget {
                     child: Row(
                       children: [
                         ProfileNetworkImage(
+                          key: ValueKey(logoUrl),
                           imageUrl: logoUrl,
                           width: 50,
                           height: 30,
