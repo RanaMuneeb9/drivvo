@@ -1,8 +1,10 @@
+import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MoreController extends GetxController {
   late AppService appService;
@@ -152,5 +154,18 @@ class MoreController extends GetxController {
     }
 
     appService.changeLanguage(languageCode, country);
+  }
+
+  Future<void> onPremiumPlanTap() async {
+    if (appService.appUser.value.isSubscribed) {
+      final Uri url = Uri.parse(
+        "https://play.google.com/store/account/subscriptions",
+      );
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      }
+    } else {
+      Get.toNamed(AppRoutes.PLAN_VIEW);
+    }
   }
 }

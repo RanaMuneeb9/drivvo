@@ -553,5 +553,8 @@
   "restore_in_progress": "بحالی کا عمل پہلے سے جاری ہے",
   "subscription_restored": "سبسکرپشن کامیابی سے بحال ہو گئی",
   "purchase_successful": "سبسکرپشن کامیابی سے خرید لی گئی",
-  "purchase_failed": "سبسکرپشن خریدنے میں ناکامی"
+  "purchase_failed": "سبسکرپشن خریدنے میں ناکامی",
+  "pro": "پرو",
+  "get_pro": "پرو بنیں",
+  "manage_your_subscription": "اپنی سبسکرپشن کا انتظام کریں"
 }

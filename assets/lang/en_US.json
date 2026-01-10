@@ -564,5 +564,8 @@
   "restore_failed": "Could not restore purchases. Please try again.",
   "premium_activated_success": "Premium activated successfully!",
   "purchase_verification_failed": "Purchase verification failed.",
-  "verification_login_required": "Please log in to verify your purchase."
+  "verification_login_required": "Please log in to verify your purchase.",
+  "pro": "PRO",
+  "get_pro": "Get PRO",
+   "manage_your_subscription": "Manage your subscription"
 }

@@ -39,11 +39,16 @@ class MoreView extends GetView<MoreController> {
               color: Utils.appColor,
             ),
             _buildSectionCard([
-              _buildTile(
-                imagePath: "assets/images/more/plan.png",
-                title: 'premium_plans'.tr,
-                subtitle: 'premium_plans_sub'.tr,
-                onTap: () => Get.toNamed(AppRoutes.PLAN_VIEW),
+              Obx(
+                () => _buildTile(
+                  imagePath: "assets/images/more/plan.png",
+                  title: 'premium_plans'.tr,
+                  subtitle: controller.appService.appUser.value.isSubscribed
+                      ? 'manage_your_subscription'.tr
+                      : 'premium_plans_sub'.tr,
+                  showPro: true,
+                  onTap: () => controller.onPremiumPlanTap(),
+                ),
               ),
               _buildDivider(),
               _buildTile(
@@ -440,6 +445,7 @@ class MoreView extends GetView<MoreController> {
     required String subtitle,
     required Function onTap,
     String? trailingInfo,
+    bool? showPro,
     Color? trailingColor,
     // bool isBadge = false,
   }) {
@@ -492,6 +498,35 @@ class MoreView extends GetView<MoreController> {
                     color: trailingColor ?? Colors.grey,
                     isUrdu: controller.isUrdu,
                   ),
+                ),
+              ),
+            if (showPro != null)
+              Container(
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Utils.appColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.workspace_premium,
+                      size: 18,
+                      color: Utils.appColor,
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      controller.appService.appUser.value.isSubscribed
+                          ? 'pro'.tr
+                          : 'get_pro'.tr,
+                      style: Utils.getTextStyle(
+                        baseSize: 12,
+                        isBold: true,
+                        color: Utils.appColor,
+                        isUrdu: controller.isUrdu,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             Icon(Icons.chevron_right, color: Colors.grey[400]),
