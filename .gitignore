@@ -48,5 +48,7 @@ lib/firebase_options.dart
 android/app/google-services.json
 firebase.json
 
+ios/runner/GoogleService-Info.plist
+
 functions/drivoo-b5d4e-49184d5a9b99.json
 android/key.properties
