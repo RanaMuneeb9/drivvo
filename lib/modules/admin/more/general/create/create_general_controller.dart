@@ -77,7 +77,7 @@ class CreateGeneralController extends GetxController {
         try {
           final ref = FirebaseFirestore.instance
               .collection(DatabaseTables.USER_PROFILE)
-              .doc(appService.appUser.value.id)  
+              .doc(appService.appUser.value.id)
               .collection(collectionPath);
 
           //final ref = FirebaseFirestore.instance.collection(collectionPath);

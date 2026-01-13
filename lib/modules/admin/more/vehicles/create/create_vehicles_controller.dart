@@ -71,7 +71,7 @@ class CreateVehiclesController extends GetxController {
           appService.setCurrentVehicleId(id);
           return;
         }
-        
+
         await appService.getAllVehicleList();
         Get.back(closeOverlays: true);
         Utils.showSnackBar(

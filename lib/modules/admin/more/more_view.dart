@@ -70,28 +70,28 @@ class MoreView extends GetView<MoreController> {
                   }
                 },
               ),
-              _buildDivider(),
-              _buildTile(
-                imagePath: "assets/images/more/storage.png",
-                title: 'storage'.tr,
-                subtitle: 'storage_sub'.tr,
-                trailingInfo: '85%',
-                trailingColor: Color(0xFF00796B),
-                onTap: () {},
-              ),
-              _buildDivider(),
-              _buildTile(
-                imagePath: "assets/images/more/transfer.png",
-                title: 'transfer'.tr,
-                subtitle: 'transfer_sub'.tr,
-                onTap: () {
-                  if (controller.appService.appUser.value.isSubscribed) {
-                    return null;
-                  } else {
-                    Get.toNamed(AppRoutes.PLAN_VIEW);
-                  }
-                },
-              ),
+              // _buildDivider(),
+              // _buildTile(
+              //   imagePath: "assets/images/more/storage.png",
+              //   title: 'storage'.tr,
+              //   subtitle: 'storage_sub'.tr,
+              //   trailingInfo: '85%',
+              //   trailingColor: Color(0xFF00796B),
+              //   onTap: () {},
+              // ),
+              // _buildDivider(),
+              // _buildTile(
+              //   imagePath: "assets/images/more/transfer.png",
+              //   title: 'transfer'.tr,
+              //   subtitle: 'transfer_sub'.tr,
+              //   onTap: () {
+              //     if (controller.appService.appUser.value.isSubscribed) {
+              //       return null;
+              //     } else {
+              //       Get.toNamed(AppRoutes.PLAN_VIEW);
+              //     }
+              //   },
+              // ),
             ]),
             CardHeaderText(
               title: 'section_vehicles'.tr,

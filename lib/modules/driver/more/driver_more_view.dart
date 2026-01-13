@@ -40,35 +40,11 @@ class DriverMoreView extends GetView<DriverMoreController> {
             ),
             _buildSectionCard([
               _buildTile(
-                imagePath: "assets/images/more/plan.png",
-                title: 'premium_plans'.tr,
-                subtitle: 'premium_plans_sub'.tr,
-                onTap: () => Get.toNamed(AppRoutes.PLAN_VIEW),
-              ),
-              _buildDivider(),
-              _buildTile(
                 imagePath: "assets/images/more/account.png",
                 title: 'my_account'.tr,
                 subtitle: 'my_account_sub'.tr,
                 onTap: () => Get.toNamed(AppRoutes.UPDATE_PROFILE_VIEW),
               ),
-              _buildDivider(),
-              _buildTile(
-                imagePath: "assets/images/more/syncronize_data.png",
-                title: 'sync_data'.tr,
-                subtitle: 'sync_data_sub'.tr,
-                onTap: () {},
-              ),
-              _buildDivider(),
-              _buildTile(
-                imagePath: "assets/images/more/storage.png",
-                title: 'storage'.tr,
-                subtitle: 'storage_sub'.tr,
-                trailingInfo: '85%',
-                trailingColor: Color(0xFF00796B),
-                onTap: () {},
-              ),
-              _buildDivider(),
             ]),
 
             CardHeaderText(

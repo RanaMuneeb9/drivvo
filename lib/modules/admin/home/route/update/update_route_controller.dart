@@ -225,7 +225,9 @@ class UpdateRouteController extends GetxController {
 
       final newRouteMap = {
         "user_id": appService.appUser.value.id,
-        "vehicle_id": appService.currentVehicleId.value,
+        "vehicle_id": isAdmin
+            ? appService.currentVehicleId.value
+            : appService.driverCurrentVehicleId.value,
         "origin": originController.text.trim(),
         "start_date": model.value.startDate,
         "start_time": startTimeController.text.trim(),

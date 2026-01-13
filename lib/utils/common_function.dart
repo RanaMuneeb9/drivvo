@@ -26,6 +26,11 @@ class CommonFunction {
   //   return;
   // }
 
+  // TODO implement in last
+  // static Future<void> printFirebaseLog({required String pageName}) async {
+  //   await FirebaseAnalytics.instance.logEvent(name: pageName);
+  // }
+
   static Future<void> deleteAccount() async {
     final user = FirebaseAuth.instance.currentUser;
 

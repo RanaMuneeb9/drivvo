@@ -53,9 +53,9 @@ class UserVehicleController extends GetxController {
           .collection(DatabaseTables.USER_VEHICLE)
           .snapshots()
           .listen((docSnapshot) {
+            vehicleList.clear();
+            filterVehiclesList.clear();
             if (docSnapshot.docs.isNotEmpty) {
-              vehicleList.clear();
-              filterVehiclesList.clear();
               vehicleList.addAll(
                 docSnapshot.docs
                     .map((doc) => UserVehicleModel.fromJson(doc.data()))
@@ -82,5 +82,37 @@ class UserVehicleController extends GetxController {
               text.isEmpty,
         )
         .toList();
+  }
+
+  Future<void> deleteVehicle(UserVehicleModel model) async {
+    Utils.showProgressDialog();
+    try {
+      final batch = FirebaseFirestore.instance.batch();
+
+      final ref = FirebaseFirestore.instance
+          .collection(DatabaseTables.USER_PROFILE)
+          .doc(appService.appUser.value.id)
+          .collection(DatabaseTables.USER_VEHICLE);
+
+      batch.delete(ref.doc(model.id));
+
+      batch.update(
+        FirebaseFirestore.instance
+            .collection(DatabaseTables.USER_PROFILE)
+            .doc(appService.appUser.value.id)
+            .collection(DatabaseTables.VEHICLES)
+            .doc(model.vehicle.id),
+        {"driver_id": ""},
+      );
+
+      await batch.commit();
+
+      appService.setDriverCurrentVehicleId("");
+    } catch (e) {
+      Utils.showSnackBar(message: "something_went_wrong".tr, success: false);
+    } finally {
+      Get.back();
+      Get.back();
+    }
   }
 }

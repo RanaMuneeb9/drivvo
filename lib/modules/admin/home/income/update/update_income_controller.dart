@@ -157,7 +157,9 @@ class UpdateIncomeController extends GetxController {
 
       final newIncomeMap = {
         "user_id": appService.appUser.value.id,
-        "vehicle_id": appService.currentVehicleId.value,
+        "vehicle_id": isAdmin
+            ? appService.currentVehicleId.value
+            : appService.driverCurrentVehicleId.value,
         "time": timeController.text.trim(),
         "date": model.value.date,
         "odometer": model.value.odometer,

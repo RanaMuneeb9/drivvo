@@ -184,7 +184,9 @@ class UserVehicleView extends GetView<UserVehicleController> {
                                   GestureDetector(
                                     onTap: () => Utils.showAlertDialog(
                                       confirmMsg: "are_you_sure_delete".tr,
-                                      onTapYes: () {},
+                                      onTapYes: () {
+                                        controller.deleteVehicle(model);
+                                      },
                                       isUrdu: controller.isUrdu,
                                     ),
                                     child: Icon(
