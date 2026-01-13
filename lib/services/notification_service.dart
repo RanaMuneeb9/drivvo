@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:drivvo/model/reminder/reminder_model.dart';
@@ -22,7 +23,7 @@ class NotificationService {
     if (_initialized) return;
 
     await AwesomeNotifications().initialize(
-      'resource://mipmap/ic_launcher', // App icon
+      Platform.isAndroid ? 'resource://mipmap/ic_launcher' : null, // App icon
       [
         NotificationChannel(
           channelKey: 'daily_channel',
@@ -31,15 +32,67 @@ class NotificationService {
           importance: NotificationImportance.Max,
           defaultColor: Colors.blue,
           ledColor: Colors.white,
+          playSound: true,
+          enableVibration: true,
         ),
       ],
+      debug: true,
     );
 
     // Request permission if not granted
     await requestPermission();
 
+    // Set listeners to handle notification events and foreground presentation
+    await AwesomeNotifications().setListeners(
+        onActionReceivedMethod: onActionReceivedMethod,
+        onNotificationCreatedMethod: onNotificationCreatedMethod,
+        onNotificationDisplayedMethod: onNotificationDisplayedMethod,
+        onDismissActionReceivedMethod: onDismissActionReceivedMethod
+    );
+
     _initialized = true;
     debugPrint("Awesome Notifications initialized");
+
+    // TEST NOTIFICATION
+    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    debugPrint("Notification Permission Granted: $isAllowed");
+    
+    if (isAllowed) {
+       Timer(const Duration(seconds: 5), () {
+         showNotification(
+           title: "Test Notification",
+           body: "If you see this, notifications are working!",
+         );
+       });
+    } else {
+       debugPrint("Permissions not granted, requesting again...");
+       await requestPermission();
+    }
+  }
+
+  /// Use this method to detect when a new notification or a schedule is created
+  @pragma("vm:entry-point")
+  static Future <void> onNotificationCreatedMethod(ReceivedNotification receivedNotification) async {
+    // Your code goes here
+  }
+
+  /// Use this method to detect every time that a new notification is displayed
+  @pragma("vm:entry-point")
+  static Future <void> onNotificationDisplayedMethod(ReceivedNotification receivedNotification) async {
+    // Your code goes here
+  }
+
+  /// Use this method to detect if the user dismissed a notification
+  @pragma("vm:entry-point")
+  static Future <void> onDismissActionReceivedMethod(ReceivedAction receivedAction) async {
+    // Your code goes here
+  }
+
+  /// Use this method to detect when the user taps on a notification or action button
+  @pragma("vm:entry-point")
+  static Future <void> onActionReceivedMethod(ReceivedAction receivedAction) async {
+    // Navigate into pages, e.g.
+    // Get.toNamed(AppRoutes.NotificationPage);
   }
 
   Future<void> requestPermission() async {

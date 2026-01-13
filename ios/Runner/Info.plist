@@ -3,7 +3,12 @@
 <plist version="1.0">
 <dict>
 	<key>GIDClientID</key>
-	<string>496143642602-bnpnfev4s35v9q3h85kng18gkn3g66as.apps.googleusercontent.com</string>
+	<string>496143642602-vt9i50pblvnn2fpipiu8u4co6d0q5dpf.apps.googleusercontent.com</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -11,7 +16,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.496143642602-bnpnfev4s35v9q3h85kng18gkn3g66as</string>
+				<string>com.googleusercontent.apps.496143642602-vt9i50pblvnn2fpipiu8u4co6d0q5dpf</string>
 			</array>
 		</dict>
 	</array>
