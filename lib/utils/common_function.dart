@@ -1,35 +1,48 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drivvo/model/app_user.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/services/app_service.dart';
+import 'package:drivvo/utils/database_tables.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 class CommonFunction {
-  final appService = AppService.to;
-  // Future<void> getAllVehicleList() async {
-  //   try {
-  //     final snapshot = await FirebaseFirestore.instance
-  //         .collection(DatabaseTables.USER_PROFILE)
-  //         .doc(appService.appUser.value.id)
-  //         .collection(DatabaseTables.VEHICLES)
-  //         .get();
-
-  //     if (snapshot.docs.isNotEmpty) {
-  //       appService.allVehiclesCount.value = snapshot.docs.length;
-  //       await appService._box.write(Constants.ALL_VEHICLES_COUNT, snapshot.docs.length);
-  //       return;
-  //     }
-  //   } catch (e) {
-  //     debugPrint("getAllVehicleList error: $e");
-  //     return;
-  //   }
-  //   return;
-  // }
+  static final appService = AppService.to;
 
   // TODO implement in last
   // static Future<void> printFirebaseLog({required String pageName}) async {
   //   await FirebaseAnalytics.instance.logEvent(name: pageName);
   // }
+
+  static Future<void> checkAdminSubscription({required String adminId}) async {
+    if (adminId.isEmpty) {
+      appService.isAdminSubscribed.value = false;
+      return;
+    }
+    try {
+      final response = await FirebaseFirestore.instance
+          .collection(DatabaseTables.USER_PROFILE)
+          .doc(adminId)
+          .get();
+
+      if (response.exists) {
+        Map<String, dynamic>? data = response.data();
+        if (data != null) {
+          final userData = AppUser.fromJson(data);
+          if (userData.isSubscribed) {
+            appService.isAdminSubscribed.value = true;
+            return;
+          }
+        }
+      }
+      appService.isAdminSubscribed.value = false;
+      return;
+    } catch (e) {
+      appService.isAdminSubscribed.value = false;
+      return;
+    }
+  }
 
   static Future<void> deleteAccount() async {
     final user = FirebaseAuth.instance.currentUser;

@@ -420,14 +420,25 @@ class UpdateRouteView extends GetView<UpdateRouteController> {
                   const SizedBox(height: 16),
                   LabelText(title: "attach_file".tr, isUrdu: controller.isUrdu),
                   GestureDetector(
-                    onTap: () =>
-                        controller.appService.appUser.value.isSubscribed
+                    onTap: () => controller.isAdmin
+                        ? controller.appService.appUser.value.isSubscribed
+                              ? Utils.showImagePicker(
+                                  isUrdu: controller.isUrdu,
+                                  pickFile: (path) =>
+                                      controller.filePath.value = path,
+                                )
+                              : Get.toNamed(AppRoutes.PLAN_VIEW)
+                        : controller.appService.isAdminSubscribed.value
                         ? Utils.showImagePicker(
                             isUrdu: controller.isUrdu,
                             pickFile: (path) =>
                                 controller.filePath.value = path,
                           )
-                        : Get.toNamed(AppRoutes.PLAN_VIEW),
+                        : Utils.showSnackBar(
+                            message:
+                                "Your administrator has not subscribed to the premium features",
+                            success: false,
+                          ),
                     child: Container(
                       width: double.maxFinite,
                       height: 200,

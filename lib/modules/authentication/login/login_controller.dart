@@ -6,6 +6,7 @@ import 'package:drivvo/model/general_model.dart';
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/services/iap_service.dart';
+import 'package:drivvo/utils/common_function.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
 import 'package:drivvo/utils/utils.dart';
@@ -208,6 +209,13 @@ class LoginController extends GetxController {
             Get.offAllNamed(AppRoutes.IMPORT_DATA_VIEW);
           }
         } else {
+          try {
+            await CommonFunction.checkAdminSubscription(
+              adminId: appService.appUser.value.adminId,
+            );
+          } catch (e) {
+            debugPrint("Error: $e");
+          }
           Get.offAllNamed(AppRoutes.DRIVER_ROOT_VIEW);
         }
 

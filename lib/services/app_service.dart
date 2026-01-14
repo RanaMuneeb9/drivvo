@@ -27,6 +27,7 @@ class AppService extends GetxService {
   static AppService get to => Get.find();
 
   bool onBoarding = false;
+  var isAdminSubscribed = false.obs;
   var allVehiclesCount = 0.obs;
 
   var currentVehicleId = "".obs;
@@ -40,9 +41,7 @@ class AppService extends GetxService {
   var routeFilter = true.obs;
   var selectedDateRange = Rxn<DateRangeModel>();
   final FirebaseFirestore db = FirebaseFirestore.instance;
-  StreamSubscription? _userSubscription;
-  StreamSubscription? _vehicleSubscription;
-  StreamSubscription? _driverVehicleSubscription;
+
   bool _isInitializingSubscriptions = false;
 
   String _languageCode = "";
@@ -61,8 +60,11 @@ class AppService extends GetxService {
   var selectedCurrencyName = "Pakistani Rupee".obs;
 
   final connected = false.obs;
-  StreamSubscription<List<ConnectivityResult>>? _connectionSubscription;
   StreamSubscription<User?>? _authSubscription;
+  StreamSubscription<List<ConnectivityResult>>? _connectionSubscription;
+  StreamSubscription? _userSubscription;
+  StreamSubscription? _vehicleSubscription;
+  StreamSubscription? _driverVehicleSubscription;
 
   Future<AppService> init() async {
     // Initial connectivity check
@@ -126,7 +128,7 @@ class AppService extends GetxService {
     fuelUnit.value = _box.read<String>(Constants.FUEL_UNIT) ?? "Liter (L)";
     gasUnit.value = _box.read<String>(Constants.GAS_UNIT) ?? "m³";
     notificationTime.value =
-        _box.read<String>(Constants.NOTIFICATION_TIME) ?? "";
+        _box.read<String>(Constants.NOTIFICATION_TIME) ?? "12:00 PM";
 
     // Load saved currency format
     selectedCurrencySymbol.value =
