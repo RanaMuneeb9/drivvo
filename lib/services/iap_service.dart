@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:drivvo/services/app_service.dart';
@@ -305,6 +306,10 @@ class IAPService extends GetxService with WidgetsBindingObserver {
       return false;
     }
 
+    debugPrint(
+      "Starting _verifyPurchase. Product: ${purchaseDetails.productID}, Type: ${purchaseDetails.runtimeType}",
+    );
+
     // Guard: Ensure auth token is fresh
     try {
       // Refresh the token if it's about to expire (within 5 minutes)
@@ -332,17 +337,49 @@ class IAPService extends GetxService with WidgetsBindingObserver {
 
       if (Platform.isIOS) {
         functionName = 'verifyAppStorePurchase';
-        final appStoreDetails = purchaseDetails as AppStorePurchaseDetails;
-        final originalTransaction =
-            appStoreDetails.skPaymentTransaction.originalTransaction;
-        final originalTransactionId =
-            originalTransaction?.transactionIdentifier ??
-            appStoreDetails.skPaymentTransaction.transactionIdentifier;
+        String? originalTransactionId;
+
+        if (purchaseDetails is AppStorePurchaseDetails) {
+          final appStoreDetails = purchaseDetails;
+          final originalTransaction =
+              appStoreDetails.skPaymentTransaction.originalTransaction;
+          originalTransactionId =
+              originalTransaction?.transactionIdentifier ??
+              appStoreDetails.skPaymentTransaction.transactionIdentifier;
+        } else {
+          // Handle StoreKit 2 (SK2PurchaseDetails)
+          // Extract originalTransactionId from JWS token in serverVerificationData
+          try {
+            final token =
+                purchaseDetails.verificationData.serverVerificationData;
+            debugPrint("Processing SK2 Token (Length: ${token.length})");
+
+            final parts = token.split('.');
+            if (parts.length == 3) {
+              final payload = parts[1];
+              final normalized = base64Url.normalize(payload);
+              final jsonString = utf8.decode(base64Url.decode(normalized));
+              final map = json.decode(jsonString);
+              debugPrint("SK2 Payload: $map");
+              originalTransactionId = map['originalTransactionId'] as String?;
+            } else {
+              debugPrint(
+                "SK2 Token is not a valid JWT (parts: ${parts.length})",
+              );
+              // Fallback: Use string as is if looks like an ID? No, unsafe.
+            }
+          } catch (e) {
+            debugPrint("Error parsing SK2 token: $e");
+          }
+        }
 
         if (originalTransactionId == null) {
+          debugPrint("Failed to extract Original Transaction ID");
           iapError.value = "Verification failed: Transaction ID missing";
           return false;
         }
+
+        debugPrint("Extracted Original Transaction ID: $originalTransactionId");
 
         data = {
           'productId': purchaseDetails.productID,
@@ -437,10 +474,11 @@ class IAPService extends GetxService with WidgetsBindingObserver {
   void _handleInvalidPurchase(PurchaseDetails purchaseDetails) {
     isPurchasing.value = false;
     Utils.showSnackBar(
-        message: iapError.value.isNotEmpty
-            ? iapError.value
-            : "purchase_verification_failed",
-        success: false);
+      message: iapError.value.isNotEmpty
+          ? iapError.value
+          : "purchase_verification_failed",
+      success: false,
+    );
   }
 
   /// Refresh user data from backend

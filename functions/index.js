@@ -409,6 +409,11 @@ exports.checkSubscriptionStatus = onCall(
     const data = snap.data();
     let isEntitled = data.isEntitled || false;
 
+    // Safety check: If productId is missing, data is invalid
+    if (!data.productId) {
+      isEntitled = false;
+    }
+
     // Check for expiration
     if (isEntitled && data.expiryTimeMillis) {
       if (Date.now() > data.expiryTimeMillis) {

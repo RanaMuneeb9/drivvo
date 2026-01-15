@@ -1,5 +1,12 @@
 class Constants {
   // ignore: constant_identifier_names
+  static const String APP_STORE_URL =
+      "https://apps.apple.com/account/subscriptions";
+  // ignore: constant_identifier_names
+  static const String PLAY_STORE_URL =
+      "https://play.google.com/store/account/subscriptions";
+  // ignore: constant_identifier_names
+
   static const String EXPENSE_TYPES = "expense_types";
   // ignore: constant_identifier_names
   static const String INCOME_TYPES = "income_types";

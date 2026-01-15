@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
@@ -158,11 +160,16 @@ class MoreController extends GetxController {
 
   Future<void> onPremiumPlanTap() async {
     if (appService.appUser.value.isSubscribed) {
-      final Uri url = Uri.parse(
-        "https://play.google.com/store/account/subscriptions",
-      );
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
+      if (Platform.isIOS) {
+        final Uri url = Uri.parse(Constants.APP_STORE_URL);
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        }
+      } else {
+        final Uri url = Uri.parse(Constants.PLAY_STORE_URL);
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        }
       }
     } else {
       Get.toNamed(AppRoutes.PLAN_VIEW);
