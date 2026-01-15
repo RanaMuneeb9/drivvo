@@ -436,7 +436,11 @@ class IAPService extends GetxService with WidgetsBindingObserver {
 
   void _handleInvalidPurchase(PurchaseDetails purchaseDetails) {
     isPurchasing.value = false;
-    Utils.showSnackBar(message: "purchase_verification_failed", success: false);
+    Utils.showSnackBar(
+        message: iapError.value.isNotEmpty
+            ? iapError.value
+            : "purchase_verification_failed",
+        success: false);
   }
 
   /// Refresh user data from backend

@@ -661,7 +661,7 @@ exports.refreshAppStorePurchase = onCall(
     console.log(`Refreshing App Store subscription for user: ${uid}`);
 
     try {
-      const subRef = admin.firestore().doc(`users/${uid}/subscriptions/current`);
+      const subRef = admin.firestore().doc(`UserProfile/${uid}`);
       const snap = await subRef.get();
 
       if (!snap.exists) {
