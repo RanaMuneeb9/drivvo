@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 
 class IAPService extends GetxService with WidgetsBindingObserver {
   static IAPService get to => Get.find();
@@ -38,6 +39,8 @@ class IAPService extends GetxService with WidgetsBindingObserver {
   static const Set<String> _productIds = {
     'monthly_subscription',
     'yearly_subscription',
+    'carlog_monthly_ios',
+    'carlog_yearly_ios',
   };
 
   @override
@@ -212,8 +215,12 @@ class IAPService extends GetxService with WidgetsBindingObserver {
     try {
       debugPrint("Refreshing subscription status from backend...");
 
+      final String functionName = Platform.isIOS
+          ? 'refreshAppStorePurchase'
+          : 'refreshPlayPurchase';
+
       final HttpsCallableResult result = await _functions
-          .httpsCallable('refreshPlayPurchase')
+          .httpsCallable(functionName)
           .call();
 
       final response = result.data as Map<String, dynamic>?;
@@ -320,14 +327,38 @@ class IAPService extends GetxService with WidgetsBindingObserver {
       iapError.value = '';
 
       // Match the payload exactly to what the Cloud Function expects
-      final Map<String, dynamic> data = {
-        'productId': purchaseDetails.productID,
-        'purchaseToken':
-            purchaseDetails.verificationData.serverVerificationData,
-      };
+      final String functionName;
+      final Map<String, dynamic> data;
+
+      if (Platform.isIOS) {
+        functionName = 'verifyAppStorePurchase';
+        final appStoreDetails = purchaseDetails as AppStorePurchaseDetails;
+        final originalTransaction =
+            appStoreDetails.skPaymentTransaction.originalTransaction;
+        final originalTransactionId =
+            originalTransaction?.transactionIdentifier ??
+            appStoreDetails.skPaymentTransaction.transactionIdentifier;
+
+        if (originalTransactionId == null) {
+          iapError.value = "Verification failed: Transaction ID missing";
+          return false;
+        }
+
+        data = {
+          'productId': purchaseDetails.productID,
+          'originalTransactionId': originalTransactionId,
+        };
+      } else {
+        functionName = 'verifyPlayPurchase';
+        data = {
+          'productId': purchaseDetails.productID,
+          'purchaseToken':
+              purchaseDetails.verificationData.serverVerificationData,
+        };
+      }
 
       final HttpsCallableResult result = await _functions
-          .httpsCallable('verifyPlayPurchase')
+          .httpsCallable(functionName)
           .call(data);
 
       debugPrint("Verification Result: ${result.data}");

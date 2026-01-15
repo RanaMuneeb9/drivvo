@@ -26,17 +26,14 @@ admin.firestore().settings({ ignoreUndefinedProperties: true });
 // Define secrets using v2 API
 const PLAY_SERVICE_ACCOUNT_JSON = defineSecret("PLAY_SERVICE_ACCOUNT_JSON");
 const PLAY_PACKAGE_NAME = defineSecret("PLAY_PACKAGE_NAME");
-// const APP_STORE_KEY_ID = defineSecret("APP_STORE_KEY_ID");
-// const APP_STORE_ISSUER_ID = defineSecret("APP_STORE_ISSUER_ID");
-// const APP_STORE_PRIVATE_KEY = defineSecret("APP_STORE_PRIVATE_KEY");
-// const APP_STORE_BUNDLE_ID = defineSecret("APP_STORE_BUNDLE_ID");
+const APP_STORE_KEY_ID = defineSecret("APP_STORE_KEY_ID");
+const APP_STORE_ISSUER_ID = defineSecret("APP_STORE_ISSUER_ID");
+const APP_STORE_PRIVATE_KEY = defineSecret("APP_STORE_PRIVATE_KEY");
+const APP_STORE_BUNDLE_ID = defineSecret("APP_STORE_BUNDLE_ID");
 
-// // Google Play Product IDs
-// const PLAY_ID_MONTHLY_SUBS = "monthly_subs";
-
-// // App Store Product IDs
-// const IOS_ID_MONTHLY = "monthly_ios_subs";
-// const IOS_ID_LIFETIME = "lifetime_ios_activation";
+// App Store Product IDs
+const IOS_ID_MONTHLY = "carlog_monthly_ios";
+const IOS_ID_YEARLY = "carlog_yearly_ios";
 /**
  * Cloud Function to create a new user with email and password
  * This uses Firebase Admin SDK so the calling user doesn't get signed out
@@ -439,39 +436,39 @@ exports.checkSubscriptionStatus = onCall(
  * @param {string} environment - The environment: 'production' or 'sandbox'.
  * @return {AppStoreServerAPIClient} The configured client.
  */
-// function createAppStoreClient(environment = "production") {
-//   // Lazy load to avoid deployment timeout
-//   const { AppStoreServerAPIClient, Environment } = require("@apple/app-store-server-library");
+function createAppStoreClient(environment = "production") {
+  // Lazy load to avoid deployment timeout
+  const { AppStoreServerAPIClient, Environment } = require("@apple/app-store-server-library");
 
-//   const keyId = APP_STORE_KEY_ID.value();
-//   const issuerId = APP_STORE_ISSUER_ID.value();
-//   const bundleId = APP_STORE_BUNDLE_ID.value();
-//   let rawKey = APP_STORE_PRIVATE_KEY.value();
+  const keyId = APP_STORE_KEY_ID.value();
+  const issuerId = APP_STORE_ISSUER_ID.value();
+  const bundleId = APP_STORE_BUNDLE_ID.value();
+  let rawKey = APP_STORE_PRIVATE_KEY.value();
 
-//   if (!rawKey || !keyId || !issuerId || !bundleId) {
-//     throw new functions.https.HttpsError(
-//       "internal",
-//       "Missing App Store configuration secrets."
-//     );
-//   }
+  if (!rawKey || !keyId || !issuerId || !bundleId) {
+    throw new functions.https.HttpsError(
+      "internal",
+      "Missing App Store configuration secrets."
+    );
+  }
 
-//   // Format the private key if needed
-//   if (rawKey) {
-//     rawKey = rawKey.replace(/\\n/g, "\n");
-//     if (!rawKey.includes("-----BEGIN PRIVATE KEY-----\n")) {
-//       rawKey = rawKey.replace("-----BEGIN PRIVATE KEY-----", "-----BEGIN PRIVATE KEY-----\n");
-//     }
-//     if (!rawKey.includes("\n-----END PRIVATE KEY-----")) {
-//       rawKey = rawKey.replace("-----END PRIVATE KEY-----", "\n-----END PRIVATE KEY-----");
-//     }
-//   }
+  // Format the private key if needed
+  if (rawKey) {
+    rawKey = rawKey.replace(/\\n/g, "\n");
+    if (!rawKey.includes("-----BEGIN PRIVATE KEY-----\n")) {
+      rawKey = rawKey.replace("-----BEGIN PRIVATE KEY-----", "-----BEGIN PRIVATE KEY-----\n");
+    }
+    if (!rawKey.includes("\n-----END PRIVATE KEY-----")) {
+      rawKey = rawKey.replace("-----END PRIVATE KEY-----", "\n-----END PRIVATE KEY-----");
+    }
+  }
 
-//   const env = environment === "sandbox"
-//     ? Environment.SANDBOX
-//     : Environment.PRODUCTION;
+  const env = environment === "sandbox"
+    ? Environment.SANDBOX
+    : Environment.PRODUCTION;
 
-//   return new AppStoreServerAPIClient(rawKey, keyId, issuerId, bundleId, env);
-// }
+  return new AppStoreServerAPIClient(rawKey, keyId, issuerId, bundleId, env);
+}
 
 /**
  * Normalizes the subscription status from App Store Server API.
@@ -523,300 +520,249 @@ function normalizeAppStoreStatus(status, transactionInfo) {
  * Verifies a new App Store purchase and saves data to Firestore.
  * Uses Apple's official app-store-server-library for API calls.
  */
-// exports.verifyAppStorePurchase = onCall(
-//   {
-//     enforceAppCheck: false,
-//     secrets: [APP_STORE_KEY_ID, APP_STORE_ISSUER_ID, APP_STORE_PRIVATE_KEY, APP_STORE_BUNDLE_ID],
-//   },
-//   async (request) => {
-//     const BUNDLE_ID = APP_STORE_BUNDLE_ID.value();
-//     if (!BUNDLE_ID) {
-//       throw new functions.https.HttpsError("internal", "Missing bundle ID.");
-//     }
+exports.verifyAppStorePurchase = onCall(
+  {
+    enforceAppCheck: false,
+    secrets: [APP_STORE_KEY_ID, APP_STORE_ISSUER_ID, APP_STORE_PRIVATE_KEY, APP_STORE_BUNDLE_ID],
+  },
+  async (request) => {
+    const BUNDLE_ID = APP_STORE_BUNDLE_ID.value();
+    if (!BUNDLE_ID) {
+      throw new functions.https.HttpsError("internal", "Missing bundle ID.");
+    }
 
-//     if (!request.auth) {
-//       throw new functions.https.HttpsError("unauthenticated", "Authentication required.");
-//     }
+    if (!request.auth) {
+      throw new functions.https.HttpsError("unauthenticated", "Authentication required.");
+    }
 
-//     const { productId, originalTransactionId } = request.data || {};
-//     if (!productId || !originalTransactionId) {
-//       throw new functions.https.HttpsError("invalid-argument", "productId and originalTransactionId are required.");
-//     }
+    const { productId, originalTransactionId } = request.data || {};
+    if (!productId || !originalTransactionId) {
+      throw new functions.https.HttpsError("invalid-argument", "productId and originalTransactionId are required.");
+    }
 
-//     // Validate product IDs
-//     if (productId !== IOS_ID_MONTHLY && productId !== IOS_ID_LIFETIME) {
-//       throw new functions.https.HttpsError("invalid-argument", "Invalid product ID.");
-//     }
+    // Validate product IDs
+    if (productId !== IOS_ID_MONTHLY && productId !== IOS_ID_YEARLY) {
+      throw new functions.https.HttpsError("invalid-argument", "Invalid product ID.");
+    }
 
-//     const uid = request.auth.uid;
-//     console.log(`Verifying App Store purchase for user: ${uid}, product: ${productId}`);
+    const uid = request.auth.uid;
+    console.log(`Verifying App Store purchase for user: ${uid}, product: ${productId}`);
 
-//     try {
-//       let purchaseData;
-//       let environment = "production";
+    try {
+      let purchaseData;
+      let environment = "production";
 
-//       // Helper to attempt verification using official Apple library
-//       const attemptVerification = async (env) => {
-//         const client = createAppStoreClient(env);
+      // Helper to attempt verification using official Apple library
+      const attemptVerification = async (env) => {
+        const client = createAppStoreClient(env);
 
-//         if (productId === IOS_ID_LIFETIME) {
-//           // For lifetime (non-consumable), get transaction info
-//           const transactionInfo = await client.getTransactionInfo(originalTransactionId);
-//           console.log(`Transaction Info (${env}):`, transactionInfo);
+        // For subscriptions, use getAllSubscriptionStatuses
+        const response = await client.getAllSubscriptionStatuses(originalTransactionId);
+        console.log(`Subscription response (${env}):`, JSON.stringify(response));
 
-//           let isEntitled = true;
-//           let subscriptionState = "PRODUCT_STATE_PURCHASED";
+        // Extract subscription info from response
+        const subscriptionGroup = response.data && response.data[0];
+        const lastTransaction = subscriptionGroup && subscriptionGroup.lastTransactions && subscriptionGroup.lastTransactions[0];
 
-//           // The library automatically decodes the JWS - signedTransactionInfo is already decoded
-//           if (transactionInfo && transactionInfo.signedTransactionInfo) {
-//             const txInfo = transactionInfo.signedTransactionInfo;
-//             if (txInfo.revocationDate) {
-//               isEntitled = false;
-//               subscriptionState = "PRODUCT_STATE_CANCELED";
-//               console.log(`Lifetime purchase revoked on ${txInfo.revocationDate}`);
-//             }
-//           }
+        if (!lastTransaction) {
+          throw new Error("No transaction data found in response");
+        }
 
-//           return {
-//             isEntitled,
-//             subscriptionState,
-//             expiryTimeMillis: null,
-//             autoRenewing: false,
-//             type: "lifetime",
-//           };
-//         } else {
-//           // For subscriptions, use getAllSubscriptionStatuses
-//           const response = await client.getAllSubscriptionStatuses(originalTransactionId);
-//           console.log(`Subscription response (${env}):`, JSON.stringify(response));
+        // The library decodes JWS automatically - signedTransactionInfo is already decoded
+        const transactionInfo = lastTransaction.signedTransactionInfo;
+        console.log(`Transaction Info (${env}):`, transactionInfo);
 
-//           // Extract subscription info from response
-//           const subscriptionGroup = response.data && response.data[0];
-//           const lastTransaction = subscriptionGroup && subscriptionGroup.lastTransactions && subscriptionGroup.lastTransactions[0];
+        return normalizeAppStoreStatus(lastTransaction.status, transactionInfo);
+      };
 
-//           if (!lastTransaction) {
-//             throw new Error("No transaction data found in response");
-//           }
+      // Try production first, then sandbox (per Apple's recommendation)
+      try {
+        console.log(`Attempting production verification for transactionId: ${originalTransactionId}`);
+        purchaseData = await attemptVerification("production");
+        console.log("Production verification succeeded");
+      } catch (err) {
+        console.log(`Production failed: ${err.message}, trying sandbox...`);
+        try {
+          purchaseData = await attemptVerification("sandbox");
+          environment = "sandbox";
+          console.log("Sandbox verification succeeded");
+        } catch (sandboxErr) {
+          console.error(`Both production and sandbox verification failed. Production: ${err.message}, Sandbox: ${sandboxErr.message}`);
+          throw new Error(`Verification failed. Prod: ${err.message}, Sandbox: ${sandboxErr.message}`);
+        }
+      }
 
-//           // The library decodes JWS automatically - signedTransactionInfo is already decoded
-//           const transactionInfo = lastTransaction.signedTransactionInfo;
-//           console.log(`Transaction Info (${env}):`, transactionInfo);
+      // Atomic check and write using transaction
+      await admin.firestore().runTransaction(async (transaction) => {
+        const mappingRef = admin.firestore().doc(`originalTransactionIds/${originalTransactionId}`);
+        const mappingSnap = await transaction.get(mappingRef);
 
-//           return normalizeAppStoreStatus(lastTransaction.status, transactionInfo);
-//         }
-//       };
+        if (mappingSnap.exists && mappingSnap.data().userId !== uid) {
+          throw new functions.https.HttpsError("already-exists", "This purchase is already associated with another account.");
+        }
 
-//       // Try production first, then sandbox (per Apple's recommendation)
-//       try {
-//         console.log(`Attempting production verification for transactionId: ${originalTransactionId}`);
-//         purchaseData = await attemptVerification("production");
-//         console.log("Production verification succeeded");
-//       } catch (err) {
-//         console.log(`Production failed: ${err.message}, trying sandbox...`);
-//         try {
-//           purchaseData = await attemptVerification("sandbox");
-//           environment = "sandbox";
-//           console.log("Sandbox verification succeeded");
-//         } catch (sandboxErr) {
-//           console.error(`Both production and sandbox verification failed. Production: ${err.message}, Sandbox: ${sandboxErr.message}`);
-//           throw new Error(`Verification failed. Prod: ${err.message}, Sandbox: ${sandboxErr.message}`);
-//         }
-//       }
+        const docRef = admin.firestore().doc(`UserProfile/${uid}/`);
 
-//       // Atomic check and write using transaction
-//       await admin.firestore().runTransaction(async (transaction) => {
-//         const mappingRef = admin.firestore().doc(`originalTransactionIds/${originalTransactionId}`);
-//         const mappingSnap = await transaction.get(mappingRef);
+        // Write the ID mapping
+        transaction.set(mappingRef, {
+          userId: uid,
+          productId,
+          store: "app_store",
+          environment,
+          verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+        }, { merge: true });
 
-//         if (mappingSnap.exists && mappingSnap.data().userId !== uid) {
-//           throw new functions.https.HttpsError("already-exists", "This purchase is already associated with another account.");
-//         }
+        // Write the subscription data
+        transaction.set(docRef, {
+          store: "app_store",
+          productId,
+          originalTransactionId,
+          bundleId: BUNDLE_ID,
+          environment,
+          userId: uid,
+          ...purchaseData,
+          verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+          lastCheckedAt: admin.firestore.FieldValue.serverTimestamp(),
+        }, { merge: true });
+      });
 
-//         const docRef = admin.firestore().doc(`UserProfile/${uid}/`);
-
-//         // Write the ID mapping
-//         transaction.set(mappingRef, {
-//           userId: uid,
-//           productId,
-//           store: "app_store",
-//           environment,
-//           verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
-//         }, { merge: true });
-
-//         // Write the subscription data
-//         transaction.set(docRef, {
-//           store: "app_store",
-//           productId,
-//           originalTransactionId,
-//           bundleId: BUNDLE_ID,
-//           environment,
-//           userId: uid,
-//           ...purchaseData,
-//           verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
-//           lastCheckedAt: admin.firestore.FieldValue.serverTimestamp(),
-//         }, { merge: true });
-//       });
-
-//       console.log(`App Store purchase verified successfully for user: ${uid}`);
-//       return purchaseData;
-//     } catch (err) {
-//       console.error("verifyAppStorePurchase failed:", err);
-//       if (err instanceof functions.https.HttpsError) {
-//         throw err;
-//       }
-//       throw new functions.https.HttpsError("internal", "Failed to verify App Store purchase.", { originalMessage: err?.message || String(err) });
-//     }
-//   },
-// );
+      console.log(`App Store purchase verified successfully for user: ${uid}`);
+      return purchaseData;
+    } catch (err) {
+      console.error("verifyAppStorePurchase failed:", err);
+      if (err instanceof functions.https.HttpsError) {
+        throw err;
+      }
+      throw new functions.https.HttpsError("internal", "Failed to verify App Store purchase.", { originalMessage: err?.message || String(err) });
+    }
+  },
+);
 
 /**
  * Refreshes the current user's existing App Store purchase status.
  * Uses Apple's official app-store-server-library for API calls.
  */
-// exports.refreshAppStorePurchase = onCall(
-//   {
-//     enforceAppCheck: false,
-//     secrets: [APP_STORE_KEY_ID, APP_STORE_ISSUER_ID, APP_STORE_PRIVATE_KEY, APP_STORE_BUNDLE_ID],
-//   },
-//   async (request) => {
-//     const BUNDLE_ID = APP_STORE_BUNDLE_ID.value();
-//     if (!BUNDLE_ID) {
-//       throw new functions.https.HttpsError("internal", "Missing bundle ID.");
-//     }
+exports.refreshAppStorePurchase = onCall(
+  {
+    enforceAppCheck: false,
+    secrets: [APP_STORE_KEY_ID, APP_STORE_ISSUER_ID, APP_STORE_PRIVATE_KEY, APP_STORE_BUNDLE_ID],
+  },
+  async (request) => {
+    const BUNDLE_ID = APP_STORE_BUNDLE_ID.value();
+    if (!BUNDLE_ID) {
+      throw new functions.https.HttpsError("internal", "Missing bundle ID.");
+    }
 
-//     if (!request.auth) {
-//       throw new functions.https.HttpsError("unauthenticated", "Authentication required.");
-//     }
+    if (!request.auth) {
+      throw new functions.https.HttpsError("unauthenticated", "Authentication required.");
+    }
 
-//     const uid = request.auth.uid;
-//     console.log(`Refreshing App Store subscription for user: ${uid}`);
+    const uid = request.auth.uid;
+    console.log(`Refreshing App Store subscription for user: ${uid}`);
 
-//     try {
-//       const subRef = admin.firestore().doc(`users/${uid}/subscriptions/current`);
-//       const snap = await subRef.get();
+    try {
+      const subRef = admin.firestore().doc(`users/${uid}/subscriptions/current`);
+      const snap = await subRef.get();
 
-//       if (!snap.exists) {
-//         console.log(`No subscription found for user: ${uid}`);
-//         return { isEntitled: false, subscriptionState: "UNSPECIFIED" };
-//       }
+      if (!snap.exists) {
+        console.log(`No subscription found for user: ${uid}`);
+        return { isEntitled: false, subscriptionState: "UNSPECIFIED" };
+      }
 
-//       const info = snap.data();
-//       if (info.userId && info.userId !== uid) {
-//         throw new functions.https.HttpsError("permission-denied", "Unauthorized access.");
-//       }
+      const info = snap.data();
+      if (info.userId && info.userId !== uid) {
+        throw new functions.https.HttpsError("permission-denied", "Unauthorized access.");
+      }
 
-//       if (info.store !== "app_store") {
-//         console.log(`Subscription is not from App Store (store: ${info.store})`);
-//         return { isEntitled: info.isEntitled || false, subscriptionState: info.subscriptionState || "UNSPECIFIED" };
-//       }
+      if (info.store !== "app_store") {
+        console.log(`Subscription is not from App Store (store: ${info.store})`);
+        return { isEntitled: info.isEntitled || false, subscriptionState: info.subscriptionState || "UNSPECIFIED" };
+      }
 
-//       const originalTransactionId = info.originalTransactionId;
-//       const productId = info.productId;
-//       if (!originalTransactionId || !productId) {
-//         console.log(`No originalTransactionId found for user: ${uid}`);
-//         return { isEntitled: false, subscriptionState: "UNSPECIFIED" };
-//       }
+      const originalTransactionId = info.originalTransactionId;
+      const productId = info.productId;
+      if (!originalTransactionId || !productId) {
+        console.log(`No originalTransactionId found for user: ${uid}`);
+        return { isEntitled: false, subscriptionState: "UNSPECIFIED" };
+      }
 
-//       // GRACE PERIOD PROTECTION:
-//       // If subscription was recently verified (within last 60 seconds),
-//       // skip App Store API call to avoid overwriting with stale data.
-//       const verifiedAt = info.verifiedAt;
-//       if (verifiedAt) {
-//         const verifiedTime = verifiedAt.toMillis ? verifiedAt.toMillis() : verifiedAt._seconds * 1000;
-//         const now = Date.now();
-//         const gracePeriodMs = 60 * 1000; // 60 seconds
-//         if (now - verifiedTime < gracePeriodMs) {
-//           console.log(
-//             `Subscription was recently verified (${Math.round((now - verifiedTime) / 1000)}s ago). ` +
-//             `Returning cached data to avoid race condition with App Store API.`
-//           );
-//           return {
-//             isEntitled: info.isEntitled || false,
-//             subscriptionState: info.subscriptionState || "UNSPECIFIED",
-//             expiryTimeMillis: info.expiryTimeMillis,
-//             autoRenewing: info.autoRenewing,
-//           };
-//         }
-//       }
+      // GRACE PERIOD PROTECTION:
+      // If subscription was recently verified (within last 60 seconds),
+      // skip App Store API call to avoid overwriting with stale data.
+      const verifiedAt = info.verifiedAt;
+      if (verifiedAt) {
+        const verifiedTime = verifiedAt.toMillis ? verifiedAt.toMillis() : verifiedAt._seconds * 1000;
+        const now = Date.now();
+        const gracePeriodMs = 60 * 1000; // 60 seconds
+        if (now - verifiedTime < gracePeriodMs) {
+          console.log(
+            `Subscription was recently verified (${Math.round((now - verifiedTime) / 1000)}s ago). ` +
+            `Returning cached data to avoid race condition with App Store API.`
+          );
+          return {
+            isEntitled: info.isEntitled || false,
+            subscriptionState: info.subscriptionState || "UNSPECIFIED",
+            expiryTimeMillis: info.expiryTimeMillis,
+            autoRenewing: info.autoRenewing,
+          };
+        }
+      }
 
-//       let environment = info.environment || "production";
-//       let purchaseData;
+      let environment = info.environment || "production";
+      let purchaseData;
 
-//       // Helper to attempt refresh using official Apple library
-//       const attemptRefresh = async (env) => {
-//         const client = createAppStoreClient(env);
+      // Helper to attempt refresh using official Apple library
+      const attemptRefresh = async (env) => {
+        const client = createAppStoreClient(env);
 
-//         if (productId === IOS_ID_LIFETIME) {
-//           const transactionInfo = await client.getTransactionInfo(originalTransactionId);
+        const response = await client.getAllSubscriptionStatuses(originalTransactionId);
 
-//           let isEntitled = true;
-//           let subscriptionState = "PRODUCT_STATE_PURCHASED";
+        const subscriptionGroup = response.data && response.data[0];
+        const lastTransaction = subscriptionGroup && subscriptionGroup.lastTransactions && subscriptionGroup.lastTransactions[0];
 
-//           if (transactionInfo && transactionInfo.signedTransactionInfo) {
-//             const txInfo = transactionInfo.signedTransactionInfo;
-//             if (txInfo.revocationDate) {
-//               isEntitled = false;
-//               subscriptionState = "PRODUCT_STATE_CANCELED";
-//               console.log(`Lifetime purchase revoked on refresh: ${txInfo.revocationDate}`);
-//             }
-//           }
+        if (!lastTransaction) {
+          throw new Error("No transaction data found in response");
+        }
 
-//           return {
-//             isEntitled,
-//             subscriptionState,
-//             expiryTimeMillis: null,
-//             autoRenewing: false,
-//             type: "lifetime",
-//           };
-//         } else {
-//           const response = await client.getAllSubscriptionStatuses(originalTransactionId);
+        const transactionInfo = lastTransaction.signedTransactionInfo;
+        return normalizeAppStoreStatus(lastTransaction.status, transactionInfo);
+      };
 
-//           const subscriptionGroup = response.data && response.data[0];
-//           const lastTransaction = subscriptionGroup && subscriptionGroup.lastTransactions && subscriptionGroup.lastTransactions[0];
+      try {
+        console.log(`Attempting ${environment} refresh for transactionId: ${originalTransactionId}`);
+        purchaseData = await attemptRefresh(environment);
+        console.log(`${environment} refresh succeeded`);
+      } catch (err) {
+        if (environment === "production") {
+          console.log(`Production refresh failed: ${err.message}, trying sandbox fallback...`);
+          try {
+            purchaseData = await attemptRefresh("sandbox");
+            environment = "sandbox";
+            console.log("Sandbox refresh succeeded");
+            // Update environment in Firestore
+            await subRef.set({ environment: "sandbox" }, { merge: true });
+          } catch (sandboxErr) {
+            console.error(`Both production and sandbox refresh failed. Production: ${err.message}, Sandbox: ${sandboxErr.message}`);
+            throw new Error(`Refresh failed. Prod: ${err.message}, Sandbox: ${sandboxErr.message}`);
+          }
+        } else {
+          throw err;
+        }
+      }
 
-//           if (!lastTransaction) {
-//             throw new Error("No transaction data found in response");
-//           }
+      await subRef.set(
+        {
+          ...purchaseData,
+          lastCheckedAt: admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true },
+      );
 
-//           const transactionInfo = lastTransaction.signedTransactionInfo;
-//           return normalizeAppStoreStatus(lastTransaction.status, transactionInfo);
-//         }
-//       };
-
-//       try {
-//         console.log(`Attempting ${environment} refresh for transactionId: ${originalTransactionId}`);
-//         purchaseData = await attemptRefresh(environment);
-//         console.log(`${environment} refresh succeeded`);
-//       } catch (err) {
-//         if (environment === "production") {
-//           console.log(`Production refresh failed: ${err.message}, trying sandbox fallback...`);
-//           try {
-//             purchaseData = await attemptRefresh("sandbox");
-//             environment = "sandbox";
-//             console.log("Sandbox refresh succeeded");
-//             // Update environment in Firestore
-//             await subRef.set({ environment: "sandbox" }, { merge: true });
-//           } catch (sandboxErr) {
-//             console.error(`Both production and sandbox refresh failed. Production: ${err.message}, Sandbox: ${sandboxErr.message}`);
-//             throw new Error(`Refresh failed. Prod: ${err.message}, Sandbox: ${sandboxErr.message}`);
-//           }
-//         } else {
-//           throw err;
-//         }
-//       }
-
-//       await subRef.set(
-//         {
-//           ...purchaseData,
-//           lastCheckedAt: admin.firestore.FieldValue.serverTimestamp(),
-//         },
-//         { merge: true },
-//       );
-
-//       console.log(`App Store subscription refreshed for user: ${uid}, entitled: ${purchaseData.isEntitled}`);
-//       return purchaseData;
-//     } catch (err) {
-//       console.error("refreshAppStorePurchase failed:", err);
-//       throw new functions.https.HttpsError("internal", "Failed to refresh App Store status.");
-//     }
-//   },
-// );
+      console.log(`App Store subscription refreshed for user: ${uid}, entitled: ${purchaseData.isEntitled}`);
+      return purchaseData;
+    } catch (err) {
+      console.error("refreshAppStorePurchase failed:", err);
+      throw new functions.https.HttpsError("internal", "Failed to refresh App Store status.");
+    }
+  },
+);
