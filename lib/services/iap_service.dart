@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:drivvo/services/app_service.dart';
@@ -494,7 +494,7 @@ class IAPService extends GetxService with WidgetsBindingObserver {
       try {
         final HttpsCallableResult result = await _functions
             .httpsCallable('checkSubscriptionStatus')
-            .call();
+            .call({'platform': Platform.isIOS ? 'ios' : 'android'});
 
         final response = result.data as Map<String, dynamic>?;
         if (response != null) {
@@ -502,7 +502,7 @@ class IAPService extends GetxService with WidgetsBindingObserver {
 
           final isEntitled = response['isEntitled'] as bool? ?? false;
           debugPrint(
-            "Subscription status checked via Cloud Function. Entitled: $isEntitled",
+            "Subscription status checked via Cloud Function for ${Platform.isIOS ? 'iOS' : 'Android'}. Entitled: $isEntitled",
           );
           return;
         }

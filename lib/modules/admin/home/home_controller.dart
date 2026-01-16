@@ -7,7 +7,6 @@ import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
 import 'package:drivvo/utils/utils.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -391,12 +390,6 @@ class HomeController extends GetxController {
     }
 
     Get.toNamed(routeName);
-  }
-
-  // Get the user's account creation date
-  DateTime get accountCreatedDate {
-    final user = FirebaseAuth.instance.currentUser;
-    return user?.metadata.creationTime ?? DateTime.now();
   }
 
   Future<void> deleteEntry(TimelineEntry entry) async {

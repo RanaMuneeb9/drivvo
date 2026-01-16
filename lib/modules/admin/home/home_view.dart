@@ -6,6 +6,7 @@ import 'package:drivvo/custom-widget/home/home_ready_to_start_card.dart';
 import 'package:drivvo/custom-widget/home/home_welcome_item.dart';
 import 'package:drivvo/modules/admin/home/home_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
+import 'package:drivvo/utils/common_function.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -147,7 +148,7 @@ class HomeView extends GetView<HomeController> {
 
                     HomeWelcomeItem(
                       isUrdu: controller.isUrdu,
-                      accountCreatedDate: controller.accountCreatedDate,
+                      accountCreatedDate: CommonFunction.accountCreatedDate(),
                     ),
 
                     const SizedBox(height: 100),

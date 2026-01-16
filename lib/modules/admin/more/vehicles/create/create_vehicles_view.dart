@@ -107,6 +107,29 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  CardTextInputField(
+                    isRequired: true,
+                    isNext: true,
+                    obscureText: false,
+                    readOnly: true,
+                    controller: controller.manufacturerController,
+                    isUrdu: controller.isUrdu,
+                    labelText: "manufacturer".tr,
+                    hintText: "manufacturer_hint".tr,
+                    sufixIcon: Icon(Icons.info_outline),
+                    onSaved: (value) {},
+                    onTap: () {
+                      openBottomSheet(context);
+                    },
+                    onValidate: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'manufacturer_required'.tr;
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
                   TextInputField(
                     isUrdu: controller.isUrdu,
                     isRequired: true,
@@ -131,29 +154,6 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
-                  CardTextInputField(
-                    isRequired: true,
-                    isNext: true,
-                    obscureText: false,
-                    readOnly: true,
-                    controller: controller.manufacturerController,
-                    isUrdu: controller.isUrdu,
-                    labelText: "manufacturer".tr,
-                    hintText: "manufacturer_hint".tr,
-                    sufixIcon: Icon(Icons.info_outline),
-                    onSaved: (value) {},
-                    onTap: () {
-                      openBottomSheet(context);
-                    },
-                    onValidate: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'manufacturer_required'.tr;
-                      }
-                      return null;
-                    },
-                  ),
-
                   const SizedBox(height: 16),
                   FormLabelText(
                     title: "model_year".tr,
@@ -642,7 +642,8 @@ class CreateVehiclesView extends GetView<CreateVehiclesController> {
                                 width: 50,
                                 height: 30,
                                 borderRadius: 0,
-                                placeholder: "assets/images/car_placeholder.png",
+                                placeholder:
+                                    "assets/images/car_placeholder.png",
                               ),
                               const SizedBox(width: 10),
                               Text(

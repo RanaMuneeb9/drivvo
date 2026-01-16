@@ -129,7 +129,7 @@ class PlanView extends GetView<PlanController> {
             // Bottom Button
             Obx(
               () => Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: EdgeInsets.only(top: 20, left: 20, right: 20),
                 child: GestureDetector(
                   onTap:
                       controller.isPurchasing.value ||
@@ -180,6 +180,34 @@ class PlanView extends GetView<PlanController> {
                       ),
                     ),
                   ),
+                ),
+              ),
+            ),
+            // Restore Button
+            Obx(
+              () => Padding(
+                padding: const EdgeInsets.only(bottom: 0),
+                child: TextButton(
+                  onPressed:
+                      controller.isPurchasing.value ||
+                          controller.isRestoring.value
+                      ? null
+                      : () => controller.restore(),
+                  child: controller.isRestoring.value
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(
+                          "restore_purchase".tr,
+                          style: Utils.getTextStyle(
+                            baseSize: 14,
+                            isBold: true,
+                            color: Colors.grey,
+                            isUrdu: controller.isUrdu,
+                          ),
+                        ),
                 ),
               ),
             ),

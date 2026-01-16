@@ -1,5 +1,6 @@
 import 'package:drivvo/custom-widget/common/card_header_text.dart';
 import 'package:drivvo/modules/admin/setting/setting_controller.dart';
+import 'package:drivvo/routes/app_routes.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -166,7 +167,8 @@ class SettingView extends GetView<SettingController> {
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton(
-                                onPressed: () => Get.back(),
+                                onPressed: () =>
+                                    Get.toNamed(AppRoutes.VEHICLES_VIEW),
                                 child: Text(
                                   'ok'.tr,
                                   style: Utils.getTextStyle(
@@ -274,55 +276,55 @@ class SettingView extends GetView<SettingController> {
                 ),
               ),
               SizedBox(height: 10),
-              _buildCard(
-                context,
-                _buildSettingTileWithCheckbox(
-                  context,
-                  icon: Icons.local_gas_station_outlined,
-                  title: 'refueling_notifications'.tr,
-                  isChecked: controller.refuelingNotifications.value,
-                  onChanged: (value) =>
-                      controller.refuelingNotifications.value = value ?? false,
-                ),
-              ),
-              SizedBox(height: 10),
-              _buildCard(
-                context,
-                _buildSettingTileWithCheckbox(
-                  context,
-                  icon: Icons.tire_repair_outlined,
-                  title: 'tire_pressure_notifications'.tr,
-                  isChecked: controller.tirePressureNotifications.value,
-                  onChanged: (value) =>
-                      controller.tirePressureNotifications.value =
-                          value ?? false,
-                ),
-              ),
-              SizedBox(height: 10),
-              _buildCard(
-                context,
-                _buildSettingTileWithCheckbox(
-                  context,
-                  icon: Icons.ev_station_outlined,
-                  title: 'gas_station_notifications'.tr,
-                  isChecked: controller.gasStationNotifications.value,
-                  onChanged: (value) =>
-                      controller.gasStationNotifications.value = value ?? false,
-                ),
-              ),
-              SizedBox(height: 10),
-              _buildCard(
-                context,
-                _buildSettingTileWithCheckbox(
-                  context,
-                  icon: Icons.vibration_outlined,
-                  title: 'vibrate_when_notifying'.tr,
-                  isChecked: controller.vibrateWhenNotifying.value,
-                  onChanged: (value) =>
-                      controller.vibrateWhenNotifying.value = value ?? false,
-                ),
-              ),
-              const SizedBox(height: 20),
+              // _buildCard(
+              //   context,
+              //   _buildSettingTileWithCheckbox(
+              //     context,
+              //     icon: Icons.local_gas_station_outlined,
+              //     title: 'refueling_notifications'.tr,
+              //     isChecked: controller.refuelingNotifications.value,
+              //     onChanged: (value) =>
+              //         controller.refuelingNotifications.value = value ?? false,
+              //   ),
+              // ),
+              // SizedBox(height: 10),
+              // _buildCard(
+              //   context,
+              //   _buildSettingTileWithCheckbox(
+              //     context,
+              //     icon: Icons.tire_repair_outlined,
+              //     title: 'tire_pressure_notifications'.tr,
+              //     isChecked: controller.tirePressureNotifications.value,
+              //     onChanged: (value) =>
+              //         controller.tirePressureNotifications.value =
+              //             value ?? false,
+              //   ),
+              // ),
+              // SizedBox(height: 10),
+              // _buildCard(
+              //   context,
+              //   _buildSettingTileWithCheckbox(
+              //     context,
+              //     icon: Icons.ev_station_outlined,
+              //     title: 'gas_station_notifications'.tr,
+              //     isChecked: controller.gasStationNotifications.value,
+              //     onChanged: (value) =>
+              //         controller.gasStationNotifications.value = value ?? false,
+              //   ),
+              // ),
+              // SizedBox(height: 10),
+              // _buildCard(
+              //   context,
+              //   _buildSettingTileWithCheckbox(
+              //     context,
+              //     icon: Icons.vibration_outlined,
+              //     title: 'vibrate_when_notifying'.tr,
+              //     isChecked: controller.vibrateWhenNotifying.value,
+              //     onChanged: (value) =>
+              //         controller.vibrateWhenNotifying.value = value ?? false,
+              //   ),
+              // ),
+              // const SizedBox(height: 20),
             ],
           ),
         ),
@@ -389,56 +391,56 @@ class SettingView extends GetView<SettingController> {
     );
   }
 
-  Widget _buildSettingTileWithCheckbox(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required bool isChecked,
-    required ValueChanged<bool?> onChanged,
-  }) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 4.0,
-      ),
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: const Color(0xFF00796B).withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, color: const Color(0xFF00796B), size: 22),
-      ),
-      title: Text(
-        title,
-        style: Utils.getTextStyle(
-          baseSize: 15,
-          isBold: false,
-          color: Theme.of(context).listTileTheme.textColor!,
-          isUrdu: controller.isUrdu,
-        ),
-      ),
-      trailing: Checkbox(
-        value: isChecked,
-        onChanged: onChanged,
-        activeColor: Utils.appColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-      ),
-    );
-  }
+  // Widget _buildSettingTileWithCheckbox(
+  //   BuildContext context, {
+  //   required IconData icon,
+  //   required String title,
+  //   required bool isChecked,
+  //   required ValueChanged<bool?> onChanged,
+  // }) {
+  //   return ListTile(
+  //     contentPadding: const EdgeInsets.symmetric(
+  //       horizontal: 16.0,
+  //       vertical: 4.0,
+  //     ),
+  //     leading: Container(
+  //       width: 40,
+  //       height: 40,
+  //       decoration: BoxDecoration(
+  //         color: const Color(0xFF00796B).withValues(alpha: 0.1),
+  //         borderRadius: BorderRadius.circular(8),
+  //       ),
+  //       child: Icon(icon, color: const Color(0xFF00796B), size: 22),
+  //     ),
+  //     title: Text(
+  //       title,
+  //       style: Utils.getTextStyle(
+  //         baseSize: 15,
+  //         isBold: false,
+  //         color: Theme.of(context).listTileTheme.textColor!,
+  //         isUrdu: controller.isUrdu,
+  //       ),
+  //     ),
+  //     trailing: Checkbox(
+  //       value: isChecked,
+  //       onChanged: onChanged,
+  //       activeColor: Utils.appColor,
+  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+  //     ),
+  //   );
+  // }
 
-  // Theme Dialog
-  void _showThemeDialog(BuildContext context) {
-    final themes = ['Light', 'Dark'];
-    _showSelectionDialog(
-      context,
-      title: 'theme'.tr,
-      options: themes,
-      selectedValue: controller.selectedTheme.value,
-      onSelected: (value) => controller.changeTheme(value),
-    );
-  }
+  // TODO: Theme Dialog
+  // void _showThemeDialog(BuildContext context) {
+  //   final themes = ['Light', 'Dark'];
+  //   _showSelectionDialog(
+  //     context,
+  //     title: 'theme'.tr,
+  //     options: themes,
+  //     selectedValue: controller.selectedTheme.value,
+  //     onSelected: (value) => controller.changeTheme(value),
+  //   );
+  // }
 
   //! Language Dialog
   // void _showLanguageDialog() {

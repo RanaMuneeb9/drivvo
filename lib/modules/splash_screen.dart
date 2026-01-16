@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
             await IAPService.to.checkSubscriptionStatus();
           } catch (e) {
             // Log error but continue navigation
-            debugPrint('Failed to check subscription status: $e');
+            debugPrint('Failed to check subscription status (Splash): $e');
           }
 
           if (appService.appUser.value.userType == Constants.ADMIN) {

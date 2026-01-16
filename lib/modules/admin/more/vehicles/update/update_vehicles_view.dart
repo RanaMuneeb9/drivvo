@@ -91,6 +91,28 @@ class UpdateVehiclesView extends GetView<UpdateVehiclesController> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  CardTextInputField(
+                    isRequired: true,
+                    isNext: true,
+                    obscureText: false,
+                    readOnly: true,
+                    controller: controller.manufacturerController,
+                    isUrdu: controller.isUrdu,
+                    labelText: "manufacturer".tr,
+                    hintText: "manufacturer_hint".tr,
+                    sufixIcon: Icon(Icons.info_outline),
+                    onSaved: (value) {},
+                    onTap: () {
+                      openBottomSheet(context);
+                    },
+                    onValidate: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'manufacturer_required'.tr;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
                   TextInputField(
                     isUrdu: controller.isUrdu,
                     isRequired: true,
@@ -116,29 +138,6 @@ class UpdateVehiclesView extends GetView<UpdateVehiclesController> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 16),
-                  CardTextInputField(
-                    isRequired: true,
-                    isNext: true,
-                    obscureText: false,
-                    readOnly: true,
-                    controller: controller.manufacturerController,
-                    isUrdu: controller.isUrdu,
-                    labelText: "manufacturer".tr,
-                    hintText: "manufacturer_hint".tr,
-                    sufixIcon: Icon(Icons.info_outline),
-                    onSaved: (value) {},
-                    onTap: () {
-                      openBottomSheet(context);
-                    },
-                    onValidate: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'manufacturer_required'.tr;
-                      }
-                      return null;
-                    },
-                  ),
-
                   const SizedBox(height: 16),
                   FormLabelText(
                     title: "model_year".tr,

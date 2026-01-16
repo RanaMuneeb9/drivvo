@@ -17,7 +17,7 @@ class AboutUsController extends GetxController {
   final String termsOfUseUrl = 'https://www.drivo.com/terms';
 
   // Star rating
-  var currentRating = 3.obs;
+  var currentRating = 4.obs;
 
   @override
   void onInit() {

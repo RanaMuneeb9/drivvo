@@ -44,6 +44,17 @@ class CommonFunction {
     }
   }
 
+  static DateTime accountCreatedDate() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final date = user.metadata.creationTime;
+      if (date != null) {
+        return date;
+      }
+    }
+    return DateTime.now();
+  }
+
   static Future<void> deleteAccount() async {
     final user = FirebaseAuth.instance.currentUser;
 

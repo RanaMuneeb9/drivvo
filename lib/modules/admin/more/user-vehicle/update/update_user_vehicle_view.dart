@@ -22,7 +22,7 @@ class UpdateUserVehicleView extends GetView<UpdateUserVehicleController> {
           icon: Icon(Icons.arrow_back, color: Colors.white),
         ),
         title: Text(
-          "vehicle/user".tr,
+          "update_user_vehicle".tr,
           style: Utils.getTextStyle(
             baseSize: 18,
             isBold: true,

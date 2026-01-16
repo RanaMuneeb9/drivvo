@@ -560,4 +560,11 @@
   "please_add_service_detail": "براہِ کرم سروس کی تفصیلات شامل کریں",
   "please_add_expense_detail": "براہِ کرم خرچ کی تفصیلات شامل کریں",
   "sign_in_with_apple": "ایپل کے ساتھ سائن ان کریں",
-  "next_refueling": "اگلا ایندھن بھرنا"}
+  "next_refueling": "اگلا ایندھن بھرنا",
+  "route_spending": "سفر کے اخراجات",
+  "add_user_vehicles": "صارف کی گاڑی شامل کریں",
+  "update_user_vehicle": "صارف کی گاڑی اپڈیٹ کریں",
+  "routes": "راستے",
+  "all_the_time": "ہر وقت",
+  "restore_purchase": "خریداری بحال کریں"
+}

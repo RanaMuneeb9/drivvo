@@ -310,33 +310,9 @@ class UpdateRouteView extends GetView<UpdateRouteController> {
                           isRequired: true,
                           isNext: true,
                           obscureText: false,
-                          readOnly: true,
-                          labelText: "value_per_km".tr,
-                          hintText: "100".tr,
-                          inputAction: TextInputAction.next,
-                          type: TextInputType.number,
-                          controller: controller.valuePerKmController,
-                          onTap: () {},
-                          onChange: (v) => controller.calculateValuePerKm(),
-                          onSaved: (value) {},
-                          onValidate: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'value_per_km_required'.tr;
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: TextInputField(
-                          isUrdu: controller.isUrdu,
-                          isRequired: true,
-                          isNext: true,
-                          obscureText: false,
                           readOnly: false,
-                          labelText: "total".tr,
-                          hintText: "100".tr,
+                          labelText: "route_spending".tr,
+                          hintText: "amount".tr,
                           inputAction: TextInputAction.next,
                           type: TextInputType.number,
                           controller: controller.totalController,
@@ -346,6 +322,30 @@ class UpdateRouteView extends GetView<UpdateRouteController> {
                           onValidate: (value) {
                             if (value == null || value.isEmpty) {
                               return 'total_required'.tr;
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: TextInputField(
+                          isUrdu: controller.isUrdu,
+                          isRequired: false,
+                          isNext: true,
+                          obscureText: false,
+                          readOnly: true,
+                          labelText: "value_per_km".tr,
+                          hintText: "amount".tr,
+                          inputAction: TextInputAction.next,
+                          type: TextInputType.number,
+                          controller: controller.valuePerKmController,
+                          onTap: () {},
+                          onChange: (v) => controller.calculateValuePerKm(),
+                          onSaved: (value) {},
+                          onValidate: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'value_per_km_required'.tr;
                             }
                             return null;
                           },

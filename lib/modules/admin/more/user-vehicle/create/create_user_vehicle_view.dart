@@ -22,7 +22,7 @@ class CreateUserVehicleView extends GetView<CreateUserVehicleController> {
           icon: Icon(Icons.arrow_back, color: Colors.white),
         ),
         title: Text(
-          "vehicle/user".tr,
+          "add_user_vehicles".tr,
           style: Utils.getTextStyle(
             baseSize: 18,
             isBold: true,

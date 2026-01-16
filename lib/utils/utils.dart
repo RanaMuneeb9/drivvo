@@ -5,6 +5,7 @@ import 'package:drivvo/model/date_range_model.dart';
 import 'package:drivvo/model/general_model.dart';
 import 'package:drivvo/model/onboarding_model.dart';
 import 'package:drivvo/services/app_service.dart';
+import 'package:drivvo/utils/common_function.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -553,6 +554,7 @@ class Utils {
   );
 
   static final List<GeneralModel> manufacturers = [
+    GeneralModel(id: "0", name: "Other", logoUrl: ""),
     GeneralModel(
       id: "1",
       name: "9ff",
@@ -3958,7 +3960,22 @@ class Utils {
             dateString: dateStr,
           ),
         );
-      } else if (e == "custom_date" || e == "all_the_time") {
+      } else if (e == "all_the_time") {
+        final dd = CommonFunction.accountCreatedDate();
+        final fromDate = DateTime(dd.year, dd.month, dd.day);
+        final toDate = DateTime(date.year, date.month, date.day);
+        final dateStr =
+            "${Utils.formatDate(date: fromDate)} To ${Utils.formatDate(date: toDate)}";
+        list.add(
+          DateRangeModel(
+            id: i,
+            title: e,
+            startDate: fromDate,
+            endDate: toDate,
+            dateString: dateStr,
+          ),
+        );
+      } else if (e == "custom_date" || e == "") {
         list.add(DateRangeModel(id: i, title: e, dateString: e));
       }
     }

@@ -9,23 +9,6 @@ import 'package:get/get.dart';
 class FilterController extends GetxController {
   late AppService appService;
 
-  var checklist = true.obs;
-
-  @override
-  void onInit() {
-    appService = Get.find<AppService>();
-    super.onInit();
-    if (appService.selectedDateRange.value != null) {
-      selectedDateIndex.value = appService.selectedDateRange.value!.id;
-      customDate.value = appService.selectedDateRange.value!.dateString;
-    } else if (dateRangeList.isNotEmpty) {
-      final model = dateRangeList.first;
-      selectedDateIndex.value = model.id;
-      customDate.value = model.dateString;
-      appService.selectedDateRange.value = model;
-    }
-  }
-
   // Expanded options state
   var moreOptionsExpanded = false.obs;
 
@@ -41,9 +24,24 @@ class FilterController extends GetxController {
       "last_6_months",
       "this_year",
       "last_year",
-      "custom_date",
+      "all_the_time",
     ],
   );
+
+  @override
+  void onInit() {
+    appService = Get.find<AppService>();
+    super.onInit();
+    if (appService.selectedDateRange.value != null) {
+      selectedDateIndex.value = appService.selectedDateRange.value!.id;
+      customDate.value = appService.selectedDateRange.value!.dateString;
+    } else if (dateRangeList.isNotEmpty) {
+      final model = dateRangeList[6];
+      selectedDateIndex.value = model.id;
+      customDate.value = model.dateString;
+      appService.selectedDateRange.value = model;
+    }
+  }
 
   void toggleMoreOptions() {
     moreOptionsExpanded.value = !moreOptionsExpanded.value;

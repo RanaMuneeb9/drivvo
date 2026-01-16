@@ -229,7 +229,7 @@ class LoginController extends GetxController {
           await IAPService.to.checkSubscriptionStatus();
         } catch (e) {
           // Log error but continue navigation
-          debugPrint('Failed to check subscription status: $e');
+          debugPrint('Failed to check subscription status (Login): $e');
         }
       } else {
         Get.back();

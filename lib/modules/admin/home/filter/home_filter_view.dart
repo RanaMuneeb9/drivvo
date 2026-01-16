@@ -164,23 +164,13 @@ class HomeFilterView extends GetView<FilterController> {
                   ),
                   Obx(
                     () => _buildCategoryItem(
-                      'pouters'.tr,
+                      'routes'.tr,
                       Icons.alt_route_outlined,
                       controller.appService.routeFilter.value,
                       (v) => controller.appService.routeFilter.value = v,
                       controller,
                     ),
                   ),
-                  Obx(
-                    () => _buildCategoryItem(
-                      'checklist'.tr,
-                      Icons.checklist_outlined,
-                      controller.checklist.value,
-                      (v) => controller.checklist.value = v,
-                      controller,
-                    ),
-                  ),
-
                   const SizedBox(height: 24),
                   Obx(
                     () => MoreOptionButton(

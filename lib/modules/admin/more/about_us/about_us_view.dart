@@ -62,7 +62,7 @@ class AboutUsView extends GetView<AboutUsController> {
               Obx(
                 () => Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(4, (index) {
+                  children: List.generate(5, (index) {
                     return GestureDetector(
                       onTap: () => controller.setRating(index + 1),
                       child: Padding(
@@ -81,93 +81,58 @@ class AboutUsView extends GetView<AboutUsController> {
               ),
               const SizedBox(height: 32),
 
-              // Follow Us Section
-              Text(
-                'follow_us'.tr,
-                style: Utils.getTextStyle(
-                  baseSize: 20,
-                  isBold: true,
-                  color: Utils.appColor,
-                  isUrdu: controller.isUrdu,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildSocialButton(
-                    icon: Icons.facebook,
-                    label: 'Facebook',
-                    onTap: controller.openFacebook,
-                  ),
-                  const SizedBox(width: 16),
-                  _buildSocialButton(
-                    icon: Icons.camera_alt,
-                    label: 'Instagram',
-                    onTap: controller.openInstagram,
-                  ),
-                  const SizedBox(width: 16),
-                  _buildSocialButton(
-                    icon: Icons.alternate_email,
-                    label: 'Twitter',
-                    onTap: controller.openTwitter,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
-
-              // Last Update Section
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Utils.appColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Icons.update,
-                        color: Utils.appColor,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'last_update'.tr,
-                          style: Utils.getTextStyle(
-                            baseSize: 16,
-                            isBold: true,
-                            color: const Color(0xFF1E2E4B),
-                            isUrdu: controller.isUrdu,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          controller.lastUpdate,
-                          style: Utils.getTextStyle(
-                            baseSize: 14,
-                            isBold: false,
-                            color: Utils.appColor,
-                            isUrdu: controller.isUrdu,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
+              //! Last Update Section
+              // Container(
+              //   width: double.infinity,
+              //   padding: const EdgeInsets.all(16),
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(12),
+              //     border: Border.all(color: Colors.grey.shade300),
+              //   ),
+              //   child: Row(
+              //     children: [
+              //       Container(
+              //         padding: const EdgeInsets.all(10),
+              //         decoration: BoxDecoration(
+              //           color: Utils.appColor.withValues(alpha: 0.1),
+              //           borderRadius: BorderRadius.circular(10),
+              //         ),
+              //         child: Icon(
+              //           Icons.update,
+              //           color: Utils.appColor,
+              //           size: 24,
+              //         ),
+              //       ),
+              //       const SizedBox(width: 16),
+              //       Column(
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         children: [
+              //           Text(
+              //             'last_update'.tr,
+              //             style: Utils.getTextStyle(
+              //               baseSize: 16,
+              //               isBold: true,
+              //               color: const Color(0xFF1E2E4B),
+              //               isUrdu: controller.isUrdu,
+              //             ),
+              //           ),
+              //           const SizedBox(height: 4),
+              //           Text(
+              //             controller.lastUpdate,
+              //             style: Utils.getTextStyle(
+              //               baseSize: 14,
+              //               isBold: false,
+              //               color: Utils.appColor,
+              //               isUrdu: controller.isUrdu,
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // const SizedBox(height: 24),
 
               // Legal Section
               Align(
@@ -231,47 +196,6 @@ class AboutUsView extends GetView<AboutUsController> {
               const SizedBox(height: 20),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSocialButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 90,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[300]!),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Icon(icon, size: 28, color: Utils.appColor),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: Utils.getTextStyle(
-                baseSize: 12,
-                isBold: false,
-                color: Colors.grey[700]!,
-                isUrdu: controller.isUrdu,
-              ),
-            ),
-          ],
         ),
       ),
     );
