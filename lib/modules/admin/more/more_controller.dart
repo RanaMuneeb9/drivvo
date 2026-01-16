@@ -161,10 +161,11 @@ class MoreController extends GetxController {
   Future<void> onPremiumPlanTap() async {
     if (appService.appUser.value.isSubscribed) {
       if (Platform.isIOS) {
-        final Uri url = Uri.parse(Constants.APP_STORE_URL);
-        if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
-        }
+        // final Uri url = Uri.parse(Constants.APP_STORE_URL);
+        // if (await canLaunchUrl(url)) {
+        //   await launchUrl(url, mode: LaunchMode.externalApplication);
+        // }
+      Get.toNamed(AppRoutes.PLAN_VIEW);
       } else {
         final Uri url = Uri.parse(Constants.PLAY_STORE_URL);
         if (await canLaunchUrl(url)) {

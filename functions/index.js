@@ -487,6 +487,18 @@ function normalizeAppStoreStatus(status, transactionInfo) {
   let subscriptionState;
   let isEntitled = false;
 
+  // FIX: Sometimes Apple returns status 2 (Expired) shortly before the actual expiration time
+  // (especially in Sandbox). We double-check the expiration date against the current time.
+  let expiryTimeMillis = null;
+  if (transactionInfo && transactionInfo.expiresDate) {
+    expiryTimeMillis = Number(transactionInfo.expiresDate);
+  }
+
+  if (status === 2 && expiryTimeMillis && expiryTimeMillis > Date.now()) {
+    console.log(`Status is EXPIRED (2) but expiry is in future (${expiryTimeMillis} > ${Date.now()}). Treating as ACTIVE.`);
+    status = 1;
+  }
+
   // Status codes: 1=Active, 2=Expired, 3=BillingRetry, 4=GracePeriod, 5=Revoked
   switch (status) {
     case 1:
@@ -514,7 +526,7 @@ function normalizeAppStoreStatus(status, transactionInfo) {
   return {
     isEntitled,
     subscriptionState,
-    expiryTimeMillis: transactionInfo && transactionInfo.expiresDate ? transactionInfo.expiresDate : null,
+    expiryTimeMillis,
     autoRenewing: status === 1 || status === 4,
     productId: transactionInfo && transactionInfo.productId ? transactionInfo.productId : null,
     type: "subscription",
