@@ -66,6 +66,8 @@ class CreateReminderController extends GetxController {
 
     // Initial value for target odometer (current + ?)
     targetOdometerController.text = lastOdometer.value.toString();
+
+    model.value.type = selectedType.value;
   }
 
   void _calculateTargetOdometer() {

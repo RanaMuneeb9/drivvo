@@ -87,7 +87,7 @@ class ReminderView extends GetView<ReminderController> {
                           bottom: 10,
                         ),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
+                          horizontal: 10,
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
@@ -97,83 +97,109 @@ class ReminderView extends GetView<ReminderController> {
                               : Border.all(color: Colors.brown),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Row(
                           children: [
-                            Text(
-                              model.subType,
-                              style: Utils.getTextStyle(
-                                baseSize: 16,
-                                isBold: false,
-                                color: Colors.black,
-                                isUrdu: controller.isUrdu,
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: model.type == "expense"
+                                    ? Colors.redAccent
+                                    : Colors.brown,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                model.type == "expense"
+                                    ? Icons.receipt_long
+                                    : Icons.build,
+                                color: Colors.white,
+                                size: 22,
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.format_list_numbered,
-                                      size: 14,
-                                      color: Colors.black54,
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    model.subType,
+                                    style: Utils.getTextStyle(
+                                      baseSize: 16,
+                                      isBold: false,
+                                      color: Colors.black,
+                                      isUrdu: controller.isUrdu,
                                     ),
-                                    SizedBox(width: 6),
-                                    Text(
-                                      "${model.odometer} km",
-                                      style: Utils.getTextStyle(
-                                        baseSize: 14,
-                                        isBold: false,
-                                        color: Colors.black54,
-                                        isUrdu: controller.isUrdu,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.format_list_numbered,
+                                            size: 14,
+                                            color: Colors.black54,
+                                          ),
+                                          SizedBox(width: 6),
+                                          Text(
+                                            "${model.odometer} km",
+                                            style: Utils.getTextStyle(
+                                              baseSize: 14,
+                                              isBold: false,
+                                              color: Colors.black54,
+                                              isUrdu: controller.isUrdu,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  distance > 0
-                                      ? "in $distance km"
-                                      : "${distance.abs().toString()} km ago",
-                                  style: Utils.getTextStyle(
-                                    baseSize: 14,
-                                    isBold: false,
-                                    color: distance > 0
-                                        ? Colors.green
-                                        : Colors.red,
-                                    isUrdu: controller.isUrdu,
+                                      Text(
+                                        distance > 0
+                                            ? "in $distance km"
+                                            : "${distance.abs().toString()} km ago",
+                                        style: Utils.getTextStyle(
+                                          baseSize: 14,
+                                          isBold: false,
+                                          color: distance > 0
+                                              ? Colors.green
+                                              : Colors.red,
+                                          isUrdu: controller.isUrdu,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  Utils.formatDate(date: model.startDate),
-                                  style: Utils.getTextStyle(
-                                    baseSize: 14,
-                                    isBold: false,
-                                    color: Colors.grey.shade700,
-                                    isUrdu: controller.isUrdu,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        Utils.formatDate(date: model.startDate),
+                                        style: Utils.getTextStyle(
+                                          baseSize: 14,
+                                          isBold: false,
+                                          color: Colors.grey.shade700,
+                                          isUrdu: controller.isUrdu,
+                                        ),
+                                      ),
+                                      Text(
+                                        days == 0
+                                            ? "today".tr
+                                            : days == 1
+                                            ? "tomorrow".tr
+                                            : "in $days".tr,
+                                        style: Utils.getTextStyle(
+                                          baseSize: 14,
+                                          isBold: false,
+                                          color: days == 0 || days == 1
+                                              ? Colors.green
+                                              : Colors.grey.shade700,
+                                          isUrdu: controller.isUrdu,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                Text(
-                                  days == 0
-                                      ? "today".tr
-                                      : days == 1
-                                      ? "tomorrow".tr
-                                      : "in $days".tr,
-                                  style: Utils.getTextStyle(
-                                    baseSize: 14,
-                                    isBold: false,
-                                    color: days == 0 || days == 1
-                                        ? Colors.green
-                                        : Colors.grey.shade700,
-                                    isUrdu: controller.isUrdu,
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
