@@ -338,6 +338,8 @@ class IAPService extends GetxService with WidgetsBindingObserver {
       if (Platform.isIOS) {
         functionName = 'verifyAppStorePurchase';
         String? originalTransactionId;
+        String? transactionId;
+        dynamic expiresDate;
 
         if (purchaseDetails is AppStorePurchaseDetails) {
           final appStoreDetails = purchaseDetails;
@@ -362,6 +364,8 @@ class IAPService extends GetxService with WidgetsBindingObserver {
               final map = json.decode(jsonString);
               debugPrint("SK2 Payload: $map");
               originalTransactionId = map['originalTransactionId'] as String?;
+              transactionId = map['transactionId']?.toString();
+              expiresDate = map['expiresDate'];
             } else {
               debugPrint(
                 "SK2 Token is not a valid JWT (parts: ${parts.length})",
@@ -380,10 +384,13 @@ class IAPService extends GetxService with WidgetsBindingObserver {
         }
 
         debugPrint("Extracted Original Transaction ID: $originalTransactionId");
+        debugPrint("Extracted Transaction ID: $transactionId");
 
         data = {
           'productId': purchaseDetails.productID,
           'originalTransactionId': originalTransactionId,
+          'transactionId': transactionId,
+          'expiresDate': expiresDate,
         };
       } else {
         functionName = 'verifyPlayPurchase';

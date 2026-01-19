@@ -106,7 +106,21 @@ class NotificationService {
   Future<void> requestPermission() async {
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (!isAllowed) {
-      await AwesomeNotifications().requestPermissionToSendNotifications();
+      // For iOS, we need to explicitly request permission
+      // This will show the iOS notification permission dialog
+      await AwesomeNotifications().requestPermissionToSendNotifications(
+        permissions: [
+          NotificationPermission.Alert,
+          NotificationPermission.Sound,
+          NotificationPermission.Badge,
+          NotificationPermission.Vibration,
+          NotificationPermission.Light,
+        ],
+      );
+      
+      // Check again after requesting
+      isAllowed = await AwesomeNotifications().isNotificationAllowed();
+      debugPrint("Notification permission after request: $isAllowed");
     }
   }
 

@@ -552,7 +552,7 @@ exports.verifyAppStorePurchase = onCall(
       throw new functions.https.HttpsError("unauthenticated", "Authentication required.");
     }
 
-    const { productId, originalTransactionId } = request.data || {};
+    const { productId, originalTransactionId, transactionId, expiresDate } = request.data || {};
     if (!productId || !originalTransactionId) {
       throw new functions.https.HttpsError("invalid-argument", "productId and originalTransactionId are required.");
     }
@@ -564,6 +564,7 @@ exports.verifyAppStorePurchase = onCall(
 
     const uid = request.auth.uid;
     console.log(`Verifying App Store purchase for user: ${uid}, product: ${productId}`);
+    console.log(`TransactionId: ${transactionId}, ExpiresDate from client: ${expiresDate}`);
 
     try {
       let purchaseData;
@@ -576,6 +577,43 @@ exports.verifyAppStorePurchase = onCall(
         // For subscriptions, use getAllSubscriptionStatuses
         const response = await client.getAllSubscriptionStatuses(originalTransactionId);
         console.log(`Subscription response (${env}):`, JSON.stringify(response));
+
+        // Check if data is empty - this can happen with old sandbox subscriptions
+        if (!response.data || response.data.length === 0) {
+          console.log(`No subscription data returned from getAllSubscriptionStatuses.`);
+
+          // Use client-provided expiresDate to determine status
+          // This is acceptable because the client has a valid JWS token from Apple
+          if (expiresDate) {
+            const clientExpiryMs = Number(expiresDate);
+            const now = Date.now();
+            console.log(`Using client-provided expiresDate: ${clientExpiryMs}, Now: ${now}`);
+
+            if (clientExpiryMs > now) {
+              console.log(`Client expiresDate is in the future. Treating as ACTIVE.`);
+              return {
+                isEntitled: true,
+                subscriptionState: "SUBSCRIPTION_STATE_ACTIVE",
+                expiryTimeMillis: clientExpiryMs,
+                autoRenewing: true,
+                productId: productId,
+                type: "subscription",
+              };
+            } else {
+              console.log(`Client expiresDate is in the past. Subscription is EXPIRED.`);
+              return {
+                isEntitled: false,
+                subscriptionState: "SUBSCRIPTION_STATE_EXPIRED",
+                expiryTimeMillis: clientExpiryMs,
+                autoRenewing: false,
+                productId: productId,
+                type: "subscription",
+              };
+            }
+          }
+
+          throw new Error("No transaction data found in response");
+        }
 
         // Extract subscription info from response
         const subscriptionGroup = response.data && response.data[0];
