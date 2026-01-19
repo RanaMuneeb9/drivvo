@@ -25,7 +25,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAexiJAGg7C3VbIr3QFtypZNVoQ4yFT8ug"/>
-
+ 
         <!-- Image cropper activity -->
         <activity
           android:name="com.yalantis.ucrop.UCropActivity"

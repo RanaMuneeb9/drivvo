@@ -1,16 +1,23 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:drivvo/model/reminder/reminder_model.dart';
 import 'package:drivvo/services/app_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/instance_manager.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:get/get.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
   NotificationService._internal();
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   bool _initialized = false;
   bool get isInitialized => _initialized;
@@ -22,42 +29,73 @@ class NotificationService {
   Future<void> init() async {
     if (_initialized) return;
 
-    await AwesomeNotifications().initialize(
-      Platform.isAndroid ? 'resource://mipmap/ic_launcher' : null, // App icon
-      [
-        NotificationChannel(
-          channelKey: 'daily_channel',
-          channelName: 'Daily Notifications',
-          channelDescription: 'Daily scheduled notifications',
-          importance: NotificationImportance.Max,
-          defaultColor: Colors.blue,
-          ledColor: Colors.white,
-          playSound: true,
-          enableVibration: true,
-        ),
-      ],
-      debug: true,
+    // Initialize Timezone
+    await _configureLocalTimeZone();
+
+    // Android Initialization
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    // iOS Initialization
+    final DarwinInitializationSettings initializationSettingsDarwin =
+        DarwinInitializationSettings(
+      requestAlertPermission: false, 
+      requestBadgePermission: false,
+      requestSoundPermission: false,
     );
 
-    // Request permission if not granted
-    await requestPermission();
-
-    // Set listeners to handle notification events and foreground presentation
-    await AwesomeNotifications().setListeners(
-      onActionReceivedMethod: onActionReceivedMethod,
-      onNotificationCreatedMethod: onNotificationCreatedMethod,
-      onNotificationDisplayedMethod: onNotificationDisplayedMethod,
-      onDismissActionReceivedMethod: onDismissActionReceivedMethod,
+    final InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
     );
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) {
+        onNotificationTap(notificationResponse);
+      },
+    );
+    
+    // Create channel for Android (required for Android 8.0+)
+    if (Platform.isAndroid) {
+        final AndroidNotificationChannel channel = const AndroidNotificationChannel(
+        'daily_channel', 
+        'Daily Notifications', 
+        description: 'Daily scheduled notifications', 
+        importance: Importance.max,
+        playSound: true,
+        enableVibration: true,
+        );
+
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin>()
+            ?.createNotificationChannel(channel);
+    }
 
     _initialized = true;
-    debugPrint("Awesome Notifications initialized");
+    debugPrint("Flutter Local Notifications initialized");
 
-    // TEST NOTIFICATION
-    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    debugPrint("Notification Permission Granted: $isAllowed");
+    // Request permissions
+    await requestPermission();
+    
+    // Test Notification
+    bool? isAllowed = await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.areNotificationsEnabled();
+    
+    // For iOS
+    if (Platform.isIOS) {
+       // We can assume we asked for permission in init()
+       // But strictly checking 'areNotificationsEnabled' on iOS requires a different call or assuming true if authorized.
+       // For simplicity, we'll just try to show it if we are initialized.
+       isAllowed = true; 
+    }
 
-    if (isAllowed) {
+    if (isAllowed == true) {
+      debugPrint("Permissions granted. Scheduling test notification in 5 seconds.");
       Timer(const Duration(seconds: 5), () {
         showNotification(
           title: "Test Notification",
@@ -65,79 +103,91 @@ class NotificationService {
         );
       });
     } else {
-      debugPrint("Permissions not granted, requesting again...");
-      await requestPermission();
+        debugPrint("Notifications not allowed, skipping test notification. User must enable permissions in Settings.");
     }
   }
 
-  /// Use this method to detect when a new notification or a schedule is created
-  @pragma("vm:entry-point")
-  static Future<void> onNotificationCreatedMethod(
-    ReceivedNotification receivedNotification,
-  ) async {
-    // Your code goes here
+  Future<void> _configureLocalTimeZone() async {
+    tz.initializeTimeZones();
+    try {
+      final timeZoneName = await FlutterTimezone.getLocalTimezone();
+      debugPrint("Detected Local Timezone: $timeZoneName");
+      tz.setLocalLocation(tz.getLocation(timeZoneName.toString()));
+      debugPrint("Timezone initialized: ${tz.local.name}");
+    } catch (e) {
+      debugPrint("Could not set local location: $e");
+      try {
+           tz.setLocalLocation(tz.getLocation('UTC'));
+           debugPrint("Fallback to UTC");
+      } catch (_) {}
+    }
   }
 
-  /// Use this method to detect every time that a new notification is displayed
-  @pragma("vm:entry-point")
-  static Future<void> onNotificationDisplayedMethod(
-    ReceivedNotification receivedNotification,
-  ) async {
-    // Your code goes here
-  }
-
-  /// Use this method to detect if the user dismissed a notification
-  @pragma("vm:entry-point")
-  static Future<void> onDismissActionReceivedMethod(
-    ReceivedAction receivedAction,
-  ) async {
-    // Your code goes here
-  }
-
-  /// Use this method to detect when the user taps on a notification or action button
-  @pragma("vm:entry-point")
-  static Future<void> onActionReceivedMethod(
-    ReceivedAction receivedAction,
-  ) async {
-    // Navigate into pages, e.g.
-    // Get.toNamed(AppRoutes.NotificationPage);
+  Future<void> onNotificationTap(NotificationResponse response) async {
+    // Handle notification tap logic here
+    debugPrint("Notification tapped: ${response.payload}");
+     // Example: Get.toNamed(AppRoutes.NotificationPage);
   }
 
   Future<void> requestPermission() async {
-    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    if (!isAllowed) {
-      // For iOS, we need to explicitly request permission
-      // This will show the iOS notification permission dialog
-      await AwesomeNotifications().requestPermissionToSendNotifications(
-        permissions: [
-          NotificationPermission.Alert,
-          NotificationPermission.Sound,
-          NotificationPermission.Badge,
-          NotificationPermission.Vibration,
-          NotificationPermission.Light,
-        ],
-      );
+    if (Platform.isAndroid) {
+      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+          flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
       
-      // Check again after requesting
-      isAllowed = await AwesomeNotifications().isNotificationAllowed();
-      debugPrint("Notification permission after request: $isAllowed");
+      // Request permission for Android 13+
+      await androidImplementation?.requestNotificationsPermission();
+      
+    } else if (Platform.isIOS) {
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
     }
   }
+
 
   // Show immediate notification
   Future<void> showNotification({
     required String title,
     required String body,
     int id = 1,
+    String? payload,
   }) async {
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: id,
-        channelKey: 'daily_channel',
-        title: title,
-        body: body,
-        notificationLayout: NotificationLayout.Default,
-      ),
+    // Ensure we are initialized or just try properly
+    
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(
+      'daily_channel',
+      'Daily Notifications',
+      channelDescription: 'Daily scheduled notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+    
+    const DarwinNotificationDetails darwinNotificationDetails = 
+        DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+        );
+
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+      iOS: darwinNotificationDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      id,
+      title,
+      body,
+      notificationDetails,
+      payload: payload,
     );
   }
 
@@ -148,45 +198,58 @@ class NotificationService {
     required String body,
     required DateTime time,
   }) async {
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: id,
-        channelKey: 'daily_channel',
-        title: title,
-        body: body,
-      ),
-      schedule: NotificationCalendar(
-        year: time.year,
-        month: time.month,
-        day: time.day,
-        hour: time.hour,
-        minute: time.minute,
-        second: 0,
-        millisecond: 0,
-        repeats: false,
-      ),
-    );
+    try {
+        if (time.isBefore(DateTime.now())) {
+            debugPrint("Cannot schedule notification in the past: $time");
+            return;
+        }
 
-    debugPrint("Notification scheduled for $time");
+        final tzDateTime = tz.TZDateTime.from(time, tz.local);
+        debugPrint("Scheduling notification for local time: $time");
+        debugPrint("Converted to TZDateTime (Location: ${tz.local.name}): $tzDateTime");
+
+        await flutterLocalNotificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tzDateTime,
+        const NotificationDetails(
+            android: AndroidNotificationDetails(
+            'daily_channel',
+            'Daily Notifications',
+            channelDescription: 'Daily scheduled notifications',
+            importance: Importance.max,
+            priority: Priority.high,
+            ),
+             iOS: DarwinNotificationDetails(
+                presentAlert: true,
+                presentBadge: true,
+                presentSound: true,
+             ), 
+        ),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        );
+         debugPrint("Notification successfully scheduled for $time");
+
+    } catch (e) {
+        debugPrint("Error scheduling notification: $e");
+    }
   }
 
   // Schedule multiple notifications from models
   Future<void> scheduleReminders({
     required List<ReminderModel> reminders,
   }) async {
-    // Mutex: Wait if already scheduling
     if (_isScheduling) {
       debugPrint("Schedule reminders already in progress, waiting...");
       if (_schedulingCompleter != null) {
         await _schedulingCompleter!.future;
       }
-      if (_isScheduling) {
-        debugPrint("Skipping duplicate schedule request");
-        return;
-      }
+      if (_isScheduling) return;
     }
 
-    // Acquire lock
     _isScheduling = true;
     _schedulingCompleter = Completer<void>();
 
@@ -194,16 +257,16 @@ class NotificationService {
       await cancelAll();
       debugPrint("Cancelled previous notifications");
 
-      int id = 100; // starting ID
+      int id = 100; 
       final appService = Get.find<AppService>();
-      final notifTimeStr = appService.notificationTime.value; // "09:00 PM"
+      final notifTimeStr = appService.notificationTime.value; 
 
       int preferredHour = 9;
       int preferredMinute = 0;
 
       // Parse Notification Time
       try {
-        final parts = notifTimeStr.split(' '); // ["09:00", "PM"]
+        final parts = notifTimeStr.split(' '); 
         final timeParts = parts[0].split(':');
         int h = int.parse(timeParts[0]);
         int m = int.parse(timeParts[1]);
@@ -234,6 +297,7 @@ class NotificationService {
         }
 
         final subType = reminder.subType; // Title usually
+        debugPrint("Processing Reminder: $subType. isDaily: $isDaily. ID: $id");
 
         if (isDaily) {
           // Schedule Daily Repeated Notification
@@ -246,8 +310,6 @@ class NotificationService {
           );
         } else {
           // Schedule Single Notification at Next Due Date
-          // Covers: One-Time Reminders AND Recurring (Interval > 1 day or custom)
-
           DateTime targetDate = reminder.startDate;
 
           // Apply preferred time to the target date
@@ -258,14 +320,21 @@ class NotificationService {
             preferredHour,
             preferredMinute,
           );
+          
+          final now = DateTime.now();
+          debugPrint("ScheduledDT: $scheduledDateTime vs Now: $now");
 
-          if (scheduledDateTime.isAfter(DateTime.now())) {
-            await scheduleNotification(
+          if (scheduledDateTime.isAfter(now)) {
+             // If scheduling for the future, go ahead.
+             // Warning: If it's less than a few seconds in the future, iOS might miss it.
+             await scheduleNotification(
               id: id++,
               title: "Reminder",
               body: "${reminder.type.toUpperCase()}: $subType",
               time: scheduledDateTime,
             );
+          } else {
+             debugPrint("Skipping past reminder: $scheduledDateTime");
           }
         }
       }
@@ -275,7 +344,6 @@ class NotificationService {
       debugPrint("Error scheduling reminders: $e");
       rethrow;
     } finally {
-      // Release lock
       _isScheduling = false;
       if (_schedulingCompleter != null && !_schedulingCompleter!.isCompleted) {
         _schedulingCompleter!.complete();
@@ -292,33 +360,48 @@ class NotificationService {
     required int hour,
     required int minute,
   }) async {
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: id,
-        channelKey: 'daily_channel',
-        title: title,
-        body: body,
-      ),
-      schedule: NotificationCalendar(
-        hour: hour,
-        minute: minute,
-        second: 0,
-        millisecond: 0,
-        repeats: true,
-      ),
-    );
+      final now = tz.TZDateTime.now(tz.local);
+      var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+        
+      if (scheduledDate.isBefore(now)) {
+        scheduledDate = scheduledDate.add(const Duration(days: 1));
+      }
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        scheduledDate,
+        const NotificationDetails(
+            android: AndroidNotificationDetails(
+            'daily_channel',
+            'Daily Notifications',
+            channelDescription: 'Daily scheduled notifications',
+            importance: Importance.max,
+            priority: Priority.high,
+            ),
+             iOS: DarwinNotificationDetails(
+                presentAlert: true,
+                presentBadge: true,
+                presentSound: true,
+             ),
+        ),
+
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time, 
+        );
 
     debugPrint("Daily reminder scheduled at $hour:$minute");
   }
 
-  // Cancel a specific notification
   Future<void> cancel(int id) async {
-    await AwesomeNotifications().cancel(id);
+    await flutterLocalNotificationsPlugin.cancel(id);
   }
 
-  // Cancel all notifications
   Future<void> cancelAll() async {
-    await AwesomeNotifications().cancelAll();
+    await flutterLocalNotificationsPlugin.cancelAll();
     debugPrint("All notifications cancelled");
   }
 }
