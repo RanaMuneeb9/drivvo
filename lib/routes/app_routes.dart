@@ -80,6 +80,9 @@ abstract class AppRoutes {
   static const UPDATE_USER_VEHICLE_VIEW =
       '/more/user-vehicle/update_user_vehicle_view';
 
+  // ignore: constant_identifier_names
+  static const MULTIPLE_SERVICES = '/more/general/multiple_service_view';
+
   //!Driver
   // ignore: constant_identifier_names
   static const DRIVER_ROOT_VIEW = '/driver_root_view';

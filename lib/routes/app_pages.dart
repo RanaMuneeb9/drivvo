@@ -52,6 +52,8 @@ import 'package:drivvo/modules/admin/more/vehicles/vehicles_bindings.dart';
 import 'package:drivvo/modules/admin/more/vehicles/vehicles_view.dart';
 import 'package:drivvo/modules/admin/reminder/create/create_reminder_binding.dart';
 import 'package:drivvo/modules/admin/reminder/create/create_reminder_view.dart';
+import 'package:drivvo/modules/admin/reminder/multiple-service/multiple_service_bindings.dart';
+import 'package:drivvo/modules/admin/reminder/multiple-service/multiple_service_view.dart';
 import 'package:drivvo/modules/admin/reminder/update/update_reminder_binding.dart';
 import 'package:drivvo/modules/admin/reminder/update/update_reminder_view.dart';
 import 'package:drivvo/modules/admin/root/admin_root_bindings.dart';
@@ -325,6 +327,12 @@ class AppPages {
       name: AppRoutes.DRIVER_VEHICLE_VIEW,
       page: () => const DriverVehiclesView(),
       binding: DriverVehiclesBindings(),
+    ),
+
+    GetPage(
+      name: AppRoutes.MULTIPLE_SERVICES,
+      page: () => const MultipleServiceView(),
+      binding: MultipleServiceBindings(),
     ),
   ];
 }

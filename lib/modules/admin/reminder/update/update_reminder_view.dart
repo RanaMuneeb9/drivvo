@@ -127,14 +127,7 @@ class UpdateReminderView extends GetView<UpdateReminderController> {
                             controller: controller.serviceController,
                             sufixIcon: Icon(Icons.keyboard_arrow_down),
                             onTap: () {
-                              Get.toNamed(
-                                AppRoutes.GENERAL_VIEW,
-                                arguments: {
-                                  "title": Constants.SERVICE_TYPES,
-                                  "selected_title":
-                                      controller.serviceController.text,
-                                },
-                              )?.then(
+                              Get.toNamed(AppRoutes.MULTIPLE_SERVICES)?.then(
                                 (e) => controller.serviceController.text = e,
                               );
                             },
@@ -408,7 +401,8 @@ class UpdateReminderView extends GetView<UpdateReminderController> {
                                 Expanded(
                                   flex: 3,
                                   child: DropdownButtonFormField<String>(
-                                    initialValue: controller.repeatTimeUnit.value,
+                                    initialValue:
+                                        controller.repeatTimeUnit.value,
                                     items: ['day', 'month', 'year'].map((
                                       String value,
                                     ) {

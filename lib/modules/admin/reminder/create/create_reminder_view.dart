@@ -127,16 +127,13 @@ class CreateReminderView extends GetView<CreateReminderController> {
                             controller: controller.serviceController,
                             sufixIcon: Icon(Icons.keyboard_arrow_down),
                             onTap: () {
-                              Get.toNamed(
-                                AppRoutes.GENERAL_VIEW,
-                                arguments: {
-                                  "title": Constants.SERVICE_TYPES,
-                                  "selected_title":
-                                      controller.serviceController.text,
-                                },
-                              )?.then(
-                                (e) => controller.serviceController.text = e,
-                              );
+                              Get.toNamed(AppRoutes.MULTIPLE_SERVICES)?.then((
+                                e,
+                              ) {
+                                if (e is String && e.isNotEmpty) {
+                                  controller.serviceController.text = e;
+                                }
+                              });
                             },
                             onSaved: (value) {},
                             onValidate: (value) {
