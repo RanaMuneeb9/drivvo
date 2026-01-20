@@ -228,34 +228,36 @@ class LoginView extends GetView<LoginController> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 24.0, top: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "no_account".tr,
-              style: Utils.getTextStyle(
-                baseSize: 14,
-                isBold: false,
-                color: Colors.black87,
-                isUrdu: controller.isUrdu,
-              ),
-            ),
-            Text(" "),
-            GestureDetector(
-              onTap: () => Get.toNamed(AppRoutes.SIGNUP_VIEW),
-              child: Text(
-                'sign_up'.tr,
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 24.0, top: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "no_account".tr,
                 style: Utils.getTextStyle(
                   baseSize: 14,
-                  isBold: true,
+                  isBold: false,
+                  color: Colors.black87,
                   isUrdu: controller.isUrdu,
-                  color: Utils.appColor,
                 ),
               ),
-            ),
-          ],
+              const Text(" "),
+              GestureDetector(
+                onTap: () => Get.toNamed(AppRoutes.SIGNUP_VIEW),
+                child: Text(
+                  'sign_up'.tr,
+                  style: Utils.getTextStyle(
+                    baseSize: 14,
+                    isBold: true,
+                    isUrdu: controller.isUrdu,
+                    color: Utils.appColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
