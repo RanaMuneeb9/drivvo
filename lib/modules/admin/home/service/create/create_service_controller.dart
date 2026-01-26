@@ -14,16 +14,15 @@ class CreateServiceController extends GetxController {
   late AppService appService;
   final formKey = GlobalKey<FormState>();
 
-  var serviceTyesList = <ExpenseTypeModel>[].obs;
-
+  var filePath = "".obs;
   var totalAmount = 0.obs;
   var lastOdometer = 0.obs;
 
-  var filePath = "".obs;
-  var model = ServiceModel().obs;
-
   var showConflictingCard = false.obs;
+
   late LastRecordModel lastRecord;
+  var model = ServiceModel().obs;
+  var serviceTyesList = <ExpenseTypeModel>[].obs;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
@@ -33,8 +32,8 @@ class CreateServiceController extends GetxController {
   final reasonController = TextEditingController();
   final driverController = TextEditingController();
 
-  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
   bool get isAdmin => appService.appUser.value.userType == Constants.ADMIN;
+  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
   void onInit() {

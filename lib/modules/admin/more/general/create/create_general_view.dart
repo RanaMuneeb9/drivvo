@@ -1,5 +1,4 @@
 import 'package:drivvo/custom-widget/button/custom_button.dart';
-import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/form_label_text.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
@@ -16,14 +15,27 @@ class CreateGeneralView extends GetView<CreateGeneralController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        name: controller.isUrdu
-            ? "${controller.title.tr} ${"add".tr}"
-            : "${"add".tr} ${controller.title.tr}",
-        isUrdu: controller.isUrdu,
-        bgColor: Utils.appColor,
-        textColor: Colors.white,
-        centerTitle: true,
+      appBar: AppBar(
+        backgroundColor: Utils.appColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
+        title: Text(
+          controller.isUrdu
+              ? "${controller.title.tr} ${"add".tr}"
+              : "${"add".tr} ${controller.title.tr}",
+          style: Utils.getTextStyle(
+            baseSize: 18,
+            isBold: true,
+            color: Colors.white,
+            isUrdu: controller.isUrdu,
+          ),
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

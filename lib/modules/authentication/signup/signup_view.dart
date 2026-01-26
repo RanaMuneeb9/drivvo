@@ -1,5 +1,4 @@
 import 'package:drivvo/custom-widget/button/custom_button.dart';
-import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/custom-widget/text-input-field/password_input_field.dart';
 import 'package:drivvo/custom-widget/text-input-field/text_input_field.dart';
 import 'package:drivvo/modules/authentication/signup/signup_controller.dart';
@@ -14,11 +13,25 @@ class SignupView extends GetView<SignupController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        name: "signup_to_continue".tr,
-        isUrdu: controller.isUrdu,
-        bgColor: Utils.appColor,
-        textColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Utils.appColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
+        title: Text(
+          "signup_to_continue".tr,
+          style: Utils.getTextStyle(
+            baseSize: 18,
+            isBold: true,
+            color: Colors.white,
+            isUrdu: controller.isUrdu,
+          ),
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

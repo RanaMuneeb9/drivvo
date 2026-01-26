@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:drivvo/custom-widget/button/custom_button.dart';
+import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/custom-widget/common/icon_with_text.dart';
 import 'package:drivvo/custom-widget/common/profile_image.dart';
 import 'package:drivvo/custom-widget/text-input-field/card_text_input_field.dart';
@@ -9,7 +8,6 @@ import 'package:drivvo/modules/common/update-profile/update_profile_controller.d
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
 class UpdateProfileView extends GetView<UpdateProfileController> {
   const UpdateProfileView({super.key});
@@ -17,29 +15,13 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Utils.appColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Get.back(),
-        ),
-        centerTitle: true,
-        title: Text(
-          'update_profile'.tr,
-          style: Utils.getTextStyle(
-            baseSize: 18,
-            isBold: true,
-            color: Colors.white,
-            isUrdu: controller.isUrdu,
-          ),
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-        ),
+      appBar: CustomAppBar(
+        name: "update_profile".tr,
+        isUrdu: controller.isUrdu,
       ),
       body: SafeArea(
-        child: Column(
+        child: Stack(
+          alignment: Alignment.bottomCenter,
           children: [
             const SizedBox(height: 10),
             Expanded(
@@ -75,32 +57,26 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                                       () => SizedBox(
                                         width: 110,
                                         height: 110,
-                                        child: controller.filePath.isNotEmpty
-                                            ? CircleAvatar(
-                                                foregroundColor: Utils.appColor,
-                                                backgroundImage: FileImage(
-                                                  File(
-                                                    controller.filePath.value,
-                                                  ),
-                                                ),
-                                                radius: 48.0,
-                                              )
-                                            : ProfileImage(
-                                                photoUrl: controller
-                                                    .appService
-                                                    .appUser
-                                                    .value
-                                                    .photoUrl,
-                                                width: 100,
-                                                height: 100,
-                                                radius: 100,
-                                                placeholder:
-                                                    "assets/images/placeholder.png",
-                                              ),
+                                        child: ProfileImage(
+                                          photoUrl: controller
+                                              .appService
+                                              .appUser
+                                              .value
+                                              .photoUrl,
+                                          width: 100,
+                                          height: 100,
+                                          radius: 100,
+                                          placeholder:
+                                              "assets/images/placeholder.png",
+                                        ),
                                       ),
                                     ),
                                     GestureDetector(
-                                      onTap: () => {showResponseDialog()},
+                                      onTap: () => Utils.showImagePicker(
+                                        isUrdu: controller.isUrdu,
+                                        pickFile: (path) =>
+                                            controller.filePath.value = path,
+                                      ),
                                       child: Container(
                                         width:
                                             MediaQuery.of(context).size.width *
@@ -345,93 +321,25 @@ class UpdateProfileView extends GetView<UpdateProfileController> {
                           },
                           onValidate: (value) {},
                         ),
-                        const SizedBox(height: 40),
-                        CustomButton(
-                          title: "update".tr,
-                          onTap: () => controller.saveData(),
-                        ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 80),
                       ],
                     ),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void showResponseDialog() async {
-    final ImagePicker imgPicker = ImagePicker();
-
-    Get.defaultDialog(
-      title: "choose_option".tr,
-      backgroundColor: Colors.white,
-      content: Padding(
-        padding: const EdgeInsets.only(top: 10, left: 16, right: 16),
-        child: Column(
-          children: [
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () async {
-                Get.back();
-                final pickedFile = await imgPicker.pickImage(
-                  source: ImageSource.camera,
-                  imageQuality: 85,
-                  maxWidth: 400,
-                  maxHeight: 400,
-                );
-                if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "take_photo".tr,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xff000000),
-                      fontSize: 14,
-                    ),
-                  ),
-                  const Icon(Icons.camera_alt, color: Colors.black, size: 18),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
-            const Divider(thickness: 0.5, color: Color(0x20000000)),
-            const SizedBox(height: 5),
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () async {
-                Get.back();
-                final pickedFile = await imgPicker.pickImage(
-                  source: ImageSource.gallery,
-                  imageQuality: 85,
-                  maxWidth: 400,
-                  maxHeight: 400,
-                );
-                if (pickedFile != null) {
-                  controller.onPickedFile(pickedFile);
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "gallery".tr,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xff000000),
-                      fontSize: 14,
-                    ),
-                  ),
-                  const Icon(Icons.image, color: Colors.black, size: 18),
-                ],
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 30.0,
+                  left: 16,
+                  right: 16,
+                ),
+                child: CustomButton(
+                  title: "update".tr,
+                  onTap: () => controller.saveData(),
+                ),
               ),
             ),
           ],

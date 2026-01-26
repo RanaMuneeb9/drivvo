@@ -10,21 +10,19 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class CreateRefuelingController extends GetxController {
+  late AppService appService;
+
   String? _lastManualEdit;
   String? _secondLastManualEdit;
   final formKey = GlobalKey<FormState>();
 
-  late AppService appService;
-
   var filePath = "".obs;
-  var isFullTank = false.obs;
-  var model = RefuelingModel().obs;
-  var missedPreviousRefueling = false.obs;
-
-  var showConflictingCard = false.obs;
-  late LastRecordModel lastRecord;
-
+  var fuelValue = "".obs;
   var lastOdometer = 0.obs;
+  var showConflictingCard = false.obs;
+
+  late LastRecordModel lastRecord;
+  var model = RefuelingModel().obs;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
@@ -37,9 +35,8 @@ class CreateRefuelingController extends GetxController {
   final reasonController = TextEditingController();
   final driverController = TextEditingController();
 
-  var fuelValue = "".obs;
-  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
   bool get isAdmin => appService.appUser.value.userType == Constants.ADMIN;
+  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
   void onInit() {
@@ -279,8 +276,6 @@ class CreateRefuelingController extends GetxController {
         "total_cost": totalCost.toInt(),
         "fuel_type": fuelController.text.trim(),
         "fuel_station": gasStationCostController.text.trim(),
-        "full_tank": isFullTank.value,
-        "missed_previous": missedPreviousRefueling.value,
         "payment_method": paymentMethodController.text.trim(),
         "notes": model.value.notes,
         "file_path": filePath.value,

@@ -10,17 +10,15 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class UpdateRouteController extends GetxController {
-  final formKey = GlobalKey<FormState>();
-
   late AppService appService;
+  final formKey = GlobalKey<FormState>();
 
   var filePath = "".obs;
   var lastOdometer = 0.obs;
-  var model = RouteModel().obs;
-
   var showConfilctingCard = false.obs;
-  late LastRecordModel lastRecord;
 
+  var model = RouteModel().obs;
+  late LastRecordModel lastRecord;
   late Map<String, dynamic> oldRouteMap;
 
   final startDateController = TextEditingController();
@@ -37,8 +35,8 @@ class UpdateRouteController extends GetxController {
   final driverController = TextEditingController();
   final notesController = TextEditingController();
 
-  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
   bool get isAdmin => appService.appUser.value.userType == Constants.ADMIN;
+  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
   void onInit() {

@@ -12,7 +12,6 @@ class RefuelingModel {
   late int totalCost;
   late String fuelType;
   late String fuelStation;
-  late bool fullTank;
   late bool missedPrevious;
   late String paymentMethod;
   late String notes;
@@ -33,7 +32,6 @@ class RefuelingModel {
     totalCost = 0;
     fuelType = "";
     fuelStation = "";
-    fullTank = true;
     missedPrevious = false;
     paymentMethod = "";
     notes = "";
@@ -62,7 +60,6 @@ class RefuelingModel {
     totalCost = json["total_cost"] ?? 0;
     fuelType = json["fuel_type"] ?? "";
     fuelStation = json["fuel_station"] ?? "";
-    fullTank = json["full_tank"] ?? true;
     missedPrevious = json["missed_previous"] ?? false;
     paymentMethod = json["payment_method"] ?? "";
     notes = json["notes"] ?? "";
@@ -90,7 +87,6 @@ class RefuelingModel {
       "total_cost": totalCost,
       "fuel_type": fuelType,
       "fuel_station": fuelStation,
-      "full_tank": fullTank,
       "missed_previous": missedPrevious,
       "payment_method": paymentMethod,
       "notes": notes,

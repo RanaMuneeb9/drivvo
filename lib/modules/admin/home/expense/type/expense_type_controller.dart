@@ -10,21 +10,17 @@ import 'package:get/get.dart';
 
 class ExpenseTypeController extends GetxController {
   late AppService appService;
-  var isLoading = false.obs;
-
-  var isChecked = false.obs;
-
-  late List<ExpenseTypeModel> selectedList;
-
-  var filterList = <ExpenseTypeModel>[].obs;
-  List<ExpenseTypeModel> generalList = [];
-  final searchInputController = TextEditingController();
-
-  final FirebaseFirestore db = FirebaseFirestore.instance;
-
-  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   bool isFromCreate = false;
+  var isLoading = false.obs;
+
+  List<ExpenseTypeModel> generalList = [];
+  late List<ExpenseTypeModel> selectedList;
+  var filterList = <ExpenseTypeModel>[].obs;
+
+  final searchInputController = TextEditingController();
+
+  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
   void onInit() {
@@ -51,7 +47,7 @@ class ExpenseTypeController extends GetxController {
     filterList.clear();
 
     try {
-      final snapshot = await db
+      final snapshot = await FirebaseFirestore.instance
           .collection(DatabaseTables.USER_PROFILE)
           .doc(appService.appUser.value.id)
           .collection(DatabaseTables.EXPENSE_TYPES)

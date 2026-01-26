@@ -1,4 +1,3 @@
-import 'package:drivvo/custom-widget/common/custom_app_bar.dart';
 import 'package:drivvo/custom-widget/common/error_refresh_view.dart';
 import 'package:drivvo/custom-widget/common/profile_network_image.dart';
 import 'package:drivvo/custom-widget/common/refresh_indicator_view.dart';
@@ -36,11 +35,25 @@ class VehiclesView extends GetView<VehiclesController> {
           ),
         ),
       ),
-      appBar: CustomAppBar(
-        name: "Vehicles",
-        isUrdu: controller.isUrdu,
-        bgColor: Utils.appColor,
-        textColor: Colors.white,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Utils.appColor,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+        ),
+        title: Text(
+          "vehicles".tr,
+          style: Utils.getTextStyle(
+            baseSize: 18,
+            isBold: true,
+            color: Colors.white,
+            isUrdu: controller.isUrdu,
+          ),
+        ),
+        centerTitle: false,
       ),
       body: SafeArea(
         child: Column(

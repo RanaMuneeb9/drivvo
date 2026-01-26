@@ -16,12 +16,10 @@ class UpdateIncomeController extends GetxController {
 
   var filePath = "".obs;
   var lastOdometer = 0.obs;
-  var model = IncomeModel().obs;
-
   var showConflictingCard = false.obs;
-  late LastRecordModel lastRecord;
 
-  // We need to store the original income map to remove it from the array
+  var model = IncomeModel().obs;
+  late LastRecordModel lastRecord;
   late Map<String, dynamic> oldIncomeMap;
 
   final dateController = TextEditingController();
@@ -29,8 +27,8 @@ class UpdateIncomeController extends GetxController {
   final incomeTypeController = TextEditingController();
   final driverController = TextEditingController();
 
-  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
   bool get isAdmin => appService.appUser.value.userType == Constants.ADMIN;
+  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
   void onInit() {

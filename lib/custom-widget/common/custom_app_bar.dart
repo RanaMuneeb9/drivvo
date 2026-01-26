@@ -5,45 +5,30 @@ import 'package:get/get.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String name;
   final bool isUrdu;
-  final Color? bgColor;
-  final Color textColor;
-  final Color? arrowColor;
-  final bool? centerTitle;
-  final List<Widget>? actions;
 
-  const CustomAppBar({
-    super.key,
-    required this.name,
-    required this.isUrdu,
-    this.bgColor = Colors.white,
-    this.textColor = Colors.black,
-    this.centerTitle = false,
-    this.arrowColor = Colors.white,
-    this.actions = const [SizedBox()],
-  });
+  const CustomAppBar({super.key, required this.name, required this.isUrdu});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: false,
-      backgroundColor: bgColor,
-      surfaceTintColor: Colors.transparent,
+      backgroundColor: Utils.appColor,
       elevation: 0,
       leading: IconButton(
-        onPressed: () => Navigator.pop(context),
-        icon: Icon(Icons.arrow_back, color: arrowColor),
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => Get.back(),
       ),
       title: Text(
         name.tr,
         style: Utils.getTextStyle(
           baseSize: 18,
           isBold: true,
-          color: textColor,
+          color: Colors.white,
           isUrdu: isUrdu,
         ),
       ),
-      centerTitle: centerTitle,
-      actions: actions,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+      ),
     );
   }
 

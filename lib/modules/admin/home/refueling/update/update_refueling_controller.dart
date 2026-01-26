@@ -10,26 +10,21 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class UpdateRefuelingController extends GetxController {
+  late AppService appService;
+
   String? _lastManualEdit;
   String? _secondLastManualEdit;
   final formKey = GlobalKey<FormState>();
 
-  late AppService appService;
-
-  var filePath = "".obs;
-  var isFullTank = false.obs;
-  var model = RefuelingModel().obs;
-  var moreOptionsExpanded = false.obs;
-  var missedPreviousRefueling = false.obs;
-
-  var lastOdometer = 0.obs;
-
-  var showConflictingCard = false.obs;
-  late LastRecordModel lastRecord;
-  late Map<String, dynamic> oldRefuelingMap;
-
   var isFirstTime = true;
   var fuelValue = "".obs;
+  var filePath = "".obs;
+  var lastOdometer = 0.obs;
+  var showConflictingCard = false.obs;
+
+  var model = RefuelingModel().obs;
+  late LastRecordModel lastRecord;
+  late Map<String, dynamic> oldRefuelingMap;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
@@ -42,9 +37,8 @@ class UpdateRefuelingController extends GetxController {
   final reasonController = TextEditingController();
   final driverController = TextEditingController();
 
-  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
-
   bool get isAdmin => appService.appUser.value.userType == Constants.ADMIN;
+  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
   void onInit() {
@@ -66,8 +60,6 @@ class UpdateRefuelingController extends GetxController {
       litersController.text = refueling.liter.toString();
       totalCostController.text = refueling.totalCost.toString();
       gasStationCostController.text = refueling.fuelStation.toString();
-      isFullTank.value = refueling.fullTank;
-      missedPreviousRefueling.value = refueling.missedPrevious;
       fuelValue.value = refueling.fuelType;
       filePath.value = model.value.filePath;
 
@@ -86,10 +78,12 @@ class UpdateRefuelingController extends GetxController {
     dateController.dispose();
     timeController.dispose();
     priceController.dispose();
+    fuelController.dispose();
     totalCostController.dispose();
     litersController.dispose();
-    fuelController.dispose();
+    gasStationCostController.dispose();
     paymentMethodController.dispose();
+    reasonController.dispose();
     driverController.dispose();
     super.onClose();
   }
@@ -185,10 +179,6 @@ class UpdateRefuelingController extends GetxController {
         model.value.price = calc.toInt();
       }
     }
-  }
-
-  void toggleMoreOptions() {
-    moreOptionsExpanded.value = !moreOptionsExpanded.value;
   }
 
   void selectDate() async {
@@ -294,8 +284,6 @@ class UpdateRefuelingController extends GetxController {
         "total_cost": totalCost.toInt(),
         "fuel_type": fuelController.text.trim(),
         "fuel_station": gasStationCostController.text.trim(),
-        "full_tank": isFullTank.value,
-        "missed_previous": missedPreviousRefueling.value,
         "payment_method": paymentMethodController.text.trim(),
         "notes": model.value.notes,
         "driver_id": isAdmin

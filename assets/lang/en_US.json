@@ -592,5 +592,8 @@
   "invalid_json_format": "Invalid backup file format",
   "data_imported_successfully": "Data imported successfully",
   "failed_import_data": "Failed to import data",
-  "confirm_export_data": "Are you sure you want to export"
+  "confirm_export_data": "Are you sure you want to export",
+  "refueling_added": "Refueling added successfully.",
+  "income_required": "Income is required.",
+  "admin_not_premium": "Your administrator has not subscribed to the premium features."
 }

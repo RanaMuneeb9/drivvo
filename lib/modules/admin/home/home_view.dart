@@ -1,3 +1,4 @@
+import 'package:drivvo/custom-widget/home/add_item_card.dart';
 import 'package:drivvo/custom-widget/home/home_appbar.dart';
 import 'package:drivvo/custom-widget/home/home_list_items.dart';
 import 'package:drivvo/custom-widget/home/home_next_refueling_card.dart';
@@ -185,243 +186,108 @@ class HomeView extends GetView<HomeController> {
       isScrollControlled: true,
       useSafeArea: true,
       builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          width: double.maxFinite,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(46),
-              topRight: Radius.circular(46),
-            ),
+        final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+        final safeBottom = MediaQuery.of(context).padding.bottom;
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: bottomInset > 0 ? bottomInset : safeBottom,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Stack(
-                alignment: Alignment.topCenter,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      "log_now".tr,
-                      style: const TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () => Get.back(),
-                      icon: const Icon(Icons.close, color: Color(0xFF8D90A8)),
-                    ),
-                  ),
-                ],
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            width: double.maxFinite,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(46),
+                topRight: Radius.circular(46),
               ),
-              const SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  border: Border.all(color: Colors.grey.shade300, width: 1),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        "log_now".tr,
+                        style: Utils.getTextStyle(
+                          baseSize: 16,
+                          isBold: true,
+                          color: Colors.black,
+                          isUrdu: controller.isUrdu,
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                        visualDensity: VisualDensity.compact,
+                        onPressed: () => Get.back(),
+                        icon: const Icon(Icons.close, color: Color(0xFF8D90A8)),
+                      ),
+                    ),
+                  ],
                 ),
-                child: InkWell(
+                AddItemCard(
+                  isUrdu: controller.isUrdu,
+                  title: "refueling",
+                  color: const Color(0xFFFB9601),
+                  icon: Icons.local_gas_station_outlined,
                   onTap: () {
                     controller.checkVehicleAndNavigate(
                       routeName: AppRoutes.CREATE_REFUELING_VIEW,
                     );
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFB9601),
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: Icon(
-                          Icons.local_gas_station_outlined,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(width: 14),
-                      Text(
-                        "refueling".tr,
-                        style: Utils.getTextStyle(
-                          baseSize: 16,
-                          isBold: false,
-                          color: Colors.black,
-                          isUrdu: controller.isUrdu,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  border: Border.all(color: Colors.grey.shade300, width: 1),
-                ),
-                child: InkWell(
+                AddItemCard(
+                  isUrdu: controller.isUrdu,
+                  title: "expense",
+                  color: Colors.red,
+                  icon: Icons.receipt_long_outlined,
                   onTap: () {
                     controller.checkVehicleAndNavigate(
                       routeName: AppRoutes.CREATE_EXPENSE_VIEW,
                     );
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: Icon(
-                          Icons.receipt_long_outlined,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(width: 14),
-                      Text(
-                        "expense".tr,
-                        style: Utils.getTextStyle(
-                          baseSize: 16,
-                          isBold: false,
-                          color: Colors.black,
-                          isUrdu: controller.isUrdu,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
-
-              const SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  border: Border.all(color: Colors.grey.shade300, width: 1),
-                ),
-                child: InkWell(
+                AddItemCard(
+                  isUrdu: controller.isUrdu,
+                  title: "service",
+                  color: Colors.brown,
+                  icon: Icons.build_outlined,
                   onTap: () {
                     controller.checkVehicleAndNavigate(
                       routeName: AppRoutes.CRAETE_SERVICE_VIEW,
                     );
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.brown,
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: Icon(Icons.build_outlined, color: Colors.white),
-                      ),
-                      SizedBox(width: 14),
-                      Text(
-                        "service".tr,
-                        style: Utils.getTextStyle(
-                          baseSize: 16,
-                          isBold: false,
-                          color: Colors.black,
-                          isUrdu: controller.isUrdu,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  border: Border.all(color: Colors.grey.shade300, width: 1),
-                ),
-                child: InkWell(
+                AddItemCard(
+                  isUrdu: controller.isUrdu,
+                  title: "income",
+                  color: Colors.green,
+                  icon: Icons.attach_money,
                   onTap: () {
                     controller.checkVehicleAndNavigate(
                       routeName: AppRoutes.CRAETE_INCOME_VIEW,
                     );
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: Icon(Icons.attach_money, color: Colors.white),
-                      ),
-                      SizedBox(width: 14),
-                      Text(
-                        "income".tr,
-                        style: Utils.getTextStyle(
-                          baseSize: 16,
-                          isBold: false,
-                          color: Colors.black,
-                          isUrdu: controller.isUrdu,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                  border: Border.all(color: Colors.grey.shade300, width: 1),
-                ),
-                child: InkWell(
+                AddItemCard(
+                  isUrdu: controller.isUrdu,
+                  title: "route",
+                  color: const Color(0xFF5E7E8D),
+                  icon: Icons.route_outlined,
                   onTap: () {
                     controller.checkVehicleAndNavigate(
                       routeName: AppRoutes.CRAETE_ROUTE_VIEW,
                     );
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF5E7E8D),
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                        ),
-                        child: Icon(Icons.route, color: Colors.white),
-                      ),
-                      SizedBox(width: 14),
-                      Text(
-                        "route".tr,
-                        style: Utils.getTextStyle(
-                          baseSize: 16,
-                          isBold: false,
-                          color: Colors.black,
-                          isUrdu: controller.isUrdu,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
-              ),
-              const SizedBox(height: 40),
-            ],
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         );
       },

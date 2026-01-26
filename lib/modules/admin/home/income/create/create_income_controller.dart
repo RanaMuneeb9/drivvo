@@ -10,24 +10,23 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class CreateIncomeController extends GetxController {
-  final formKey = GlobalKey<FormState>();
-
   late AppService appService;
+  final formKey = GlobalKey<FormState>();
 
   var filePath = "".obs;
   var lastOdometer = 0.obs;
-  var model = IncomeModel().obs;
-
   var showConflictingCard = false.obs;
+
   late LastRecordModel lastRecord;
+  var model = IncomeModel().obs;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
   final incomeTypeController = TextEditingController();
   final driverController = TextEditingController();
 
-  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
   bool get isAdmin => appService.appUser.value.userType == Constants.ADMIN;
+  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
   void onInit() {

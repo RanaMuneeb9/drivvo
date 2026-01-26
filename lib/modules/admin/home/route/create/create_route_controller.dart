@@ -10,16 +10,15 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class CreateRouteController extends GetxController {
-  final formKey = GlobalKey<FormState>();
-
   late AppService appService;
+  final formKey = GlobalKey<FormState>();
 
   var filePath = "".obs;
   var lastOdometer = 0.obs;
-  var model = RouteModel().obs;
-
-  var initalOdometer = 0.obs;
   int totalAmount = 0;
+  var initalOdometer = 0.obs;
+
+  var model = RouteModel().obs;
 
   var showConflictingCard = false.obs;
   late LastRecordModel lastRecord;

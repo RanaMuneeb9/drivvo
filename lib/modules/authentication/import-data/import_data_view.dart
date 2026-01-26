@@ -17,15 +17,7 @@ class ImportDataView extends GetView<ImportDataController> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Spacer(flex: 1),
-              Text(
-                'LOQO',
-                style: Utils.getTextStyle(
-                  baseSize: 40,
-                  isBold: true,
-                  color: Color(0xFF00796B),
-                  isUrdu: controller.isUrdu,
-                ),
-              ),
+              Image.asset('assets/images/main_logo_2.png', height: 100),
               const Spacer(flex: 1),
               Text(
                 controller.isFromSetting.value

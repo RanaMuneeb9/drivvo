@@ -20,8 +20,6 @@ class ServiceTypeController extends GetxController {
   List<ExpenseTypeModel> generalList = [];
   final searchInputController = TextEditingController();
 
-  final FirebaseFirestore db = FirebaseFirestore.instance;
-
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
@@ -45,7 +43,7 @@ class ServiceTypeController extends GetxController {
     filterList.clear();
 
     try {
-      final snapshot = await db
+      final snapshot = await FirebaseFirestore.instance
           .collection(DatabaseTables.USER_PROFILE)
           .doc(appService.appUser.value.id)
           .collection(DatabaseTables.SERVICE_TYPES)

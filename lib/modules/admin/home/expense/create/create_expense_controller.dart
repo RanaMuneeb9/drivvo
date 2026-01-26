@@ -14,13 +14,14 @@ class CreateExpenseController extends GetxController {
   late AppService appService;
   final formKey = GlobalKey<FormState>();
 
-  var expenseTypesList = <ExpenseTypeModel>[].obs;
-
+  var filePath = "".obs;
   var totalAmount = 0.obs;
   var lastOdometer = 0.obs;
+  var showConfilctingCard = false.obs;
 
-  var filePath = "".obs;
+  late LastRecordModel lastRecord;
   var model = ExpenseModel().obs;
+  var expenseTypesList = <ExpenseTypeModel>[].obs;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
@@ -30,13 +31,8 @@ class CreateExpenseController extends GetxController {
   final reasonController = TextEditingController();
   final driverController = TextEditingController();
 
-  var showConfilctingCard = false.obs;
-
-  late LastRecordModel lastRecord;
-
-  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
-
   bool get isAdmin => appService.appUser.value.userType == Constants.ADMIN;
+  bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
 
   @override
   void onInit() {
