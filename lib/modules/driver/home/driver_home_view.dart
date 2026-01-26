@@ -4,6 +4,7 @@ import 'package:drivvo/custom-widget/home/home_ready_to_start_card.dart';
 import 'package:drivvo/custom-widget/home/home_welcome_item.dart';
 import 'package:drivvo/modules/driver/home/driver_home_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
+import 'package:drivvo/services/ads_service.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -137,6 +138,7 @@ class DriverHomeView extends GetView<DriverHomeController> {
                             onTapEdit: (model) => controller.editEntry(model),
                             onTapdelete: (model) =>
                                 controller.deleteEntry(model),
+                            loadAds: AdsService.isNativeAdLoaded.value,
                           ),
 
                     HomeWelcomeItem(

@@ -6,6 +6,7 @@ import 'package:drivvo/custom-widget/home/home_ready_to_start_card.dart';
 import 'package:drivvo/custom-widget/home/home_welcome_item.dart';
 import 'package:drivvo/modules/admin/home/home_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
+import 'package:drivvo/services/ads_service.dart';
 import 'package:drivvo/utils/common_function.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
@@ -88,89 +89,110 @@ class HomeView extends GetView<HomeController> {
 
           // Content Section
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Obx(
-                () => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    controller.allEntries.isEmpty
-                        // Ready to Start Section
-                        ? HomeReadyToStartCard(
-                            isUrdu: controller.isUrdu,
-                            initialSelection: controller.initialSelection.value,
-                            onTap: (label) {
-                              final String vehicleId =
-                                  controller.appService.currentVehicleId.value;
-                              if (vehicleId.isEmpty) {
-                                Utils.showSnackBar(
-                                  message: "vehicle_must_be_selected_first".tr,
-                                  success: false,
-                                );
-                                return;
-                              }
-
-                              controller.initialSelection.value = label;
-                              if (label == "Fuel") {
-                                Get.toNamed(AppRoutes.CREATE_REFUELING_VIEW);
-                              } else if (label == "Service") {
-                                Get.toNamed(AppRoutes.CRAETE_SERVICE_VIEW);
-                              } else if (label == "Expense") {
-                                Get.toNamed(AppRoutes.CREATE_EXPENSE_VIEW);
-                              }
-                            },
-                          )
-                        : Column(
-                            children: [
-                              if (controller.nextRefuelingOdometer.value >
-                                  0) ...[
-                                const SizedBox(height: 16),
-                                // Prediction Card
-                                HomeNextRefuelingCard(
-                                  isUrdu: controller.isUrdu,
-                                  nextRefuelingOdometer:
-                                      controller.nextRefuelingOdometer.value,
-                                  nextRefuelingDate:
-                                      controller.nextRefuelingDate.value,
-                                  avgConsumption:
-                                      controller.avgConsumption.value,
-                                  distanceUnit: controller
-                                      .appService
-                                      .vehicleModel
-                                      .value
-                                      .distanceUnit,
-                                ),
-                              ],
-                              HomeListItems(
-                                isUrdu: controller.isUrdu,
-                                isLoading: controller.isLoading.value,
-                                onTapRefresh: () => controller.refreshData(),
-                                allEntries: controller.allEntries,
-                                groupedEntries: controller.groupedEntries,
-                                isEntryExpanded: (entryKey) =>
-                                    controller.isEntryExpanded(entryKey),
-                                toggleEntryExpansion: (entryKey) =>
-                                    controller.toggleEntryExpansion(entryKey),
-                                selectedCurrencySymbol: controller
+            child: Obx(
+              () => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  controller.allEntries.isEmpty
+                      // Ready to Start Section
+                      ? Column(
+                          children: [
+                            HomeReadyToStartCard(
+                              isUrdu: controller.isUrdu,
+                              initialSelection:
+                                  controller.initialSelection.value,
+                              onTap: (label) {
+                                final String vehicleId = controller
                                     .appService
-                                    .selectedCurrencySymbol
-                                    .value,
-                                onTapEdit: (model) =>
-                                    controller.editEntry(model),
-                                onTapdelete: (model) =>
-                                    controller.deleteEntry(model),
+                                    .currentVehicleId
+                                    .value;
+                                if (vehicleId.isEmpty) {
+                                  Utils.showSnackBar(
+                                    message:
+                                        "vehicle_must_be_selected_first".tr,
+                                    success: false,
+                                  );
+                                  return;
+                                }
+
+                                controller.initialSelection.value = label;
+                                if (label == "Fuel") {
+                                  Get.toNamed(AppRoutes.CREATE_REFUELING_VIEW);
+                                } else if (label == "Service") {
+                                  Get.toNamed(AppRoutes.CRAETE_SERVICE_VIEW);
+                                } else if (label == "Expense") {
+                                  Get.toNamed(AppRoutes.CREATE_EXPENSE_VIEW);
+                                }
+                              },
+                            ),
+                            // if (AdsService.isNativeAdLoaded.value &&
+                            //     AdsService.nativeAd != null)
+                            //   Container(
+                            //     margin: const EdgeInsets.symmetric(
+                            //       vertical: 16,
+                            //     ),
+                            //     height: 320,
+                            //     child: AdWidget(ad: AdsService.nativeAd!),
+                            //   ),
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            if (controller.nextRefuelingOdometer.value > 0) ...[
+                              const SizedBox(height: 16),
+                              // Prediction Card
+                              HomeNextRefuelingCard(
+                                isUrdu: controller.isUrdu,
+                                nextRefuelingOdometer:
+                                    controller.nextRefuelingOdometer.value,
+                                nextRefuelingDate:
+                                    controller.nextRefuelingDate.value,
+                                avgConsumption: controller.avgConsumption.value,
+                                distanceUnit: controller
+                                    .appService
+                                    .vehicleModel
+                                    .value
+                                    .distanceUnit,
                               ),
                             ],
-                          ),
+                            // if (AdsService.isNativeAdLoaded.value &&
+                            //     AdsService.nativeAd != null)
+                            //   Container(
+                            //     margin: const EdgeInsets.symmetric(
+                            //       vertical: 16,
+                            //     ),
+                            //     height: 320,
+                            //     child: AdWidget(ad: AdsService.nativeAd!),
+                            //   ),
+                            HomeListItems(
+                              isUrdu: controller.isUrdu,
+                              loadAds: AdsService.isNativeAdLoaded.value,
+                              isLoading: controller.isLoading.value,
+                              onTapRefresh: () => controller.refreshData(),
+                              allEntries: controller.allEntries,
+                              groupedEntries: controller.groupedEntries,
+                              isEntryExpanded: (entryKey) =>
+                                  controller.isEntryExpanded(entryKey),
+                              toggleEntryExpansion: (entryKey) =>
+                                  controller.toggleEntryExpansion(entryKey),
+                              selectedCurrencySymbol: controller
+                                  .appService
+                                  .selectedCurrencySymbol
+                                  .value,
+                              onTapEdit: (model) => controller.editEntry(model),
+                              onTapdelete: (model) =>
+                                  controller.deleteEntry(model),
+                            ),
+                          ],
+                        ),
 
-                    HomeWelcomeItem(
-                      isUrdu: controller.isUrdu,
-                      accountCreatedDate: CommonFunction.accountCreatedDate(),
-                    ),
+                  HomeWelcomeItem(
+                    isUrdu: controller.isUrdu,
+                    accountCreatedDate: CommonFunction.accountCreatedDate(),
+                  ),
 
-                    const SizedBox(height: 100),
-                  ],
-                ),
+                  const SizedBox(height: 100),
+                ],
               ),
             ),
           ),

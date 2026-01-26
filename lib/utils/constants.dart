@@ -12,6 +12,12 @@ class Constants {
   // ignore: constant_identifier_names
   static const String INTERSTITIAL_ANDROID_TEST_ID =
       "ca-app-pub-3940256099942544/1033173712";
+  // ignore: constant_identifier_names
+  static const String NATIVE_ANDROID_TEST_ID =
+      "ca-app-pub-3940256099942544/2247696110";
+  // ignore: constant_identifier_names
+  static const String NATIVE_IOS_TEST_ID =
+      "ca-app-pub-3940256099942544/3986624511";
 
   // ignore: constant_identifier_names
   static const String EXPENSE_TYPES = "expense_types";

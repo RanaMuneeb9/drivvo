@@ -33,13 +33,17 @@ class HomeController extends GetxController {
   var currentVehicle = VehicleModel().obs;
 
   var initialSelection = "".obs;
+
   @override
   void onInit() {
     appService = Get.find<AppService>();
     super.onInit();
     loadTimelineData();
 
-    AdsService.loadInterstitialAd();
+    if (!appService.appUser.value.isSubscribed) {
+      AdsService.loadInterstitialAd();
+      AdsService.loadNativeAd();
+    }
   }
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
@@ -498,5 +502,12 @@ class HomeController extends GetxController {
         );
         break;
     }
+  }
+
+  @override
+  void onClose() {
+    AdsService.nativeAd?.dispose();
+    AdsService.interstitialAd?.dispose();
+    super.onClose();
   }
 }

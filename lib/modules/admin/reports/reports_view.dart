@@ -13,6 +13,7 @@ import 'package:drivvo/modules/admin/reports/reports_controller.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class ReportsView extends GetView<ReportsController> {
   const ReportsView({super.key});
@@ -124,11 +125,11 @@ class ReportsView extends GetView<ReportsController> {
               child: TabBarView(
                 controller: controller.tabController,
                 children: [
-                  _buildReportTab(_buildGeneralCards()),
-                  _buildRefuelingCardsTab(),
-                  _buildExpenseCardsTab(),
-                  _buildIncomeCardsTab(),
-                  _buildServiceCardsTab(),
+                  _buildReportTab(_buildGeneralCards(), 0),
+                  _buildReportTab(_buildRefuelingCards(), 1),
+                  _buildReportTab(_buildExpenseCards(), 2),
+                  _buildReportTab(_buildIncomeCards(), 3),
+                  _buildReportTab(_buildServiceCards(), 4),
                 ],
               ),
             ),
@@ -138,7 +139,7 @@ class ReportsView extends GetView<ReportsController> {
     );
   }
 
-  Widget _buildReportTab(Widget content) {
+  Widget _buildReportTab(Widget content, int adIndex) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -152,6 +153,18 @@ class ReportsView extends GetView<ReportsController> {
           const SizedBox(height: 16),
           content,
           const SizedBox(height: 24),
+          Obx(() {
+            if (!controller.appService.appUser.value.isSubscribed &&
+                controller.isAdsLoaded[adIndex].value &&
+                controller.nativeAds[adIndex] != null) {
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 16),
+                height: 320,
+                child: AdWidget(ad: controller.nativeAds[adIndex]!),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
           _buildCharts(),
           const SizedBox(height: 24),
         ],
@@ -260,11 +273,6 @@ class ReportsView extends GetView<ReportsController> {
       );
     });
   }
-
-  Widget _buildRefuelingCardsTab() => _buildReportTab(_buildRefuelingCards());
-  Widget _buildExpenseCardsTab() => _buildReportTab(_buildExpenseCards());
-  Widget _buildIncomeCardsTab() => _buildReportTab(_buildIncomeCards());
-  Widget _buildServiceCardsTab() => _buildReportTab(_buildServiceCards());
 
   Widget _buildGeneralCards() {
     return Column(

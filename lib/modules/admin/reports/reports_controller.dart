@@ -3,11 +3,13 @@ import 'package:drivvo/model/income/income_model.dart';
 import 'package:drivvo/model/refueling/refueling_model.dart';
 import 'package:drivvo/model/service/service_model.dart';
 import 'package:drivvo/model/vehicle/vehicle_model.dart';
+import 'package:drivvo/services/ads_service.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 
 class ReportsController extends GetxController
@@ -85,6 +87,10 @@ class ReportsController extends GetxController
   var incomeTypeDistribution = <String, int>{}.obs;
   var fuelTypeDistribution = <String, int>{}.obs;
 
+  // Native Ads for each tab to prevent "already in widget tree" error
+  final List<NativeAd?> nativeAds = List.filled(5, null);
+  final List<RxBool> isAdsLoaded = List.generate(5, (_) => false.obs);
+
   @override
   void onInit() {
     appService = Get.find<AppService>();
@@ -104,12 +110,31 @@ class ReportsController extends GetxController
     startDate.value = DateTime(endDate.value.year, endDate.value.month, 1);
 
     calculateAllReports();
+
+    loadNativeAds();
   }
 
   @override
   void onClose() {
     tabController.dispose();
+    for (var ad in nativeAds) {
+      ad?.dispose();
+    }
     super.onClose();
+  }
+
+  void loadNativeAds() {
+    if (appService.appUser.value.isSubscribed) return;
+
+    for (int i = 0; i < 5; i++) {
+      int index = i;
+      nativeAds[index] = AdsService.createNativeAd(
+        onAdLoaded: (loaded) {
+          isAdsLoaded[index].value = loaded;
+        },
+      );
+      nativeAds[index]!.load();
+    }
   }
 
   void onSelect(String name) {

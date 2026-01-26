@@ -1,7 +1,10 @@
 import 'package:drivvo/model/timeline_entry.dart';
+import 'package:drivvo/services/ads_service.dart';
+import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class HomeListItems extends StatelessWidget {
   final bool isUrdu;
@@ -14,6 +17,7 @@ class HomeListItems extends StatelessWidget {
   final String selectedCurrencySymbol;
   final void Function(TimelineEntry) onTapEdit;
   final void Function(TimelineEntry) onTapdelete;
+  final bool loadAds;
 
   const HomeListItems({
     super.key,
@@ -27,10 +31,13 @@ class HomeListItems extends StatelessWidget {
     required this.selectedCurrencySymbol,
     required this.onTapEdit,
     required this.onTapdelete,
+    required this.loadAds,
   });
 
   @override
   Widget build(BuildContext context) {
+    bool nativeAdInserted = false;
+
     if (isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: Utils.appColor),
@@ -68,38 +75,64 @@ class HomeListItems extends StatelessWidget {
                   ...monthGroup.value.asMap().entries.map((entry) {
                     final index = entry.key;
                     final timelineEntry = entry.value;
+
                     final isLastInGroup = index == monthGroup.value.length - 1;
                     final isLastMonth =
                         monthGroup.key == groupedEntries.keys.last;
                     final isLastOverall = isLastMonth && isLastInGroup;
 
-                    // Create a unique key for this entry
                     final entryKey = '${monthGroup.key}_$index';
 
-                    return Column(
-                      children: [
-                        _buildTimelineItem(
-                          entry: timelineEntry,
-                          isLast: isLastOverall,
-                          entryKey: entryKey,
-                        ),
-                        //! TimelineConnector
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 44,
-                              child: Center(
-                                child: Container(
-                                  width: 3,
-                                  height: 16,
-                                  color: const Color(0xFF424242),
+                    final shouldInsertAd =
+                        !nativeAdInserted &&
+                        index == 3 &&
+                        monthGroup.value.length > 3 &&
+                        !AppService.to.appUser.value.isSubscribed &&
+                        loadAds &&
+                        AdsService.nativeAd != null;
+
+                    if (shouldInsertAd) {
+                      nativeAdInserted = true;
+
+                      return Column(
+                        children: [
+                          // Native Ad
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 0),
+                            height: 350,
+                            child: AdWidget(ad: AdsService.nativeAd!),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              children: [
+                                _buildTimelineConnector(),
+                                _buildTimelineItem(
+                                  entry: timelineEntry,
+                                  isLast: isLastOverall,
+                                  entryKey: entryKey,
                                 ),
-                              ),
+                                _buildTimelineConnector(),
+                              ],
                             ),
-                            const Expanded(child: SizedBox.shrink()),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      );
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        children: [
+                          _buildTimelineItem(
+                            entry: timelineEntry,
+                            isLast: isLastOverall,
+                            entryKey: entryKey,
+                          ),
+                          _buildTimelineConnector(),
+                        ],
+                      ),
                     );
                   }),
                 ],
@@ -460,6 +493,24 @@ class HomeListItems extends StatelessWidget {
             isUrdu: isUrdu,
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildTimelineConnector() {
+    return Row(
+      children: [
+        SizedBox(
+          width: 44,
+          child: Center(
+            child: Container(
+              width: 3,
+              height: 16,
+              color: const Color(0xFF424242),
+            ),
+          ),
+        ),
+        const Expanded(child: SizedBox.shrink()),
       ],
     );
   }
