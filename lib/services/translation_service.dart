@@ -6,24 +6,34 @@ import 'package:get/get_navigation/src/root/internacionalization.dart';
 
 class TranslationService extends Translations {
   static final fallbackLocale = Locale('en', 'US');
-  static final locales = [Locale('en', 'US'), Locale('ur', 'PK')];
+  static final locales = [
+    Locale('en', 'US'),
+    Locale('ur', 'PK'),
+    Locale('es', 'ES'),
+    Locale('fr', 'FR'),
+    Locale('ar', 'SA'),
+    Locale('ja', 'JP'),
+    Locale('de', 'DE'),
+  ];
 
   Map<String, Map<String, String>> translations = {};
 
   Future<void> init() async {
-    try {
-      translations['en_US'] = await _loadJson('assets/lang/en_US.json');
-    } catch (e) {
-      debugPrint('Error loading en_US translations: $e');
-      translations['en_US'] = {}; // Fallback to empty map
-    }
+    await _loadLanguage('en_US', 'assets/lang/en_US.json');
+    await _loadLanguage('ur_PK', 'assets/lang/ur_PK.json');
+    await _loadLanguage('es_ES', 'assets/lang/es_ES.json');
+    await _loadLanguage('fr_FR', 'assets/lang/fr_FR.json');
+    await _loadLanguage('ar_SA', 'assets/lang/ar_SA.json');
+    await _loadLanguage('ja_JP', 'assets/lang/ja_JP.json');
+    await _loadLanguage('de_DE', 'assets/lang/de_DE.json');
+  }
 
+  Future<void> _loadLanguage(String key, String path) async {
     try {
-      translations['ur_PK'] = await _loadJson('assets/lang/ur_PK.json');
+      translations[key] = await _loadJson(path);
     } catch (e) {
-      debugPrint('Error loading ur_PK translations: $e');
-      // Fallback to English if Urdu fails to load
-      translations['ur_PK'] = translations['en_US'] ?? {};
+      debugPrint('Error loading $key translations from $path: $e');
+      translations[key] = translations['en_US'] ?? {};
     }
   }
 

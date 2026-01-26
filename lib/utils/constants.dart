@@ -48,6 +48,16 @@ class Constants {
   // ignore: constant_identifier_names
   static const String DEFAULT_COUNTRY_CODE = "US";
   // ignore: constant_identifier_names
+  static const String SPANISH_LANGUAGE_CODE = "es";
+  // ignore: constant_identifier_names
+  static const String ARABIC_LANGUAGE_CODE = "ar";
+  // ignore: constant_identifier_names
+  static const String FRENCH_LANGUAGE_CODE = "fr";
+  // ignore: constant_identifier_names
+  static const String JAPANESE_LANGUAGE_CODE = "ja";
+  // ignore: constant_identifier_names
+  static const String GERMAN_LANGUAGE_CODE = "de";
+  // ignore: constant_identifier_names
   static const String LANGUAGE_CODE = "language_code";
   // ignore: constant_identifier_names
   static const String COUNTRY_CODE = "country_code";

@@ -154,9 +154,7 @@ class AppService extends GetxService {
         Constants.DEFAULT_COUNTRY_CODE;
 
     // Load and apply saved language
-    final savedLanguageCode =
-        _box.read<String>(Constants.LANGUAGE_CODE) ?? 'en';
-    final locale = Locale(savedLanguageCode);
+    final locale = Locale(_languageCode, _countryCode);
     Get.updateLocale(locale);
 
     dynamic user = _box.read(Constants.USER_PROFILE);

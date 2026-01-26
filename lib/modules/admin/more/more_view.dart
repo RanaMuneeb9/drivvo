@@ -1,4 +1,5 @@
 import 'package:drivvo/custom-widget/button/custom_outline_button.dart';
+import 'package:drivvo/custom-widget/common/build_language_option.dart';
 import 'package:drivvo/custom-widget/common/card_header_text.dart';
 import 'package:drivvo/modules/admin/more/more_controller.dart';
 import 'package:drivvo/routes/app_routes.dart';
@@ -319,7 +320,7 @@ class MoreView extends GetView<MoreController> {
                 imagePath: "assets/images/more/translation.png",
                 title: 'translation'.tr,
                 subtitle: 'translation_sub'.tr,
-                onTap: () => controller.showLanguageDialog(),
+                onTap: () => _openBottomSheet(context: context),
               ),
             ]),
             CardHeaderText(
@@ -549,5 +550,177 @@ class MoreView extends GetView<MoreController> {
       indent: 0,
       endIndent: 0,
     );
+  }
+
+  void _openBottomSheet({required BuildContext context}) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (BuildContext context) {
+        final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+        final safeBottom = MediaQuery.of(context).padding.bottom;
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: bottomInset > 0 ? bottomInset : safeBottom,
+          ),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            width: double.maxFinite,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(46),
+                topRight: Radius.circular(46),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        "select_language".tr,
+                        style: Utils.getTextStyle(
+                          baseSize: 16,
+                          isBold: true,
+                          color: Colors.black,
+                          isUrdu: controller.isUrdu,
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: IconButton(
+                        visualDensity: VisualDensity.compact,
+                        onPressed: () => Get.back(),
+                        icon: const Icon(Icons.close, color: Color(0xFF8D90A8)),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      BuildLanguageOption(
+                        isUrdu: controller.isUrdu,
+                        languageName: "english".tr,
+                        country: "US",
+                        isSelected:
+                            controller.currentLanguage.value == "english",
+                        onTap: () {
+                          changeLanguage(languageCode: "en", country: "US");
+                          Get.back();
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      BuildLanguageOption(
+                        isUrdu: controller.isUrdu,
+                        languageName: "urdu".tr,
+                        country: "PK",
+                        isSelected: controller.currentLanguage.value == "urdu",
+                        onTap: () {
+                          changeLanguage(languageCode: "ur", country: "PK");
+                          Get.back();
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      BuildLanguageOption(
+                        isUrdu: controller.isUrdu,
+                        languageName: "spanish".tr,
+                        country: "ES",
+                        isSelected:
+                            controller.currentLanguage.value == "spanish",
+                        onTap: () {
+                          changeLanguage(languageCode: "es", country: "ES");
+                          Get.back();
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      BuildLanguageOption(
+                        isUrdu: controller.isUrdu,
+                        languageName: "arabic".tr,
+                        country: "SA",
+                        isSelected:
+                            controller.currentLanguage.value == "arabic",
+                        onTap: () {
+                          changeLanguage(languageCode: "ar", country: "SA");
+                          Get.back();
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      BuildLanguageOption(
+                        isUrdu: controller.isUrdu,
+                        languageName: "french".tr,
+                        country: "FR",
+                        isSelected:
+                            controller.currentLanguage.value == "french",
+                        onTap: () {
+                          changeLanguage(languageCode: "fr", country: "FR");
+                          Get.back();
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      BuildLanguageOption(
+                        isUrdu: controller.isUrdu,
+                        languageName: "japanese".tr,
+                        country: "JP",
+                        isSelected:
+                            controller.currentLanguage.value == "japanese",
+                        onTap: () {
+                          changeLanguage(languageCode: "ja", country: "JP");
+                          Get.back();
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      BuildLanguageOption(
+                        isUrdu: controller.isUrdu,
+                        languageName: "german".tr,
+                        country: "DE",
+                        isSelected:
+                            controller.currentLanguage.value == "german",
+                        onTap: () {
+                          changeLanguage(languageCode: "de", country: "DE");
+                          Get.back();
+                        },
+                      ),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void changeLanguage({required String languageCode, required String country}) {
+    // Update current language name
+    if (languageCode == Constants.URDU_LANGUAGE_CODE) {
+      controller.currentLanguage.value = "urdu";
+    } else if (languageCode == Constants.SPANISH_LANGUAGE_CODE) {
+      controller.currentLanguage.value = "spanish";
+    } else if (languageCode == Constants.ARABIC_LANGUAGE_CODE) {
+      controller.currentLanguage.value = "arabic";
+    } else if (languageCode == Constants.FRENCH_LANGUAGE_CODE) {
+      controller.currentLanguage.value = "french";
+    } else if (languageCode == Constants.JAPANESE_LANGUAGE_CODE) {
+      controller.currentLanguage.value = "japanese";
+    } else if (languageCode == Constants.GERMAN_LANGUAGE_CODE) {
+      controller.currentLanguage.value = "german";
+    } else {
+      controller.currentLanguage.value = "english";
+    }
+
+    controller.appService.changeLanguage(languageCode, country);
   }
 }

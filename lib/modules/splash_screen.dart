@@ -27,7 +27,6 @@ class _SplashScreenState extends State<SplashScreen> {
           try {
             await IAPService.to.checkSubscriptionStatus();
           } catch (e) {
-            // Log error but continue navigation
             debugPrint('Failed to check subscription status (Splash): $e');
           }
 
@@ -36,7 +35,6 @@ class _SplashScreenState extends State<SplashScreen> {
               Get.offAllNamed(AppRoutes.ADMIN_ROOT_VIEW);
             } else {
               Get.offAllNamed(AppRoutes.IMPORT_DATA_VIEW, arguments: false);
-              //Get.offAllNamed(AppRoutes.CREATE_VEHICLES_VIEW, arguments: true);
             }
           } else {
             Get.offAllNamed(AppRoutes.DRIVER_ROOT_VIEW);
