@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drivvo/model/timeline_entry.dart';
 import 'package:drivvo/model/vehicle/vehicle_model.dart';
 import 'package:drivvo/routes/app_routes.dart';
+import 'package:drivvo/services/ads_service.dart';
 import 'package:drivvo/services/app_service.dart';
 import 'package:drivvo/utils/constants.dart';
 import 'package:drivvo/utils/database_tables.dart';
@@ -37,6 +38,8 @@ class HomeController extends GetxController {
     appService = Get.find<AppService>();
     super.onInit();
     loadTimelineData();
+
+    AdsService.loadInterstitialAd();
   }
 
   bool get isUrdu => Get.locale?.languageCode == Constants.URDU_LANGUAGE_CODE;
@@ -390,7 +393,11 @@ class HomeController extends GetxController {
       return;
     }
 
-    Get.toNamed(routeName);
+    Get.toNamed(routeName)?.then((e) {
+      AppService.to.appUser.value.isSubscribed
+          ? null
+          : AdsService.showInterstitialAd();
+    });
   }
 
   Future<void> deleteEntry(TimelineEntry entry) async {
